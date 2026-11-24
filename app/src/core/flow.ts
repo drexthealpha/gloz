@@ -250,8 +250,10 @@ function cardOf(s: State, lang: string): Card {
     // the language named; the reply itself goes out in the sender's language.
     const x = d as Draft & { lang?: string; langName?: string }
     const name = langName(x.lang, lang) ?? x.langName
-    if (d.gloss) return { kind: 'draft', head: name ? `↩ ${w.means(name, msg.from)}` : '↩', text: d.gloss, hint: s.online ? w.draftHint : w.draftOffline, progress }
-    return { kind: 'draft', head: name ? `↩ ${w.inLang(name, msg.from)}` : '↩', text: d.text, hint: s.online ? w.draftHint : w.draftOffline, progress }
+    // A reply written by the AI says so on the glasses (EU AI Act, Article 50).
+    const ai = d.by === 'ai' ? 'AI draft · ' : ''
+    if (d.gloss) return { kind: 'draft', head: name ? `↩ ${ai}${w.means(name, msg.from)}` : `↩ ${ai}`, text: d.gloss, hint: s.online ? w.draftHint : w.draftOffline, progress }
+    return { kind: 'draft', head: name ? `↩ ${ai}${w.inLang(name, msg.from)}` : `↩ ${ai}`, text: d.text, hint: s.online ? w.draftHint : w.draftOffline, progress }
   }
   // A long message starts with one sentence saying what it wants, then the full text.
   const brief = (msg as Msg & { brief?: string }).brief

@@ -122,7 +122,7 @@ test('lines stay up long enough to read', () => {
 
 test('a reply in another language shows its meaning in the wearer language, and sends the original', () => {
   let r = run(start(true), { t: 'inbox', msgs: [m('a', 'هل يمكننا؟')] }, { t: 'draft', id: 'a', draft: { text: 'نعم', gloss: 'Yes', by: 'ai', langName: 'Arabic' } as any }, { t: 'tap' })
-  assert.equal(card(r.s).head, '↩ Ana gets this in Arabic, meaning:')
+  assert.equal(card(r.s).head, '↩ AI draft · Ana gets this in Arabic, meaning:')
   assert.equal(card(r.s).text, 'Yes')
   r = run(r.s, { t: 'tap' })
   assert.equal(r.fx[0].text, 'نعم')
@@ -318,4 +318,9 @@ test('a hold and release on a reply never sends it', () => {
   r = run(r.s, { t: 'heard', text: '' })
   assert.ok(!r.fx.some(f => f.e === 'send'))
   assert.equal(r.s.view, 'draft')
+})
+
+test('only a reply the AI wrote is labelled as an AI draft', () => {
+  const fixed = run(start(true), { t: 'inbox', msgs: [m('a', 'Hi')] }, { t: 'draft', id: 'a', draft: { text: 'Got it', by: 'default', langName: 'English' } as any }, { t: 'tap' })
+  assert.ok(!String(card(fixed.s).head).includes('AI'))
 })

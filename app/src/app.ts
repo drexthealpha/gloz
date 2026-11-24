@@ -1,5 +1,6 @@
 // Runs Gloz: wires the flow to the glasses, the backend and the outbox.
 import { doubleTap } from './core/back.ts'
+import { shows } from './core/chats.ts'
 import type { EvenAppBridge } from '@evenrealities/even_hub_sdk'
 import { start, step, card, type State, type Event, type Effect } from './core/flow.ts'
 import { Outbox, type Store } from './core/outbox.ts'
@@ -47,6 +48,9 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   // left out by `seen`, so a message that was on screen but not answered is never lost on a reopen.
   let after = 0
   const muted = new Set<string>(JSON.parse(store.get('gloz.muted') || '[]'))
+  // Chats the wearer picked on the phone: when any are picked, only they reach the glasses.
+  const only = new Set<string>(JSON.parse(store.get('gloz.only') || '[]'))
+  const chats = new Map<string, string>(JSON.parse(store.get('gloz.chats') || '[]'))   // chat key -> "chat · service", newest last
   let pcm: Uint8Array[] = []
   let listening = false
   let r: Room = room()
@@ -154,7 +158,10 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
       const r = await used.inbox(after, settings.myLang, settings.translate)
       after = r.after
       if (!s.online) { outbox.retryNow(); dispatch({ t: 'online', online: true, queued: outbox.size }) }
-      const msgs = r.msgs.filter(m => !muted.has(`${m.source}:${m.chat}`))
+      for (const m of r.msgs) { const k = `${m.source}:${m.chat}`; chats.delete(k); chats.set(k, `${m.chat} · ${m.source}`) }
+      while (chats.size > 30) chats.delete(chats.keys().next().value!)
+      if (r.msgs.length) store.set('gloz.chats', JSON.stringify([...chats]))
+      const msgs = r.msgs.filter(m => shows(`${m.source}:${m.chat}`, muted, only))
       if (msgs.length) dispatch({ t: 'inbox', msgs })
       dispatch({ t: 'checked', at: Date.now() })
       return msgs.length
@@ -268,6 +275,8 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
     check() { poll() },
     unmuteAll() { muted.clear(); store.set('gloz.muted', '[]'); after = 0; dispatch({ t: 'unmute' }); poll() },
     muted: () => muted.size,
+    chats: () => [...chats].reverse().slice(0, 12).map(([key, label]) => ({ key, label, on: only.has(key) })),
+    pick(key: string, on: boolean) { if (on) only.add(key); else only.delete(key); store.set('gloz.only', JSON.stringify([...only])); after = 0; poll() },
     top() { g.top() },
   }
 }

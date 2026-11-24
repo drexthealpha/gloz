@@ -10,13 +10,14 @@ import { field, LANGS } from './shared'
 import type { Settings } from '../core/types'
 
 const More = lazy(() => import('./MoreSettings'))
-export type Live = { status: string; said: string; muted: number }
+export type Chat = { key: string; label: string; on: boolean }
+export type Live = { status: string; said: string; muted: number; chats: Chat[] }
 export type Theme = 'device' | 'light' | 'dark'
 export type Set = (n: Partial<Settings> & { roomLang?: string }) => void
 
-export function SettingsScreen({ settings, current, onChange, live, unmute, theme, onTheme }: {
+export function SettingsScreen({ settings, current, onChange, live, unmute, pick, theme, onTheme }: {
   settings: Settings & { roomLang?: string }; current?: () => Settings & { roomLang?: string }; onChange: (n: Partial<Settings> & { roomLang?: string }) => void
-  live: () => Live; unmute: () => void; theme: Theme; onTheme: (v: Theme) => void
+  live: () => Live; unmute: () => void; pick: (key: string, on: boolean) => void; theme: Theme; onTheme: (v: Theme) => void
 }) {
   const [s, setS] = useState(settings)
   const [l, setL] = useState(live)
@@ -52,7 +53,7 @@ export function SettingsScreen({ settings, current, onChange, live, unmute, them
         {open && (
           <div id="more" className="flex flex-col gap-3">
             <Suspense fallback={<p className="m-0 text-muted-foreground">{t('loading')}</p>}>
-              <More s={s} set={set} l={l} setL={setL} live={live} unmute={unmute} theme={theme} onTheme={onTheme} />
+              <More s={s} set={set} l={l} setL={setL} live={live} unmute={unmute} pick={pick} theme={theme} onTheme={onTheme} />
             </Suspense>
           </div>
         )}

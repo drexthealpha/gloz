@@ -22,7 +22,10 @@ const pair = async () => {
   await new Promise(ok => setTimeout(ok, slow))
   if (q.get('wrong')) throw Object.assign(new Error('refused'), { status: 403 })
 }
-const settings = () => settingsScreen(root, s, () => {}, () => status || phoneStatus(toRead, 1, muted * 2, 0), () => said, () => muted, () => { toRead += muted * 2; muted = 0 })
+// Sample chats, as the glasses app lists the chats it has seen.
+const picked = new Set<string>()
+const chats = () => [['telegram:Board', 'Board · telegram'], ['slack:#launch', '#launch · slack'], ['gmail:Layla', 'Layla · gmail']].map(([key, label]) => ({ key, label, on: picked.has(key) }))
+const settings = () => settingsScreen(root, s, () => {}, () => status || phoneStatus(toRead, 1, muted * 2, 0), () => said, () => muted, () => { toRead += muted * 2; muted = 0 }, undefined, chats, (k, on) => { if (on) picked.add(k); else picked.delete(k) })
 // A code that pairs leads on to the settings screen, as in the app.
 if (screen === 'settings') settings()
 else pairScreen(root, screen === 'server' ? '' : 'https://gloz.example.org', async (b, code) => { await pair(); void b; void code; void settings() })

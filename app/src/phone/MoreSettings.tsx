@@ -11,11 +11,12 @@ import { big, field, LANGS, Listen } from './shared'
 import type { Live, Set, Theme } from './SettingsScreen'
 import type { Settings } from '../core/types'
 
-export default function MoreSettings({ s, set, l, setL, live, unmute, theme, onTheme }: {
-  s: Settings & { roomLang?: string }; set: Set; l: Live; setL: (l: Live) => void; live: () => Live; unmute: () => void; theme: Theme; onTheme: (v: Theme) => void
+export default function MoreSettings({ s, set, l, setL, live, unmute, pick, theme, onTheme }: {
+  s: Settings & { roomLang?: string }; set: Set; l: Live; setL: (l: Live) => void; live: () => Live; unmute: () => void; pick: (key: string, on: boolean) => void; theme: Theme; onTheme: (v: Theme) => void
 }) {
   const [copied, setCopied] = useState('')
   const [unmutedNote, setUnmutedNote] = useState(false)
+  const [chatsOpen, setChatsOpen] = useState(false)
   return (
     <>
       <div className="flex flex-col gap-2">
@@ -45,11 +46,23 @@ export default function MoreSettings({ s, set, l, setL, live, unmute, theme, onT
         </ToggleGroup>
       </div>
       {unmutedNote && <p role="status" className="m-0 font-semibold">{t('unmuted')}</p>}
-      {l.muted > 0 && (
+      {(l.muted > 0 || l.chats.length > 0) && (
         <div className="flex min-h-12 flex-wrap items-center justify-between gap-3">
-          <span className="min-w-0 flex-1 basis-40">{l.muted === 1 ? t('mutedChat') : t('mutedChats', l.muted)}</span>
-          <Button variant="outline" className={big} onClick={() => { unmute(); setL(live()); setUnmutedNote(true); setTimeout(() => setUnmutedNote(false), 4000) }}>{t('unmute')}</Button>
+          <span className="min-w-0 flex-1 basis-40">{l.muted > 0 ? (l.muted === 1 ? t('mutedChat') : t('mutedChats', l.muted)) : l.chats.some(c => c.on) ? t('onlyPicked') : t('allChats')}</span>
+          <Button variant="outline" className={big} aria-expanded={chatsOpen} aria-controls="chatlist" onClick={() => setChatsOpen(!chatsOpen)}>{t('chats')}</Button>
         </div>
+      )}
+      {chatsOpen && (
+        <fieldset id="chatlist" className="m-0 flex flex-col gap-2 border-0 p-0">
+          <legend className="mb-1 text-base font-semibold">{t('onlyChats')}</legend>
+          {l.muted > 0 && <Button variant="outline" className={`${big} w-full`} onClick={() => { unmute(); setL(live()); setUnmutedNote(true); setTimeout(() => setUnmutedNote(false), 4000) }}>{t('unmute')}</Button>}
+          {l.chats.map((c, k) => (
+            <div key={c.key} className="flex min-h-12 flex-wrap items-center justify-between gap-3">
+              <Label htmlFor={`chat${k}`} className="min-w-0 flex-1 basis-40 text-base"><bdi>{c.label}</bdi></Label>
+              <Switch id={`chat${k}`} checked={c.on} onCheckedChange={v => { pick(c.key, v); setL(live()) }} />
+            </div>
+          ))}
+        </fieldset>
       )}
       {l.said && (
         <section className="flex flex-col gap-2">

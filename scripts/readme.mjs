@@ -12,6 +12,11 @@ const json = n => existsSync(R(n)) ? JSON.parse(readFileSync(R(n), 'utf8')) : nu
 const blocks = {}
 const h = json('heldout.json')
 const t = json('time.json')
+const v = json('video.json')
+// A missing result file fails the check: a page must never keep an old number silently.
+const missing = ['heldout.json', 'heldout.md', 'time.json', 'time.md', 'video.json', 'complaints.json'].filter(n => !existsSync(R(n)))
+if (missing.length) { console.log('missing result files:', missing.join(', ')); process.exit(1) }
+blocks.video = `${v.seconds} s`
 if (h) {
   const five = ['Arabic', 'Persian', 'Hindi', 'Thai', 'Hebrew']
   const g = five.reduce((n, k) => n + h.by[k].glozA, 0)
@@ -29,16 +34,23 @@ blocks.wins = [
   ...rows.map(r => `| "${r.q}" (${r.d}) | ${r.fix} | ${r.gloz} | ${r.best} |`),
 ].join('\n')
 
-const path = new URL('../README.md', import.meta.url)
-let md = readFileSync(path, 'utf8')
-for (const [k, v] of Object.entries(blocks)) {
-  // A function, so a "$" in the text (prices) is never read as a pattern.
-  md = md.replace(new RegExp(`(<!-- gen:${k} -->)[\\s\\S]*?(<!-- /gen -->)`), (_, a, b) => `${a}\n${v}\n${b}`)
+// Each page and the blocks it must hold; a block written inline (gen-i) stays on its line.
+const PAGES = { 'README.md': ['first', 'heldout', 'time', 'wins', 'video'], 'SUBMISSION-CHECK.md': ['video'] }
+let stale = false
+for (const [file, want] of Object.entries(PAGES)) {
+  const path = new URL(`../${file}`, import.meta.url)
+  const before = readFileSync(path, 'utf8')
+  let md = before
+  for (const k of want) {
+    const block = new RegExp(`(<!-- gen:${k} -->)[\\s\\S]*?(<!-- /gen -->)`)
+    if (!block.test(md)) { console.log(`${file}: the gen:${k} marker is missing`); process.exit(1) }
+    // A function, so a "$" in the text (prices) is never read as a pattern; a short value stays inline.
+    const val = blocks[k]
+    md = md.replace(new RegExp(`(<!-- gen:${k} -->)[\\s\\S]*?(<!-- /gen -->)`, 'g'), (_, a, b) => val.includes('\n') || val.length > 40 ? `${a}\n${val}\n${b}` : `${a}${val}${b}`)
+  }
+  if (md !== before) { stale = true; if (!process.argv.includes('--check')) writeFileSync(path, md) }
 }
 if (process.argv.includes('--check')) {
-  if (md !== readFileSync(path, 'utf8')) { console.log('README.md is out of date: run node scripts/readme.mjs'); process.exit(1) }
-  console.log('README numbers match eval/results')
-} else {
-  writeFileSync(path, md)
-  console.log('README.md blocks written:', Object.keys(blocks).join(', '))
-}
+  if (stale) { console.log('README.md or SUBMISSION-CHECK.md is out of date: run node scripts/readme.mjs'); process.exit(1) }
+  console.log('README and SUBMISSION-CHECK numbers match eval/results')
+} else console.log('blocks written:', Object.keys(blocks).join(', '))

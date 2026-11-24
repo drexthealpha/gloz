@@ -7,7 +7,7 @@ Every requirement and rule on https://dorahacks.io/hackathon/even-realities/deta
 | The page says | Proof |
 |---|---|
 | "A public GitHub/GitLab repository with a README that explains setup" | https://github.com/drexthealpha/gloz (public). README "Setup": 5 steps, checked by `npm run check:setup` in [scripts/check-setup.mjs](scripts/check-setup.mjs). |
-| "A demo video of up to 3 minutes, running in the simulator or on G2" | https://drexthealpha.github.io/gloz/gloz-demo.mp4: 85 s, recorded in the Even Hub simulator by [scripts/video.mjs](scripts/video.mjs) driving the real app and backend. |
+| "A demo video of up to 3 minutes, running in the simulator or on G2" | https://drexthealpha.github.io/gloz/gloz-demo.mp4: <!-- gen:video -->85 s<!-- /gen -->, recorded in the Even Hub simulator by [scripts/video.mjs](scripts/video.mjs) driving the real app and backend. |
 | "A short description: the problem, who it is for, how it works, and the track" | See "Short description" below. |
 | "Optional: feature requests, up to 5 things the APIs you used were missing" | README, "For Even Realities: five requests for the SDK": 5 requests. |
 | "Optional: a packaged .ehpk build" | https://github.com/drexthealpha/gloz/releases/latest/download/gloz.ehpk ; also built by CI on every push and by `cd app && npm run pack`. |
@@ -63,8 +63,8 @@ README, "For judges: where to look", has one row for each: Usefulness on G2, Rea
 
 ## Video
 
-https://drexthealpha.github.io/gloz/gloz-demo.mp4 (85 s). Scenes: the same Thai message as plain G2 text and as Gloz; reading and answering messages in Arabic, Persian, Hindi, Thai and Hebrew; a reply saved through a dropped link and sent when it returns; the Apps list and the dashboard, then back to messages; closing with a double tap; the measured results. Sample messages from Gloz's labelled sample service, since no service key is set.
+https://drexthealpha.github.io/gloz/gloz-demo.mp4 (<!-- gen:video -->85 s<!-- /gen -->). Scenes: the same Thai message as plain G2 text and as Gloz; reading and answering messages in Arabic, Persian, Hindi, Thai and Hebrew; a reply saved through a dropped link and sent when it returns; the Apps list and the dashboard, then back to messages; closing with a double tap; the measured results. Sample messages from Gloz's labelled sample service, since no service key is set.
 
 ## Checked
 
-Checked on 23 Nov 2026 by an agent that did not build Gloz, on a fresh clone of the public repository: every rule it could check passed (tests, text check, setup check, no secrets in history, demo, badge, video and package links). Checked again the same evening on the final code: 0 FAIL; tests 47 of 47 at that commit; the video plays 71.28 s by ffprobe. It could not check team size, the services' terms in practice, or the submission itself, which only the DoraHacks form and the founder can show.
+Checked on 24 Nov 2026 by an agent that did not build Gloz, on a fresh clone of the public repository: no rule on the page failed (tests, text check, setup check, no secrets in history, live demo with no sign-in, status badge, video under 3 minutes, package). It could not check team size, the services' terms in practice, or the submission itself, which only the DoraHacks form and the founder can show. Test counts and timings are in the CI run for each commit.

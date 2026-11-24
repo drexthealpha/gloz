@@ -26,6 +26,19 @@ jobs:
           npx -y @evenrealities/evenhub-cli@0.2.0 pack app.json dist -o gloz.ehpk --sdk-ver 0.0.16
       - name: Results and README numbers match the committed run
         run: node eval/score.mjs --check && node scripts/readme.mjs --check
+  setup:
+    # The README setup steps, run the way a judge would: install, build, pack, start, pair.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm ci
+      - run: npm ci
+        working-directory: app
+      - name: Setup checked as the README says
+        run: npm run check:setup
   evaluation:
     runs-on: ubuntu-24.04
     steps:

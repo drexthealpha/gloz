@@ -1,6 +1,6 @@
 // Mounts the phone screens. Same two calls as before: pairScreen and settingsScreen.
 import { createRoot, type Root } from 'react-dom/client'
-import type { Live } from './SettingsScreen'
+import type { Live, Chat } from './SettingsScreen'
 import type { Settings } from '../core/types'
 import './phone.css'
 
@@ -25,9 +25,9 @@ export async function pairScreen(el: HTMLElement, backend: string, onPair: (base
   rootOf(el).render(<PairScreen backend={backend} onPair={onPair} />)
 }
 
-export async function settingsScreen(el: HTMLElement, s: Settings & { roomLang?: string }, onChange: (n: Partial<Settings> & { roomLang?: string }) => void, status: () => string, said: () => string = () => '', muted: () => number = () => 0, unmute: () => void = () => {}, current?: () => Settings & { roomLang?: string }) {
+export async function settingsScreen(el: HTMLElement, s: Settings & { roomLang?: string }, onChange: (n: Partial<Settings> & { roomLang?: string }) => void, status: () => string, said: () => string = () => '', muted: () => number = () => 0, unmute: () => void = () => {}, current?: () => Settings & { roomLang?: string }, chats: () => Chat[] = () => [], pick: (key: string, on: boolean) => void = () => {}) {
   const { SettingsScreen } = await import('./SettingsScreen')
-  const live = (): Live => ({ status: status(), said: said(), muted: muted() })
-  const draw = () => rootOf(el).render(<SettingsScreen settings={{ ...s }} current={current} onChange={onChange} live={live} unmute={unmute} theme={theme()} onTheme={v => { applyTheme(v); draw() }} />)
+  const live = (): Live => ({ status: status(), said: said(), muted: muted(), chats: chats() })
+  const draw = () => rootOf(el).render(<SettingsScreen settings={{ ...s }} current={current} onChange={onChange} live={live} unmute={unmute} pick={pick} theme={theme()} onTheme={v => { applyTheme(v); draw() }} />)
   draw()
 }

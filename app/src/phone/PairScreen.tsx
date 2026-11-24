@@ -38,6 +38,7 @@ export function PairScreen({ backend, onPair }: { backend: string; onPair: (base
           <Input id="server" dir="ltr" data-no-mirror className={`${field} w-full`} inputMode="url" autoComplete="off" maxLength={300} value={base} onChange={e => setBase(e.target.value)} placeholder="https://" aria-invalid={badBase || undefined} />
           {badBase && <p role="alert" className="m-0 font-semibold text-destructive">⚠ {t('badServer')}</p>}
           <Button data-primary className={`${field} w-full`}><Server aria-hidden="true" /> {t('next')}</Button>
+          <p className="m-0 text-muted-foreground">{t('dataStays')}</p>
           {known && <Button type="button" variant="outline" className={`${field} w-full`} onClick={() => { setBase(known); setBadBase(false); setStep('code') }}>{t('back')}</Button>}
         </form>
       ) : (

@@ -5,6 +5,8 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+  id-token: write
+  attestations: write
 jobs:
   release:
     runs-on: ubuntu-24.04
@@ -27,6 +29,11 @@ jobs:
           npm ci && npm test
           cd app && npm ci && npx tsc --noEmit && npx vite build
           npx -y @evenrealities/evenhub-cli@0.2.0 pack app.json dist -o gloz.ehpk --sdk-ver 0.0.16
+      - name: Signed record of how the package was built (build provenance)
+        if: steps.new.outputs.skip != '1'
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: app/gloz.ehpk
       - name: Publish the release
         if: steps.new.outputs.skip != '1'
         env:
