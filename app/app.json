@@ -9,12 +9,20 @@
     {
       "name": "network",
       "desc": "Reaches your own Gloz backend, which fetches your messages and sends the replies you approve.",
-      "whitelist": ["https://gloz-backend.example.com"]
+      "whitelist": [
+        "https://gloz-backend.example.com"
+      ]
     },
     {
       "name": "g2-microphone",
       "desc": "Hears what you say while you hold the touchpad, to change a reply or to say send."
+    },
+    {
+      "name": "location",
+      "desc": "Only Navigation (directions) and the Dashboard (local weather) use your position, and only while they are open. Messages never need it."
     }
   ],
-  "supported_languages": ["en"]
+  "supported_languages": [
+    "en"
+  ]
 }

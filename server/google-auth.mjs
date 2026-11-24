@@ -10,8 +10,8 @@ const secret = process.env.GLOZ_GOOGLE_CLIENT_SECRET
 if (!id || !secret) { console.log('Set GLOZ_GOOGLE_CLIENT_ID and GLOZ_GOOGLE_CLIENT_SECRET first (a Desktop app OAuth client).'); process.exit(1) }
 const port = 8788
 const redirect = `http://127.0.0.1:${port}/`
-// Read, send, and mark as read. Nothing else.
-const scope = 'https://www.googleapis.com/auth/gmail.modify'
+// Mail for messages; calendar, tasks and documents for the Apps on the glasses (read-only, except mail, tasks and the notes Gloz creates).
+const scope = ['gmail.modify', 'calendar.readonly', 'tasks', 'drive.readonly', 'drive.file'].map(s => 'https://www.googleapis.com/auth/' + s).join(' ')
 const url = `https://accounts.google.com/o/oauth2/v2/auth?${new URLSearchParams({ client_id: id, redirect_uri: redirect, response_type: 'code', scope, access_type: 'offline', prompt: 'consent' })}`
 
 const srv = createServer(async (req, res) => {

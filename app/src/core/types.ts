@@ -24,6 +24,7 @@ export interface Card {
   text: string
   hint?: string         // what a tap or hold does here
   progress?: [number, number]
+  grid?: string[]       // short items drawn as a grid over the whole display (the dashboard)
 }
 
 export interface Settings {

@@ -62,7 +62,12 @@ export async function draft(msg, thread = [], askText = '', myLang = 'en') {
     `${msg.from}: ${msg.text}`,
     askText ? `Wearer's instruction: ${askText}` : 'Wearer gave no instruction.',
   ].join('\n')
-  const out = await ask(DRAFT_SYSTEM.replace('WEARER_LANG', NAMES[myLang] || myLang), user)
+  // Every provider failing (server errors, no signal) still leaves a reply to send: the holding reply.
+  let out
+  try { out = await ask(DRAFT_SYSTEM.replace('WEARER_LANG', NAMES[myLang] || myLang), user) } catch {
+    const text = HOLDING[lang] || HOLDING.en
+    return { text, gloss: lang === myLang ? undefined : HOLDING[myLang] || HOLDING.en, lang: guessLang(text), langName: NAMES[guessLang(text)], by: 'default' }
+  }
   const j = json(out.text)
   const text = String(j.reply).trim()
   const rl = guessLang(text)

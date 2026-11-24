@@ -12,7 +12,7 @@ import {
 } from '@evenrealities/even_hub_sdk'
 import type { Card } from './core/types.ts'
 import { dwell } from './core/layout.ts'
-import { layoutCard, drawLine, tiles, blankStrip, STRIP, type Lines } from './render.ts'
+import { layoutCard, drawLine, tiles, blankStrip, drawGrid, tiles4, STRIP, type Lines } from './render.ts'
 
 export type Input = 'tap' | 'next' | 'prev' | 'hold' | 'release' | 'exit'
 
@@ -41,9 +41,16 @@ export class Glasses {
   private y() { return this.low ? 288 - STRIP - 8 : (288 - STRIP) / 2 }
 
   private menu: { itemName: string; itemID: number }[] = []
+  private full = false   // a grid card fills the display with four tiles
 
   private page() {
     const y = this.y()
+    if (this.full) return {
+      containerTotalNum: 5,
+      textObject: [new TextContainerProperty({ xPosition: 0, yPosition: 0, width: 576, height: 288, containerID: 1, containerName: 'input', content: ' ', isEventCapture: 1, zOrderIndex: 1 })],
+      imageObject: [[0, 0], [288, 0], [0, 144], [288, 144]].map(([x, yy], k) => new ImageContainerProperty({ xPosition: x, yPosition: yy, width: 288, height: 144, containerID: 2 + k, containerName: `t${k}`, zOrderIndex: 2 + k })),
+      menuObject: { menuItems: this.menu },
+    } as any
     return {
       containerTotalNum: 3,
       textObject: [new TextContainerProperty({ xPosition: 0, yPosition: 0, width: 576, height: 288, containerID: 1, containerName: 'input', content: ' ', isEventCapture: 1, zOrderIndex: 1 })],
@@ -133,6 +140,8 @@ export class Glasses {
   }
 
   show(c: Card, force = false) {
+    // A grid card and a line card need different pages: switch when the kind of card changes.
+    if (Boolean(c.grid) !== this.full) { this.full = Boolean(c.grid); this.drawing = this.drawing.then(() => this.bridge.rebuildPageContainer(new RebuildPageContainer(this.page()))).then(() => {}); force = true }
     // A new hint ("Checked ✓", no signal) keeps the line the wearer is on; new text starts at line 1.
     const sameText = Boolean(this.card) && this.card!.kind === c.kind && this.card!.text === c.text && this.card!.head === c.head
     if (sameText && this.card!.hint === c.hint && !force) return
@@ -154,7 +163,7 @@ export class Glasses {
   // A message stops at its last page; a reply goes round so all of it can be read.
   private tick() {
     const c = this.card, l = this.lay
-    if (!c || !l || !this.autoPace || this.manual || this.menuOpen || l.lines.length < 2) return
+    if (!c || !l || c.grid || !this.autoPace || this.manual || this.menuOpen || l.lines.length < 2) return
     if (c.kind !== 'message' && c.kind !== 'draft') return
     const wait = (dwell(l.lines[this.line]) + (c.kind === 'message' && this.line === 0 ? 1.5 : 0)) * 1000
     if (Date.now() - this.lineAt < wait) return
@@ -172,6 +181,12 @@ export class Glasses {
     const my = ++this.gen
     this.drawing = this.drawing.then(async () => {
       if (my !== this.gen) return   // a newer screen is waiting: skip this one
+      if (c.grid && !this.menuOpen) {
+        const four = await tiles4(drawGrid(c.grid, c.hint ?? ''))
+        if (my !== this.gen) return
+        for (let k = 0; k < 4; k++) { await this.bridge.updateImageRawData(new ImageRawDataUpdate({ containerID: 2 + k, containerName: `t${k}`, imageData: four[k] })); await new Promise(r => setTimeout(r, 150)) }
+        return
+      }
       const [a, b] = await tiles(this.menuOpen ? blankStrip() : drawLine(c, l, i))
       if (my !== this.gen) return
       // The glasses hold an image sent within 100 ms of the one before until the next send
@@ -189,5 +204,17 @@ export class Glasses {
   }
 
   async mic(on: boolean) { await this.bridge.audioControl(on) }
+
+  // The phone's position: from the Even app first, then the browser; null after 5 s without one.
+  async locate(): Promise<{ lat: number; lon: number } | null> {
+    const late = new Promise<null>(done => setTimeout(() => done(null), 5000))
+    const fromApp = (async () => { try { const l = await (this.bridge as any).getAppLocation?.(); return l ? { lat: l.latitude, lon: l.longitude } : null } catch { return null } })()
+    const fromBrowser = () => new Promise<{ lat: number; lon: number } | null>(done => {
+      const geo = typeof navigator !== 'undefined' ? navigator.geolocation : undefined
+      if (!geo) return done(null)
+      geo.getCurrentPosition(p => done({ lat: p.coords.latitude, lon: p.coords.longitude }), () => done(null), { timeout: 5000, maximumAge: 60000 })
+    })
+    return Promise.race([fromApp.then(p => p ?? fromBrowser()), late])
+  }
   exit() { this.bridge.shutDownPageContainer(1) }
 }

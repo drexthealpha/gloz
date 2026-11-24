@@ -3,6 +3,7 @@
 // (Arabic, Hebrew, Persian, Hindi, Thai in our probe); the phone's own fonts do not.
 import { SIZES, type Card } from './core/types.ts'
 import { wrap, direction } from './core/layout.ts'
+import { grid } from './modes/dash.ts'
 
 export const W = 576
 export const STRIP = 144             // one line lives in a 576 x 144 strip: two 288 x 144 tiles
@@ -119,6 +120,54 @@ export function blankStrip(): HTMLCanvasElement {
   g.fillStyle = '#000'
   g.fillRect(0, 0, W, STRIP)
   return cv
+}
+
+// The whole display (576 x 288) as a grid of short items: up to 12, each at the largest size
+// that fits its cell, never below 20 px; the hint sits along the bottom.
+export const FULL_H = 288
+export function drawGrid(texts: string[], hint: string): HTMLCanvasElement {
+  const cv = document.createElement('canvas')
+  cv.width = W
+  cv.height = FULL_H
+  const g = cv.getContext('2d')!
+  g.fillStyle = '#000'
+  g.fillRect(0, 0, W, FULL_H)
+  const measure = (s: string, px: number) => { g.font = `${px}px ${FONT}`; return g.measureText(s).width }
+  const H = hint ? FULL_H - HINT_PX - 12 : FULL_H
+  const cells = grid(texts, measure, W, H)
+  g.textBaseline = 'top'
+  g.strokeStyle = '#555'
+  for (const c of cells) {
+    g.strokeRect(c.x + 0.5, c.y + 0.5, c.w - 1, c.h - 1)
+    g.font = `${c.px}px ${FONT}`
+    g.fillStyle = '#fff'
+    const lh = c.px * 1.2
+    const top = c.y + (c.h - c.lines.length * lh) / 2
+    c.lines.forEach((l, i) => { g.direction = direction(l); g.textAlign = g.direction === 'rtl' ? 'right' : 'left'; g.fillText(l, g.direction === 'rtl' ? c.x + c.w - 6 : c.x + 6, top + i * lh) })
+  }
+  if (hint) {
+    g.font = `${HINT_PX}px ${FONT}`
+    g.fillStyle = '#aaa'
+    g.textBaseline = 'middle'
+    g.direction = 'ltr'
+    g.textAlign = 'left'
+    g.fillText(hint, PAD, FULL_H - HINT_PX / 2 - 4)
+  }
+  return cv
+}
+
+// The whole display cut into the four tiles a page holds (each 288 x 144): top left, top right, bottom left, bottom right.
+export async function tiles4(full: HTMLCanvasElement): Promise<Uint8Array[]> {
+  const out: Uint8Array[] = []
+  for (const [x, y] of [[0, 0], [288, 0], [0, 144], [288, 144]]) {
+    const t = document.createElement('canvas')
+    t.width = 288
+    t.height = 144
+    t.getContext('2d')!.drawImage(full, -x, -y)
+    const blob: Blob = await new Promise(res => t.toBlob(b => res(b!), 'image/png'))
+    out.push(new Uint8Array(await blob.arrayBuffer()))
+  }
+  return out
 }
 
 // Cuts the strip into the two tiles the glasses accept (each at most 288 x 144)

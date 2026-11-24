@@ -11,6 +11,7 @@ import { createServer } from 'node:http'
 import { randomBytes, createHash, randomInt } from 'node:crypto'
 import { readFileSync, writeFileSync, mkdirSync, renameSync } from 'node:fs'
 import { join } from 'node:path'
+import { MODES } from './modes/index.mjs'
 
 const sha = s => createHash('sha256').update(s).digest('hex')
 
@@ -168,6 +169,12 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
       const i = inbox.findIndex(e => e.id === id)
       if (i >= 0) inbox.splice(i, 1)
       return send(200, { ok: true })
+    }
+    if (p.startsWith('/mode/') && req.method === 'POST') {
+      const id = decodeURIComponent(p.slice(6))
+      const h = MODES[id]
+      if (!h) return send(404, { error: 'no such app' })
+      try { return send(200, await h(await body(req), { ai, env: process.env })) } catch (e) { return send(502, { error: String(e.message || e).slice(0, 200) }) }
     }
     if (p === '/stt' && req.method === 'POST') {
       const pcm = await body(req, true)

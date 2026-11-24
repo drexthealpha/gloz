@@ -1,0 +1,18 @@
+{
+ "words": 481,
+ "passes": 5,
+ "updates": 710,
+ "seed": 1,
+ "exact": 0.752112676056338,
+ "within1": 0.9690140845070423,
+ "errors": {
+  "sub": 0.1,
+  "del": 0.06,
+  "ins": 0.04,
+  "cutLast": 0.15,
+  "reread": 0.04,
+  "skip": 0.03,
+  "pause": 0.1
+ },
+ "input": "simulated recognizer text, not audio"
+}

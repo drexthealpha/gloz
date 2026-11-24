@@ -88,21 +88,53 @@ const out = {}
   out.replyLanguage = { messages: items.length, sameLanguage: sameLang, drafter: ai.aiReady() ? 'ai' : 'holding reply' }
 }
 
+// 36: every AI provider set up and every one failing (a server error on each call): does each message still get a reply to send?
+{
+  const keep = { ...process.env }
+  // Dummy values only, so all three providers are tried; no real key is read or used.
+  process.env.GLOZ_OPENROUTER_KEY = 'x'; process.env.GLOZ_ANTHROPIC_KEY = 'x'; process.env.GLOZ_OPENAI_KEY = 'x'
+  const realFetch = globalThis.fetch
+  let calls = 0
+  globalThis.fetch = async (u, o) => { if (/openrouter|anthropic|openai/.test(String(u))) { calls++; return new Response('{"error":"server error"}', { status: 500 }) } return realFetch(u, o) }
+  const items = JSON.parse(readFileSync(new URL('./set/heldout.json', import.meta.url), 'utf8')).items
+  let got = 0
+  for (const it of items) { const d = await ai.draft({ id: 'o', from: 'S', text: it.expected }, [], '', 'en').catch(() => null); if (d && d.text && d.text.trim()) got++ }
+  globalThis.fetch = realFetch
+  for (const k of ['GLOZ_OPENROUTER_KEY', 'GLOZ_ANTHROPIC_KEY', 'GLOZ_OPENAI_KEY']) if (keep[k] === undefined) delete process.env[k]; else process.env[k] = keep[k]
+  out.outage = { messages: items.length, gotReply: got, providerCallsFailed: calls }
+}
+
 // 8 and 36: one command word acts in ten languages; no always-on wake word exists to misfire.
 out.words = { send: ['send', 'أرسل', 'بفرست', 'भेजो', 'ส่ง', 'שלח', '送信', '보내', '发送', 'отправь'].filter(w => word(w) === 'send').length, alwaysListening: false }
 
-// 93, 102, 80: a long meeting in Listen mode. 11 hours of 4-second pieces: is any
+// 93, 102, 80, 85: a long meeting in Listen mode. 60 hours of 4-second pieces: is any
 // piece dropped or any shown caption rewritten? Can any earlier line be reached?
 {
   let r = roomStep(room(), { t: 'start' })
-  const pieces = (11 * 3600) / 4
+  const pieces = (60 * 3600) / 4
   const shown = []
   for (let i = 0; i < pieces; i++) { r = roomStep(r, { t: 'heard', text: `line ${i}`, at: i }); if (i % 997 === 0) shown.push([i, r.lines[i].text]) }
   const rewritten = shown.filter(([i, t]) => r.lines[i].text !== t).length
   let back = r
   for (let i = 0; i < pieces - 1; i++) back = roomStep(back, { t: 'up' })
-  out.room = { hours: 11, pieces, kept: r.lines.length, rewritten, earliestReachable: back.at === 0, tapsToPause: 1 }
+  out.room = { hours: 60, pieces, kept: r.lines.length, rewritten, earliestReachable: back.at === 0, tapsToPause: 1 }
 }
 
 writeFileSync(new URL('./results/complaints.json', import.meta.url), JSON.stringify(out, null, 1) + '\n')
 console.log(JSON.stringify(out, null, 1))
+
+// 29, 92: the dashboard. Every panel the wearer can pick (12), each at its longest text, on one 576 x 288 screen
+// (a 576 x 256 grid above the hint line): how many fit at 20 px or more with nothing cut?
+{
+  const { grid, panelText, PANELS, MIN_PX } = await import('../app/src/modes/dash.ts')
+  const { measure } = await import('./text-width.mjs')
+  const data = {
+    unread: 12345, events: [{ at: '2026-11-24T23:45:00Z', title: 'Quarterly board review with investors' }, { at: '2026-11-25T08:00:00Z', title: 'Dinner with the Hamburg team' }],
+    tasks: { due: 999, first: 'Send the signed contract to legal' }, weather: { temp: -12.4, hi: -10, lo: -22, rain: 100, wind: 104 },
+  }
+  const texts = PANELS.map(([id]) => panelText(id, data, 'en', new Date('2026-09-30T23:59:00Z'), 'Pick up dry cleaning before 6', true))
+  const cells = grid(texts, measure, 576, 256)
+  const fit = cells.filter(c => c.px >= MIN_PX && !c.cut && c.lines.every(l => measure(l, c.px) <= c.w - 12) && c.lines.length * c.px * 1.2 <= c.h - 12).length
+  out.dashboard = { panels: PANELS.length, fitOneScreen: fit, smallestPx: Math.min(...cells.map(c => c.px)), maxChars: 28 }
+  writeFileSync(new URL('./results/complaints.json', import.meta.url), JSON.stringify(out, null, 1) + '\n')
+}

@@ -5,6 +5,9 @@ import { Outbox, type Store } from './core/outbox.ts'
 import { DEFAULT_SETTINGS, type Settings } from './core/types.ts'
 import { Glasses } from './glasses.ts'
 import { menuItems } from './core/menu.ts'
+import type { Mode, ModeCtx } from './modes/types.ts'
+import { APPS } from './modes/index.ts'
+import { appsList } from './modes/apps.ts'
 import { words } from './core/words.ts'
 import { holdingReply } from './core/holding.ts'
 import { room, roomStep, roomCard, transcript, type Room, type RoomEvent } from './core/room.ts'
@@ -51,10 +54,12 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   let silentPieces = 0
   let roomNote = ''
   let quiet = false   // listening, and nothing heard yet
+  let active: Mode | null = null   // an app from the Apps list, when one is open
 
   const outbox = new Outbox(store, p => api ? api.send(p.key, p.msgId, p.text) : Promise.resolve('retry'))
 
   function render() {
+    if (active) { g.show(active.card()); onState?.(s, settings); return }
     g.show(r.on ? { ...roomCard(r, settings.myLang), ...(roomNote ? { text: roomNote } : quiet && !r.paused && !r.lines.length ? { text: words(settings.myLang).nothingHeardYet } : {}) } : card(s, settings.myLang))
     onState?.(s, settings)
   }
@@ -162,6 +167,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
 
   g.onInput = i => {
     if (i === 'exit') return g.exit()
+    if (active) { active.input(i); return }
     if (r.on) {
       if (i === 'tap') roomDo({ t: 'tap' })
       const few = r.lines.length - (r.since ?? 0) < 2
@@ -177,6 +183,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
     dispatch({ t: i })
   }
   g.onAudio = chunk => {
+    if (active?.audio) { active.audio(chunk); return }
     if (listening) pcm.push(chunk)
     if (r.on && !r.paused) {
       roomPcm.push(chunk)
@@ -195,10 +202,37 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
     if (id === 6) { const n = await poll(); note = n < 0 ? w.noSignal : n ? w.someNew(n) : w.nothingNew }
     if (id === 8 && !muted.size) note = w.nothingMuted
     else if (id === 8) { const who = [...new Set((s.mutedMsgs ?? []).map(x => x.from))].join(', '); note = who ? w.unmutedWho(who) : w.unmuted; muted.clear(); store.set('gloz.muted', '[]'); after = 0; dispatch({ t: 'unmute' }); poll() }
+    if (id === 9) { if (r.on) roomDo({ t: 'stop' }); openApp(appsList(modeCtx(''), APPS, a => openApp(a.make(modeCtx(a.id))))); return }
+    if (id === 10) { closeApp(); return }
     if (id === 7) { if (r.on) note = r.lines.length ? w.roomStop : w.roomStopEmpty; roomNote = ''; quiet = false; silentPieces = 0; roomDo({ t: r.on ? 'stop' : 'start' }); g.setMenu(menuItems(settings.myLang, r.on, w.stopListening)) }
     if (note) dispatch({ t: 'note', text: note, ms: 3500 })   // a menu choice is confirmed long enough to look back
     saveSettings(settings)
     g.setLook(settings.size, settings.low, settings.autoPace)
+    render()
+  }
+
+  // Apps from the glasses menu: each gets the wearer's language, its own server route and the microphone.
+  function modeCtx(id: string): ModeCtx {
+    return {
+      call: body => (api?.mode ? api.mode(id, body) : Promise.reject(new Error('not paired'))),
+      lang: () => settings.myLang,
+      render,
+      mic: on => g.mic(on),
+      locate: () => g.locate(),
+      store,
+    }
+  }
+  function openApp(m: Mode) {
+    active?.stop?.()
+    active = m
+    g.setMenu(menuItems(settings.myLang, false, words(settings.myLang).stopListening, true))
+    void m.start?.()
+    render()
+  }
+  function closeApp() {
+    active?.stop?.()
+    active = null
+    g.setMenu(menuItems(settings.myLang, r.on, words(settings.myLang).stopListening))
     render()
   }
 

@@ -34,16 +34,27 @@
   "sameLanguage": 200,
   "drafter": "holding reply"
  },
+ "outage": {
+  "messages": 200,
+  "gotReply": 200,
+  "providerCallsFailed": 600
+ },
  "words": {
   "send": 10,
   "alwaysListening": false
  },
  "room": {
-  "hours": 11,
-  "pieces": 9900,
-  "kept": 9900,
+  "hours": 60,
+  "pieces": 54000,
+  "kept": 54000,
   "rewritten": 0,
   "earliestReachable": true,
   "tapsToPause": 1
+ },
+ "dashboard": {
+  "panels": 12,
+  "fitOneScreen": 12,
+  "smallestPx": 20,
+  "maxChars": 28
  }
 }

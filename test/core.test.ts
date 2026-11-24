@@ -187,8 +187,11 @@ test('menu names fit the 32-byte limit in every language', async () => {
   const { menuItems } = await import('../app/src/core/menu.ts')
   for (const l of ['en', 'ar', 'fa', 'he', 'hi', 'th', 'ja', 'ko', 'zh', 'ru']) {
     const items = menuItems(l)
-    assert.equal(items.length, 8)
-    for (const it of items) assert.ok(Buffer.byteLength(it.itemName) <= 32, `${l}: ${it.itemName} is ${Buffer.byteLength(it.itemName)} bytes`)
+    assert.equal(items.length, 9)
+    assert.ok(items.length <= 10, 'the glasses menu holds at most 10 items')
+    const inApp = menuItems(l, false, 'Stop listening', true)
+    assert.equal(inApp[0].itemID, 10)
+    for (const it of [...items, ...inApp]) assert.ok(Buffer.byteLength(it.itemName) <= 32, `${l}: ${it.itemName} is ${Buffer.byteLength(it.itemName)} bytes`)
   }
 })
 

@@ -2,6 +2,16 @@
 // 576 x 288 green screen on the page) and a stand-in backend holding sample
 // messages. Nothing to install, no sign-in.
 import { runGloz } from './app.ts'
+import { sampleDash } from './modes/dash.ts'
+import { sampleTasks } from './modes/tasks.ts'
+import { sampleNotes } from './modes/notes.ts'
+import { sampleAsk } from './modes/ask.ts'
+import { sampleReader } from './modes/reader.ts'
+import { samplePrompter } from './modes/prompter.ts'
+import { sampleNav } from './modes/nav.ts'
+import { sampleStocks } from './modes/stocks.ts'
+import { sampleMusic } from './modes/music.ts'
+import { sampleTerm } from './modes/term.ts'
 import type { Api } from './api.ts'
 import type { Draft, Msg } from './core/types.ts'
 import { HOLDING_REPLIES } from './demo-data.ts'
@@ -15,9 +25,13 @@ class DemoBridge {
   handlers: Handler[] = []
   tiles = new Map<number, { x: number; y: number; img?: ImageBitmap }>()
   constructor(canvas: HTMLCanvasElement) { this.canvas = canvas; this.g = canvas.getContext('2d')! }
+  last = 3        // the tile sent last on this page; the screen is drawn when it arrives
+  inApp = false   // the glasses menu starts with Back to messages while an app is open
   private layout(p: any) {
+    this.inApp = (p.menuObject?.menuItems ?? [])[0]?.itemID === 10
     this.tiles.clear()
     for (const o of p.imageObject || []) this.tiles.set(o.containerID, { x: o.xPosition, y: o.yPosition })
+    this.last = Math.max(0, ...this.tiles.keys())
     this.paint()
   }
   async createStartUpPageContainer(p: any) { this.layout(p); return 0 }
@@ -28,7 +42,7 @@ class DemoBridge {
     if (!t) return 'imageException'
     t.img = await createImageBitmap(new Blob([u.imageData], { type: 'image/png' }))
     // Both halves of a line change together; a dialog on the glasses stays until answered.
-    if (this.mode === 'app' && u.containerID === 3) this.paint()
+    if (this.mode === 'app' && u.containerID === this.last) this.paint()
     return 'success'
   }
   private paint() {
@@ -68,6 +82,7 @@ class DemoBridge {
 }
 
 // --- stand-in backend -----------------------------------------------------------
+const SAMPLES: Record<string, (body: any) => any> = { dash: sampleDash, tasks: sampleTasks, notes: sampleNotes, ask: sampleAsk, reader: sampleReader, prompter: samplePrompter, nav: sampleNav, stocks: sampleStocks, music: sampleMusic, term: sampleTerm }
 class DemoApi implements Api {
   online = true
   sent: { to: string; text: string; meaning?: string }[] = (() => { try { return JSON.parse(sessionStorage.getItem('gloz.demo.sent') || '[]') } catch { return [] } })()
@@ -104,6 +119,8 @@ class DemoApi implements Api {
   async read() {}
   async stt() { return { text: this.heard ? await this.heard() : '' } }
   async listen() { return { text: '' } }
+  // The apps on the glasses answer with their sample data here, as the server does with GLOZ_SAMPLE=1.
+  async mode(id: string, body: unknown) { await new Promise(r => setTimeout(r, 250)); const f = SAMPLES[id]; if (!f) throw new Error('no such app'); return f(body) }
 }
 
 // --- page ---------------------------------------------------------------------
@@ -209,6 +226,10 @@ net.onclick = () => {
 // Mute and unmute are the glasses menu items of the same names.
 const mute = document.getElementById('mute') as HTMLButtonElement
 const unmute = document.getElementById('unmute') as HTMLButtonElement
+const apps = document.getElementById('apps') as HTMLButtonElement
+const appsLabel = () => { apps.textContent = bridge.inApp ? 'Back to messages' : 'Apps' }
+apps.onclick = () => { bridge.menu(bridge.inApp ? 10 : 9); setTimeout(appsLabel, 50) }
+setInterval(appsLabel, 500)
 const muteLabel = () => { unmute.hidden = !gloz.muted() }
 mute.onclick = () => { bridge.menu(5); setTimeout(muteLabel, 50) }
 unmute.onclick = () => { bridge.menu(8); setTimeout(muteLabel, 50) }

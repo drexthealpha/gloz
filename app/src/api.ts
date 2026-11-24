@@ -11,6 +11,8 @@ export interface Api {
   stt(pcm: Uint8Array, lang: string): Promise<{ text: string; ms?: number }>
   listen(pcm: Uint8Array, lang: string, spoken: string): Promise<{ text: string; translated?: string }>
   health?(): Promise<{ ai?: boolean }>
+  // An app's route on the server (POST /mode/<id>).
+  mode?(id: string, body: unknown): Promise<any>
 }
 
 export class HttpApi implements Api {
@@ -48,6 +50,11 @@ export class HttpApi implements Api {
     } catch { return 'retry' }
   }
   async read(id: string) { await this.call('/read', { id }).catch(() => {}) }
+  async mode(id: string, body: unknown) {
+    const r = await this.call(`/mode/${encodeURIComponent(id)}`, body ?? {})
+    if (!r.ok) throw Object.assign(new Error(`mode ${r.status}`), { status: r.status })
+    return r.json()
+  }
   async stt(pcm: Uint8Array, lang: string) {
     const r = await this.call(`/stt?lang=${lang}`, pcm, true)
     if (!r.ok) throw new Error(`stt ${r.status}`)
