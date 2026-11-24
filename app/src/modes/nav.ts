@@ -10,19 +10,19 @@ export interface Step { text: string; m: number; s: number; at: [number, number]
 export interface Route { to: Place; steps: Step[]; line: [number, number][]; sample?: boolean; error?: string }
 
 const KEY = 'nav.places'
-const MAX_BYTES = 10 * 32000          // 10 s of 16 kHz 16-bit audio
 export const OFF_ROUTE_M = 40
 const REROUTE_GAP_MS = 15000          // at most one new route request every 15 s
 const NEAR_TURN_M = 25                // this close to the next turn: show the step after it
 
-export function sampleNav(_body: unknown): Route {
+export function sampleNav(body: any): Route {
+  const name = typeof body?.text === 'string' && body.text.trim() ? body.text.trim().replace(/^the /i, '').replace(/^./, (c: string) => c.toUpperCase()).slice(0, 24) : 'Ferry Building'
   return {
-    to: { name: 'Ferry Building', lat: 37.7955, lon: -122.3937, profile: 'foot' },
+    to: { name, lat: 37.7955, lon: -122.3937, profile: 'foot' },
     steps: [
       { text: 'Head east on Geary St', m: 120, s: 86, at: [37.7873, -122.4074] },
       { text: 'Turn left onto Kearny St', m: 450, s: 321, at: [37.7877, -122.4036] },
       { text: 'Turn right onto Market St', m: 900, s: 643, at: [37.7905, -122.4042] },
-      { text: 'Arrive at Ferry Building', m: 0, s: 0, at: [37.7955, -122.3937] },
+      { text: `Arrive at ${name}`, m: 0, s: 0, at: [37.7955, -122.3937] },
     ],
     line: [[37.7873, -122.4074], [37.7877, -122.4036], [37.7905, -122.4042], [37.7955, -122.3937]],
     sample: true,
@@ -70,12 +70,6 @@ export function left(r: Route, i: number): { m: number; s: number } {
   return { m, s }
 }
 
-function b64(parts: Uint8Array[]): string {
-  let s = ''
-  for (const p of parts) for (let i = 0; i < p.length; i += 0x8000) s += String.fromCharCode(...p.subarray(i, i + 0x8000))
-  return btoa(s)
-}
-
 function load(ctx: ModeCtx): Place[] {
   try { const v = JSON.parse(ctx.store.get(KEY) || '[]'); return Array.isArray(v) ? v : [] } catch { return [] }
 }
@@ -84,7 +78,7 @@ function load(ctx: ModeCtx): Place[] {
 export function makeNav(ctx: ModeCtx): Mode & { moved: (p: [number, number]) => void } {
   let places = load(ctx)
   let pick = 0
-  let state: 'pick' | 'listening' | 'busy' | 'route' = 'pick'
+  let state: 'pick' | 'busy' | 'route' = 'pick'
   let note = ''
   let info = false
   let route: Route | null = null
@@ -92,8 +86,6 @@ export function makeNav(ctx: ModeCtx): Mode & { moved: (p: [number, number]) => 
   let pos: [number, number] | null = null
   let lastAsk = 0
   let watch: ReturnType<typeof setInterval> | null = null
-  let pcm: Uint8Array[] = []
-  let bytes = 0
 
   const where = () => (pos ? { lat: pos[0], lon: pos[1] } : {})
 
@@ -125,12 +117,11 @@ export function makeNav(ctx: ModeCtx): Mode & { moved: (p: [number, number]) => 
     say(text: string) { note = ''; void ask({ op: 'say', text, lang: ctx.lang() }) },
     moved,
     card(): Card {
-      if (state === 'listening') return { kind: 'status', text: 'Listening', hint: 'release: find the place' }
       if (state === 'busy') return { kind: 'status', text: 'Finding the route', hint: 'wait a moment' }
       if (state === 'route' && route) {
         const l = left(route, at)
         const up = at ? ' · up: earlier step' : places.length ? ' · up: saved places' : ''
-        const hint = `tap: time left${at < route.steps.length - 1 ? ' · down: next step' : ''}${up} · hold: new place`
+        const hint = `tap: time left${at < route.steps.length - 1 ? ' · down: next step' : ''}${up}`
         if (info) return { kind: 'status', text: `${route.to.name}: ${km(l.m)} · ${mins(l.s)} left`, hint: '© OpenStreetMap · tap: step · hold: new place' }
         return { kind: 'status', text: stepLine(route, at), hint: route.sample ? `sample · ${hint}` : hint, progress: [at + 1, route.steps.length] }
       }
@@ -138,17 +129,7 @@ export function makeNav(ctx: ModeCtx): Mode & { moved: (p: [number, number]) => 
       return { kind: 'status', text: note || places[pick].name, hint: 'tap: go · down: next place · up: earlier place · hold: say where', progress: [pick + 1, places.length] }
     },
     input(i) {
-      if (i === 'hold') { if (state === 'busy') return; pcm = []; bytes = 0; note = ''; state = 'listening'; ctx.mic(true).catch(() => {}); return ctx.render() }
-      if (i === 'release') {
-        if (state !== 'listening') return
-        ctx.mic(false).catch(() => {})
-        const parts = pcm
-        pcm = []; bytes = 0
-        if (!parts.length) { state = route ? 'route' : 'pick'; note = 'Nothing heard'; return ctx.render() }
-        void ask({ op: 'say', pcm: b64(parts), lang: ctx.lang() })
-        return
-      }
-      if (state === 'listening' || state === 'busy') return
+      if (state === 'busy') return
       note = ''
       if (state === 'route' && route) {
         if (i === 'tap') info = !info
@@ -162,17 +143,12 @@ export function makeNav(ctx: ModeCtx): Mode & { moved: (p: [number, number]) => 
       if (i === 'tap') { const p = places[pick]; void ask({ op: 'route', to: p }); return }
       ctx.render()
     },
-    audio(chunk) {
-      if (state !== 'listening' || bytes >= MAX_BYTES) return
-      pcm.push(chunk); bytes += chunk.length
-    },
     start() {
       const tick = () => ctx.locate().then(p => { if (p) moved([p.lat, p.lon]) })
       void tick()
       watch = setInterval(tick, 5000)
     },
     stop() {
-      if (state === 'listening') ctx.mic(false).catch(() => {})
       if (watch !== null) clearInterval(watch)
     },
   }

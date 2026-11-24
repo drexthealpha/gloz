@@ -6,7 +6,6 @@ import type { Card } from '../core/types.ts'
 export interface Run { lines: string[]; code: number | null; cut: boolean; timedOut: boolean; ms: number; startMs: number; sample?: boolean; error?: string }
 
 const KEY = 'term.saved'
-const MAX_BYTES = 10 * 32000   // 10 s of 16 kHz 16-bit audio
 
 // Sample output per sample command, so each command shows what it would print.
 export function sampleOut(cmd: string): string[] {
@@ -21,12 +20,6 @@ export function sampleTerm(body: any): any {
   return { on: true, allow: ['uptime', 'df', 'git'], sample: true }
 }
 
-function b64(parts: Uint8Array[]): string {
-  let s = ''
-  for (const p of parts) for (let i = 0; i < p.length; i += 0x8000) s += String.fromCharCode(...p.subarray(i, i + 0x8000))
-  return btoa(s)
-}
-
 function load(ctx: ModeCtx): string[] {
   try { const v = JSON.parse(ctx.store.get(KEY) || '[]'); return Array.isArray(v) ? v : [] } catch { return [] }
 }
@@ -34,14 +27,12 @@ function load(ctx: ModeCtx): string[] {
 function make(ctx: ModeCtx): Mode {
   let saved = load(ctx)
   let cmds: string[] = saved
-  let state: 'loading' | 'off' | 'pick' | 'listening' | 'busy' | 'out' = 'loading'
+  let state: 'loading' | 'off' | 'pick' | 'busy' | 'out' = 'loading'
   let at = 0
   let note = ''
   let out: string[] = []
   let line = 0
   let ran = ''   // the command whose output is shown
-  let pcm: Uint8Array[] = []
-  let bytes = 0
   let heardIt = false   // the command on screen is the one just heard
   let sample = false
 
@@ -56,10 +47,10 @@ function make(ctx: ModeCtx): Mode {
     ctx.render()
   }
 
-  async function heard(parts: Uint8Array[] | string) {
+  async function heard(text: string) {
     state = 'busy'; ctx.render()
     try {
-      const r = await ctx.call(typeof parts === 'string' ? { op: 'say', text: parts, lang: ctx.lang() } : { op: 'say', pcm: b64(parts), lang: ctx.lang() })
+      const r = await ctx.call({ op: 'say', text, lang: ctx.lang() })
       if (r?.cmd) { cmds = [r.cmd, ...cmds.filter(c => c !== r.cmd)]; at = 0; heardIt = true } else note = r?.error || 'Nothing heard'
     } catch { note = 'No signal' }
     state = 'pick'; ctx.render()
@@ -81,7 +72,6 @@ function make(ctx: ModeCtx): Mode {
     card(): Card {
       if (state === 'loading') return { kind: 'status', text: 'Terminal', hint: 'wait a moment' }
       if (state === 'off') return { kind: 'status', text: 'Terminal is off', hint: 'server: set GLOZ_TERMINAL=1 and GLOZ_TERMINAL_ALLOW' }
-      if (state === 'listening') return { kind: 'status', text: 'Listening', hint: 'release: write the command' }
       if (state === 'busy') return { kind: 'status', text: 'Working', hint: 'wait a moment' }
       // One output line per screen, fitted to it; the hint offers only presses that move.
       if (state === 'out') return { kind: 'status', text: `${ran}: ${out[line]}`, hint: [sample && 'sample', 'tap: all commands', line < out.length - 1 && 'down: next line', line > 0 && 'up: earlier'].filter(Boolean).join(' · '), progress: [line + 1, out.length] }
@@ -91,16 +81,6 @@ function make(ctx: ModeCtx): Mode {
     },
     input(i) {
       if (state === 'loading' || state === 'off' || state === 'busy') return
-      if (i === 'hold') { pcm = []; bytes = 0; note = ''; state = 'listening'; ctx.mic(true).catch(() => {}); return ctx.render() }
-      if (i === 'release') {
-        if (state !== 'listening') return
-        ctx.mic(false).catch(() => {})
-        const parts = pcm
-        pcm = []; bytes = 0
-        if (!parts.length) { state = 'pick'; note = 'Nothing heard'; return ctx.render() }
-        return void heard(parts)
-      }
-      if (state === 'listening') return
       heardIt = false
       if (state === 'out') {
         if (i === 'tap') state = 'pick'
@@ -116,13 +96,8 @@ function make(ctx: ModeCtx): Mode {
       if (i === 'prev') at = (at - 1 + cmds.length) % cmds.length
       ctx.render()
     },
-    audio(chunk) {
-      if (state !== 'listening' || bytes >= MAX_BYTES) return
-      pcm.push(chunk); bytes += chunk.length
-    },
     start: list,
     say(text) { void heard(text) },
-    stop() { if (state === 'listening') ctx.mic(false).catch(() => {}) },
   }
 }
 

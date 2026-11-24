@@ -7,8 +7,8 @@ import { Outbox, type Store } from './core/outbox.ts'
 import { DEFAULT_SETTINGS, type Settings, type Card } from './core/types.ts'
 import { Glasses } from './glasses.ts'
 import { menuItems } from './core/menu.ts'
-import type { Mode, ModeCtx } from './modes/types.ts'
 import { APPS } from './modes/index.ts'
+import type { Mode, ModeCtx } from './modes/types.ts'
 import { dayItems, type DayItem } from './core/day.ts'
 import { said, type Said } from './core/say.ts'
 import { words } from './core/words.ts'
@@ -69,13 +69,15 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   let saying: '' | 'listening' | 'working' = ''
   let sayPcm: Uint8Array[] = []
   let sayGen = 0
+  let sayTo: Mode | null = null   // the tool the words go to; null on home
+  let toolNote = ''                // a short note over a tool's hint (nothing heard)
   const home = () => !active && !r.on && s.paired && s.view === 'empty'
 
   const outbox = new Outbox(store, p => api ? api.send(p.key, p.msgId, p.text) : Promise.resolve('retry'))
 
   function render() {
     if (home() || saying) { g.show(homeCard()); onState?.(saying ? { ...s, view: 'listen' } : s, settings); return }
-    if (active) { const c = active.card(); g.show({ ...c, back: 'double tap: back' }); onState?.(s, settings); return }
+    if (active) { const c = active.card(); g.show(toolNote ? { ...c, hint: toolNote } : { ...c, back: 'double tap: back' }); onState?.(s, settings); return }
     g.show(r.on ? { ...roomCard(r, settings.myLang), ...(roomNote ? { text: roomNote } : quiet && !r.paused && !r.lines.length ? { text: words(settings.myLang).nothingHeardYet } : {}) } : card(s, settings.myLang))
     onState?.(s, settings)
   }
@@ -187,10 +189,12 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
 
   g.onInput = i => {
     if (i === 'exit' && active?.back?.()) return render()
-    if (i === 'exit' && saying) { sayGen++; saying = ''; g.mic(false).catch(() => {}); return render() }
+    if (i === 'exit' && saying) { sayGen++; saying = ''; sayTo = null; g.mic(false).catch(() => {}); return render() }
     if (i === 'exit') return doubleTap(active) === 'home' ? closeApp() : g.exit()
+    if (saying) return homeInput(i)
+    if (active?.say && i === 'hold') { sayTo = active; saying = 'listening'; sayPcm = []; g.mic(true).catch(() => {}); return render() }
     if (active) { active.input(i); return }
-    if (home() || saying) return homeInput(i)
+    if (home()) return homeInput(i)
     if (r.on) {
       if (i === 'tap') roomDo({ t: 'tap' })
       const few = r.lines.length - (r.since ?? 0) < 2
@@ -274,7 +278,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
     const skipped = s.skippedMsgs?.length ?? 0
     if (dayAt === 0) return { kind: 'status', text: homeNote || base.text, hint: ['tap: check now', day.length && 'down: your day', skipped && w.showSkipped(skipped), 'hold: say anything'].filter(Boolean).join(' · '), progress: day.length ? [1, n] : undefined }
     const it = day[dayAt - 1]
-    return { kind: 'status', text: homeNote || it.text, hint: [it.sample && 'sample', it.tool === 'nav' ? 'tap: say where' : 'tap: open', dayAt < day.length && 'down: next', 'up: earlier', 'hold: say anything'].filter(Boolean).join(' · '), progress: [dayAt + 1, n] }
+    return { kind: 'status', text: homeNote || it.text, hint: [it.sample && 'sample', it.tool === 'nav' ? 'tap: say where' : it.tool === 'dash' ? 'tap: whole day' : 'tap: open', dayAt < day.length && 'down: next', 'up: earlier', 'hold: say anything'].filter(Boolean).join(' · '), progress: [dayAt + 1, n] }
   }
   function flash(text: string) {
     homeNote = text
@@ -283,8 +287,8 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   }
   function homeInput(i: string) {
     if (saying === 'listening') { if (i === 'release' || i === 'tap') void finishSay(); return }
-    if (saying === 'working') { if (i === 'prev') { sayGen++; saying = ''; render() } return }   // the demo's Cancel
-    if (i === 'hold') { saying = 'listening'; sayPcm = []; homeNote = ''; g.mic(true).catch(() => {}); return render() }
+    if (saying === 'working') { if (i === 'prev') { sayGen++; saying = ''; sayTo = null; render() } return }   // the demo's Cancel
+    if (i === 'hold') { sayTo = null; saying = 'listening'; sayPcm = []; homeNote = ''; g.mic(true).catch(() => {}); return render() }
     if (i === 'release') return
     if (i === 'next') { if (dayAt < day.length) { dayAt++; homeNote = ''; render() } else flash('That is all for now'); return }
     if (i === 'prev') { if (dayAt > 0) { dayAt--; homeNote = ''; return render() } return dispatch({ t: 'prev' }) }
@@ -310,16 +314,18 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
     } catch { text = '' }
     if (my !== sayGen) return
     saying = ''
+    if (sayTo) { const to = sayTo; sayTo = null; if (text.trim() && active === to) to.say!(text.trim()); else if (active === to) { const n = words(settings.myLang).notHeard; toolNote = n; render(); setTimeout(() => { if (toolNote === n) { toolNote = ''; render() } }, 3500) } return }
     const it = said(text)
     if (!it) return flash(words(settings.myLang).notHeard)
     await act(it)
   }
   // Quick requests are done on the spot and confirmed; the rest open their tool with the words.
+  const short = (t = '') => (t.length > 16 ? t.slice(0, 15).replace(/\s+\S*$/, '') + '…' : t)
   async function act(it: Said) {
     const call = (id: string, body: unknown) => (api?.mode ? api.mode(id, body) : Promise.reject(new Error('not paired')))
     try {
-      if (it.tool === 'tasks' && it.op === 'add') { const r = await call('tasks', { action: 'add', title: it.arg }); flash(r?.error || `Task added: ${it.arg} ✓`); return void loadDay() }
-      if (it.tool === 'notes' && it.op === 'add') { const r = await call('notes', { action: 'add', text: it.arg }); flash(r?.error || `Note saved: ${it.arg} ✓`); return void loadDay() }
+      if (it.tool === 'tasks' && it.op === 'add') { const r = await call('tasks', { action: 'add', title: it.arg }); flash(r?.error || `Task added: ${short(it.arg)} ✓`); return void loadDay() }
+      if (it.tool === 'notes' && it.op === 'add') { const r = await call('notes', { action: 'add', text: it.arg }); flash(r?.error || `Note saved: ${short(it.arg)} ✓`); return void loadDay() }
       if (it.tool === 'music' && it.op) { const r = await call('music', { action: it.op }); flash(r?.error || r?.need || (r?.track ? `${r.playing ? 'Playing' : 'Paused'}: ${r.track}` : 'Done ✓')); return void loadDay() }
     } catch { return flash(words(settings.myLang).noSignal) }
     openTool(it.tool, it.arg)

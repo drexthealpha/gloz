@@ -43,7 +43,7 @@ export function panelText(id: string, d: DashData, lang: string, now: Date, pin:
   switch (id) {
     case 'time': return hm(now)
     case 'date': return now.toLocaleDateString(lang, { weekday: 'short', day: 'numeric', month: 'short' })
-    case 'unread': return d.unread == null ? 'Mail off' : `${d.unread} unread`
+    case 'unread': return d.unread == null ? 'Mail off' : `${d.unread} unread mail`
     case 'event': return d.events === null ? 'Calendar off' : ev(d.events?.[0])
     case 'event2': return d.events === null ? 'Calendar off' : ev(d.events?.[1])
     case 'tasks': return d.tasks == null ? 'Tasks off' : `${d.tasks.due} tasks due`
@@ -118,9 +118,10 @@ function make(ctx: ModeCtx): Mode {
         return { kind: 'status', text: `${name}: ${chosen.includes(id) ? 'on' : 'off'}`, hint: 'tap: on or off · down: next · hold: show dashboard', progress: [at + 1, PANELS.length] }
       }
       if (!chosen.length) return { kind: 'status', text: 'No panels', hint: 'hold: choose panels' }
+      if (note === 'Loading') return { kind: 'status', text: 'Loading your day', hint: 'wait a moment' }
       const pin = ctx.store.get('dash.pin') || ''
       const items = chosen.map(id => panelText(id, data, ctx.lang(), new Date(), pin, Boolean(where)))
-      return { kind: 'status', text: note && note !== 'Loading' ? `${note} · ${items.join(' · ')}` : items.join(' · '), grid: note && note !== 'Loading' ? [note, ...items].slice(0, 12) : items, hint: `${data.sample ? 'sample · ' : ''}${Date.now() - loadedMs < 4000 ? `updated ${loadedAt} · ` : ''}tap: refresh · hold: choose items · double tap: back` }
+      return { kind: 'status', text: note && note !== 'Loading' ? `${note} · ${items.join(' · ')}` : items.join(' · '), grid: note && note !== 'Loading' ? [note, ...items].slice(0, 12) : items, hint: `${data.sample ? 'sample · ' : ''}tap: refresh · double tap: back · hold: choose items${Date.now() - loadedMs < 4000 ? ` · updated ${loadedAt}` : ''}` }
     },
     back() { if (!picking) return false; picking = false; void load(); return true },
     input(i) {

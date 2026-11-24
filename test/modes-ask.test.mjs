@@ -18,25 +18,21 @@ function fakeCtx(reply) {
 }
 const tick = () => new Promise(r => setTimeout(r, 0))
 
-test('ask: hold listens, release sends the audio, the answer shows paged with a hint', async () => {
+test('ask: words said are sent, the answer shows paged with a hint', async () => {
   const ctx = fakeCtx(b => ({ q: 'Wie hoch ist der Everest?', a: `8849 Meter (${b.history.length} before)` }))
   const m = askApp.make(ctx)
   assert.equal(m.card().text, 'Hold and ask')
-  m.input('hold')
-  assert.deepEqual(ctx.mics, [true])
-  assert.equal(m.card().text, 'Listening')
-  m.audio(new Uint8Array([1, 2, 3, 4]))
-  m.input('release')
-  assert.deepEqual(ctx.mics, [true, false])
+  m.say('Wie hoch ist der Everest?')
+  assert.equal(m.card().text, 'Thinking')
   await tick()
-  assert.equal(ctx.calls[0].pcm, Buffer.from([1, 2, 3, 4]).toString('base64'))
+  assert.equal(ctx.calls[0].q, 'Wie hoch ist der Everest?')
   assert.equal(ctx.calls[0].lang, 'de')
   const c = m.card()
   assert.equal(c.kind, 'message')
   assert.match(c.text, /8849 Meter/)
   assert.match(c.hint, /^(down: next answer · )?(up: earlier answer · )?hold: ask again$/)
   // A follow-up carries the earlier question and answer.
-  m.input('hold'); m.audio(new Uint8Array([5, 6])); m.input('release'); await tick()
+  m.say('Und der K2?'); await tick()
   assert.equal(ctx.calls[1].history.length, 1)
   assert.deepEqual(m.card().progress, [2, 2])
   // Up before the first page goes to the earlier answer; down comes back; tap asks again.
@@ -49,7 +45,7 @@ test('ask: keeps only the last 10, survives a reopen, and says No signal on fail
   let n = 0
   const ctx = fakeCtx(() => ({ q: `q${++n}`, a: `a${n}` }))
   let m = askApp.make(ctx)
-  for (let i = 0; i < 12; i++) { m.input('hold'); m.audio(new Uint8Array([1, 1])); m.input('release'); await tick() }
+  for (let i = 0; i < 12; i++) { m.say(`q${i}`); await tick() }
   assert.equal(JSON.parse(ctx.store.get('ask.log')).length, 10)
   assert.equal(JSON.parse(ctx.store.get('ask.log'))[0].q, 'q3')
   m = askApp.make(ctx)
@@ -57,12 +53,9 @@ test('ask: keeps only the last 10, survives a reopen, and says No signal on fail
   assert.equal(m.card().text, 'a12')
   const bad = fakeCtx(new Error('down'))
   m = askApp.make(bad)
-  m.input('hold'); m.audio(new Uint8Array([1, 1])); m.input('release'); await tick()
+  m.say('anything'); await tick()
   assert.equal(m.card().text, 'No signal')
-  // Release with nothing heard sends nothing.
-  m.input('hold'); m.input('release'); await tick()
   assert.equal(bad.calls.length, 1)
-  assert.equal(m.card().text, 'Nothing heard')
 })
 
 test('ask server: no key gives one plain line; sample mode gives the sample', async () => {
