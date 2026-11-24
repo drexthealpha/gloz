@@ -59,10 +59,12 @@ export const prompterApp: AppEntry = {
     const show = (to: View) => { view = to; ctx.render() }
     const lineOf = (w: number) => { let l = 0; while (l + 1 < starts.length && starts[l + 1] <= w) l++; return l }
 
+    let replies = 0   // answers from the server while following
     function follow(on: boolean) {
       following = on
       parts = []; bytes = 0; fresh = 0
       ctx.mic(on).catch(() => {})
+      if (on) { const was = replies; setTimeout(() => { if (following && replies === was && !note) { note = 'No voice heard yet'; if (view === 'script') ctx.render() } }, 5000) }
     }
 
     async function load() {
@@ -98,6 +100,8 @@ export const prompterApp: AppEntry = {
       try {
         const r = await ctx.call({ action: 'follow', pcm: b64(joinPcm(parts)), lang: ctx.lang(), from, at: at - from, words: words.slice(from, at + 80).join(' ') })
         sampleVoice = Boolean(r?.sample)
+        replies++
+        if (note === 'No voice heard yet') note = ''
         if (r?.error) { note = r.error; follow(false) }
         else { note = ''; if (following && was === moved && typeof r?.at === 'number') at = Math.min(words.length, Math.max(0, r.at)) }
       } catch { note = 'No signal' }
@@ -111,7 +115,7 @@ export const prompterApp: AppEntry = {
         case 'error': return { kind: 'status', text: line, hint: 'tap: try again' }
         case 'pick': return { kind: 'status', text: docs[pick].title || 'Untitled', hint: 'tap: use this script · down: next · up: earlier', progress: [pick + 1, docs.length] }
         case 'script': {
-          const lead = note ? `${note} · ` : following ? (sampleVoice ? 'Following a sample voice · ' : 'Following · ') : ''
+          const lead = note ? `${note} · ` : following ? (sampleVoice ? 'Sample voice · ' : 'Following · ') : ''
           const other = docs.length > 1 ? ' · hold: other scripts' : ''
           if (at >= words.length) return { kind: 'status', text: 'End of script', hint: `${lead}up: line back${other}` }
           const l = lineOf(at)

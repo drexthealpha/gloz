@@ -32,7 +32,7 @@ export function spoken(text) {
 export async function handle(body, { env, stt = transcribe, run = execFile }) {
   const op = body?.op
   if (env.GLOZ_SAMPLE === '1' && op === 'say') { if (body?.pcm) { let t = ''; try { t = (await stt(Buffer.from(String(body.pcm), 'base64'), String(body.lang || 'en'))).text } catch { return { error: 'No speech engine on the server' } } if (!String(t || '').trim()) return { error: 'Nothing heard' } } }
-  if (env.GLOZ_SAMPLE === '1') return op === 'run' ? { ...SAMPLE_RUN, lines: [...sampleLines(String(body?.cmd || '')), 'done'] } : op === 'say' ? { cmd: 'uptime', sample: true } : SAMPLE_LIST
+  if (env.GLOZ_SAMPLE === '1') return op === 'run' ? { ...SAMPLE_RUN, lines: [...sampleLines(String(body?.cmd || '')), 'done'] } : op === 'say' ? { cmd: 'df', sample: true } : SAMPLE_LIST
   if (env.GLOZ_TERMINAL !== '1') return { on: false }
   const allow = allowed(env)
   if (op === 'list') return { on: true, allow }

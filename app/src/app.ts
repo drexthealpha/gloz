@@ -242,7 +242,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   }
 
   g.setLook(settings.size, settings.low, settings.autoPace)
-  await g.open(menuItems(settings.myLang, false, undefined, false, settings.translate === true))
+  await g.open(menuItems(settings.myLang, false, undefined, false, null))
   render()
   console.log('[gloz] ready')
   poll()

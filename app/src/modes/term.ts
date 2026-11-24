@@ -17,7 +17,7 @@ export function sampleOut(cmd: string): string[] {
 
 export function sampleTerm(body: any): any {
   if (body?.op === 'run') return { lines: [...sampleOut(body?.cmd), 'done'], code: 0, cut: false, timedOut: false, ms: 9, startMs: 3, sample: true }
-  if (body?.op === 'say') return { cmd: 'uptime', sample: true }
+  if (body?.op === 'say') return { cmd: 'df', sample: true }
   return { on: true, allow: ['uptime', 'df', 'git'], sample: true }
 }
 
@@ -84,10 +84,10 @@ function make(ctx: ModeCtx): Mode {
       if (state === 'listening') return { kind: 'status', text: 'Listening', hint: 'release: write the command' }
       if (state === 'busy') return { kind: 'status', text: 'Working', hint: 'wait a moment' }
       // One output line per screen, fitted to it; the hint offers only presses that move.
-      if (state === 'out') return { kind: 'status', text: `${ran}: ${out[line]}`, hint: [sample && 'sample', 'tap: commands', line < out.length - 1 && 'down: next line', line > 0 && 'up: earlier'].filter(Boolean).join(' · '), progress: [line + 1, out.length] }
+      if (state === 'out') return { kind: 'status', text: `${ran}: ${out[line]}`, hint: [sample && 'sample', 'tap: all commands', line < out.length - 1 && 'down: next line', line > 0 && 'up: earlier'].filter(Boolean).join(' · '), progress: [line + 1, out.length] }
       if (note) return { kind: 'status', text: note, hint: 'tap: back · hold: speak' }
       if (!cmds.length) return { kind: 'status', text: 'No commands allowed', hint: 'server: set GLOZ_TERMINAL_ALLOW · hold: speak' }
-      return { kind: 'status', text: cmds[at], hint: `${heardIt && !sample ? 'you said this · ' : sample ? 'sample · ' : ''}tap: run · down: next · up: earlier · hold: speak`, progress: [at + 1, cmds.length] }
+      return { kind: 'status', text: cmds[at], hint: `${heardIt && !sample ? 'you said this · ' : sample ? 'sample · ' : ''}tap: run · down: next · up: earlier · hold: say a command`, progress: [at + 1, cmds.length] }
     },
     input(i) {
       if (state === 'loading' || state === 'off' || state === 'busy') return

@@ -125,8 +125,8 @@ export const readerApp: AppEntry = {
         case 'loading': return { kind: 'status', text: 'Loading', hint: 'wait' }
         case 'error': return { kind: 'status', text: line, hint: 'tap: try again' }
         case 'pick': return { kind: 'status', text: docs[pick].title || 'Untitled', hint: 'tap: read · down: next · up: earlier', progress: [pick + 1, docs.length] }
-        case 'page': return { kind: 'message', text: slice(page).trim() || ' ', hint: `${sample ? 'sample · ' : ''}page ${page + 1}/${starts.length} · down: next page · up: page back${other}`, parts: false, progress: [page + 1, starts.length] }
-        case 'where': return { kind: 'status', text: `Page ${page + 1} of ${starts.length}`, hint: `tap: back to the text${other}` }
+        case 'page': return { kind: 'message', text: slice(page).trim() || ' ', hint: `${sample ? 'sample · ' : ''}line ${page + 1}/${starts.length} · down: next line · up: line back${other}`, parts: false, progress: [page + 1, starts.length] }
+        case 'where': return { kind: 'status', text: `Line ${page + 1} of ${starts.length}`, hint: `tap: back to the text${other}` }
         case 'end': return { kind: 'status', text: 'End of text', hint: `up: last page${other}` }
       }
     }

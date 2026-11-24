@@ -115,7 +115,7 @@ function make(ctx: ModeCtx): Mode {
     card(): Card {
       if (picking) {
         const [id, name] = PANELS[at]
-        return { kind: 'status', text: `${name}: ${chosen.includes(id) ? 'on' : 'off'}`, hint: 'tap: on or off, kept at once · down: next · hold: show dashboard', progress: [at + 1, PANELS.length] }
+        return { kind: 'status', text: `${name}: ${chosen.includes(id) ? 'on' : 'off'}`, hint: 'tap: on or off · down: next · hold: show dashboard', progress: [at + 1, PANELS.length] }
       }
       if (!chosen.length) return { kind: 'status', text: 'No panels', hint: 'hold: choose panels' }
       const pin = ctx.store.get('dash.pin') || ''
