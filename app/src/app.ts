@@ -167,6 +167,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   }
 
   g.onInput = i => {
+    if (i === 'exit' && active?.back?.()) return render()
     if (i === 'exit') { const b = doubleTap(active, list); return b === 'close' ? g.exit() : b === 'messages' ? closeApp() : openList() }
     if (active) { active.input(i); return }
     if (r.on) {

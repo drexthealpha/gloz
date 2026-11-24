@@ -122,6 +122,7 @@ function make(ctx: ModeCtx): Mode {
       const items = chosen.map(id => panelText(id, data, ctx.lang(), new Date(), pin, Boolean(where)))
       return { kind: 'status', text: note && note !== 'Loading' ? `${note} · ${items.join(' · ')}` : items.join(' · '), grid: note && note !== 'Loading' ? [note, ...items].slice(0, 12) : items, hint: `${data.sample ? 'sample · ' : ''}${Date.now() - loadedMs < 4000 ? `updated ${loadedAt} · ` : ''}tap: refresh · hold: choose items · double tap: back` }
     },
+    back() { if (!picking) return false; picking = false; void load(); return true },
     input(i) {
       if (i === 'release') return
       if (i === 'hold') {

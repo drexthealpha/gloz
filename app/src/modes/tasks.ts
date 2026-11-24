@@ -99,6 +99,7 @@ export const tasksApp: AppEntry = {
       start: load,
       stop: () => { if (v.on) ctx.mic(false).catch(() => {}) },
       audio: p => v.add(p),
+      back() { if (view !== 'heard') return false; draft = ''; flash('Not added'); show('list'); return true },
       input(i) {
         if (view === 'listening') {
           if (i !== 'release') return

@@ -87,7 +87,7 @@ function make(ctx: ModeCtx): Mode {
       if (state === 'out') return { kind: 'status', text: `${ran}: ${out[line]}`, hint: [sample && 'sample', 'tap: all commands', line < out.length - 1 && 'down: next line', line > 0 && 'up: earlier'].filter(Boolean).join(' · '), progress: [line + 1, out.length] }
       if (note) return { kind: 'status', text: note, hint: 'tap: back · hold: speak' }
       if (!cmds.length) return { kind: 'status', text: 'No commands allowed', hint: 'server: set GLOZ_TERMINAL_ALLOW · hold: speak' }
-      return { kind: 'status', text: cmds[at], hint: `${heardIt && !sample ? 'you said this · ' : sample ? 'sample · ' : ''}tap: run · down: next · up: earlier · hold: say a command`, progress: [at + 1, cmds.length] }
+      return { kind: 'status', text: cmds[at], hint: `${heardIt ? (sample ? 'heard (sample) · ' : 'you said this · ') : sample ? 'sample · ' : ''}tap: run · down: next · hold: say a command`, progress: [at + 1, cmds.length] }
     },
     input(i) {
       if (state === 'loading' || state === 'off' || state === 'busy') return

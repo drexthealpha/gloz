@@ -142,6 +142,7 @@ export const notesApp: AppEntry = {
       start: load,
       stop: () => { if (v.on) ctx.mic(false).catch(() => {}) },
       audio: p => v.add(p),
+      back() { if (view !== 'heard') return false; draft = ''; line = 'Not saved'; show('note'); setTimeout(() => { if (view === 'note') void load() }, 2500); return true },
       input(i) {
         if (view === 'listening') {
           if (i !== 'release') return

@@ -92,7 +92,7 @@ class DemoBridge {
 // --- stand-in backend -----------------------------------------------------------
 // No microphone here: what an app hears is sample words, and the teleprompter moves on a few words each time.
 const heardSample = (f: (b: any) => any, words: string) => (b: any) => b?.action === 'stt' ? { text: words } : f(b)
-const SAMPLES: Record<string, (body: any) => any> = { dash: sampleDash, tasks: heardSample(sampleTasks, 'Sample: call the bank'), notes: heardSample(sampleNotes, 'Sample: call the plumber on Friday'), ask: sampleAsk, reader: sampleReader, prompter: (b: any) => b?.action === 'follow' ? { at: (Number(b.from) || 0) + 4, heard: '', sample: true } : samplePrompter(b), nav: sampleNav, stocks: sampleStocks, music: sampleMusic, term: sampleTerm }
+const SAMPLES: Record<string, (body: any) => any> = { dash: sampleDash, tasks: heardSample(sampleTasks, 'Sample: call the bank'), notes: heardSample(sampleNotes, 'Sample: call the plumber on Friday'), ask: sampleAsk, reader: sampleReader, prompter: (b: any) => b?.action === 'follow' ? { at: (Number(b.from) || 0) + (Number(b.at) || 0) + 4, heard: '', sample: true } : samplePrompter(b), nav: sampleNav, stocks: sampleStocks, music: sampleMusic, term: sampleTerm }
 class DemoApi implements Api {
   online = true
   sent: { to: string; text: string; meaning?: string }[] = (() => { try { return JSON.parse(sessionStorage.getItem('gloz.demo.sent') || '[]') } catch { return [] } })()
@@ -244,6 +244,7 @@ const appsLabel = () => {
   keyScroll.textContent = bridge.inApp ? 'down: next · up: earlier' : 'up: earlier · down: skip'
   keyDouble.textContent = bridge.inApp ? 'back' : 'close'
   keyHold.textContent = bridge.inApp ? 'where the screen offers it' : 'speak a reply'
+  if (bridge.inApp) { meaning.style.visibility = 'hidden'; document.getElementById('mute')!.hidden = true }
 }
 apps.onclick = () => { bridge.menu(bridge.inApp ? 10 : 9); setTimeout(appsLabel, 50) }
 setInterval(appsLabel, 500)
