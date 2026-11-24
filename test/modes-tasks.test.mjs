@@ -1,7 +1,7 @@
 // Tasks: the app's presses and the server handler, with no keys and no network (fetch is replaced).
-import { test, afterEach } from 'node:test'
+import { test, afterEach, beforeEach } from 'node:test'
 import assert from 'node:assert/strict'
-import { tasksApp, sampleTasks } from '../app/src/modes/tasks.ts'
+import { tasksApp, sampleTasks, resetSampleTasks } from '../app/src/modes/tasks.ts'
 import { handle, doneProp } from '../server/modes/tasks.mjs'
 import { forgetGoogleToken } from '../server/modes/notes.mjs'
 
@@ -19,6 +19,8 @@ function fakeCtx(reply) {
   }
   return { ctx, calls, mics }
 }
+
+beforeEach(() => resetSampleTasks())
 
 test('handler with no account: sample tasks; done and add change this run only', async () => {
   const before = await handle({ action: 'list' }, { env: {} })
@@ -84,7 +86,7 @@ test('the app: tap asks first, tap again marks done; down cancels', async () => 
   const m = tasksApp.make(ctx)
   await m.start()
   assert.equal(m.card().text, 'Sample: book the dentist')
-  assert.equal(m.card().hint, 'tap: done · down: next · up: earlier · hold: add')
+  assert.equal(m.card().hint, 'tap: done · down: next · up: earlier · hold: add a task')
   m.input('next'); assert.equal(m.card().text, 'Sample: send the invoice to Marta')
   m.input('tap')
   assert.equal(m.card().hint, 'tap again to mark done · down: not yet')

@@ -54,7 +54,7 @@ test('the app: opens paused, tap follows the voice, tap pauses, down and up move
   const m = prompterApp.make(ctx)
   await m.start(); await tick()
   assert.deepEqual(mics, [])
-  assert.equal(m.card().hint, 'tap: follow voice · down: next line')
+  assert.equal(m.card().hint, 'tap: follow my voice · down: next line')
   m.input('tap')
   assert.deepEqual(mics, [true])
   const first = m.card()
@@ -74,7 +74,7 @@ test('the app: opens paused, tap follows the voice, tap pauses, down and up move
   assert.equal(calls.length, n)
   m.input('tap')
   assert.deepEqual(mics, [true, false])
-  assert.match(m.card().hint, /^tap: follow voice/)
+  assert.match(m.card().hint, /^tap: follow my voice/)
   const line = m.card().progress[0]
   m.input('next'); assert.equal(m.card().progress[0], line + 1)
   m.input('prev'); m.input('prev'); assert.equal(m.card().progress[0], line - 1)
@@ -90,7 +90,7 @@ test('the app: no speech engine stops following with a clear line', async () => 
   await m.start(); await tick()
   m.input('tap')
   m.audio(loud()); await tick()
-  assert.match(m.card().hint, /^No speech engine on the server · tap: follow voice/)
+  assert.match(m.card().hint, /^No speech engine on the server · tap: follow my voice/)
 })
 
 test('measure: word position accuracy on simulated recognition output', () => {

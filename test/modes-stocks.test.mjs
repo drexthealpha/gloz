@@ -58,7 +58,7 @@ test('mode: loads on open, down and up move, tap refreshes, sample is labelled',
   const m = stocksApp.make(ctx)
   await m.start()
   assert.equal(m.card().text, 'AAPL 231.40 +1.2%')
-  assert.match(m.card().hint, /^sample \d\d:\d\d:\d\d · tap: refresh · down: next · up: earlier$/)
+  assert.match(m.card().hint, /^sample · updated .+ · tap: refresh · down: next · up: earlier$/)
   m.input('next')
   assert.equal(m.card().text, 'MSFT 498.12 -0.4%')
   m.input('prev'); m.input('prev')

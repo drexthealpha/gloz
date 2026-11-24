@@ -137,7 +137,7 @@ export const readerApp: AppEntry = {
       id: 'reader',
       card,
       start: load,
-      say(text) { const d = docs.find(x => (x.title || '').toLowerCase().includes(text.toLowerCase())); if (d) void open(d); else { line = `No text called ${text}`.slice(0, 60); show('error') } },
+      say(text) { const d = docs.find(x => (x.title || '').toLowerCase().includes(text.toLowerCase())); if (d) void open(d); else { pick = 0; show('pick') } },
       input(i) {
         if (view === 'error' && i === 'tap') return void load()
         if (i === 'hold' && doc && docs.length > 1) { pick = Math.max(0, docs.indexOf(doc)); return show('pick') }

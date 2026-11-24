@@ -278,7 +278,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
     const skipped = s.skippedMsgs?.length ?? 0
     if (dayAt === 0) return { kind: 'status', text: homeNote || base.text, hint: ['tap: check now', day.length && 'down: your day', skipped && w.showSkipped(skipped), 'hold: say anything'].filter(Boolean).join(' · '), progress: day.length ? [1, n] : undefined }
     const it = day[dayAt - 1]
-    return { kind: 'status', text: homeNote || it.text, hint: [it.sample && 'sample', it.tool === 'nav' ? 'tap: say where' : it.tool === 'dash' ? 'tap: whole day' : 'tap: open', dayAt < day.length && 'down: next', 'up: earlier', 'hold: say anything'].filter(Boolean).join(' · '), progress: [dayAt + 1, n] }
+    return { kind: 'status', text: homeNote || it.text, hint: [it.sample && 'sample', it.tool === 'nav' ? 'tap: say where' : it.tool === 'dash' ? 'tap: whole day' : 'tap: open', 'down: next', 'up: earlier', 'hold: say anything'].filter(Boolean).join(' · '), progress: [dayAt + 1, n] }
   }
   function flash(text: string) {
     homeNote = text
@@ -290,12 +290,13 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
     if (saying === 'working') { if (i === 'prev') { sayGen++; saying = ''; sayTo = null; render() } return }   // the demo's Cancel
     if (i === 'hold') { sayTo = null; saying = 'listening'; sayPcm = []; homeNote = ''; g.mic(true).catch(() => {}); return render() }
     if (i === 'release') return
-    if (i === 'next') { if (dayAt < day.length) { dayAt++; homeNote = ''; render() } else flash('That is all for now'); return }
+    if (i === 'next') { dayAt = dayAt < day.length ? dayAt + 1 : 0; homeNote = ''; return render() }
     if (i === 'prev') { if (dayAt > 0) { dayAt--; homeNote = ''; return render() } return dispatch({ t: 'prev' }) }
     if (i === 'tap') { if (dayAt === 0) return dispatch({ t: 'tap' }); openTool(day[dayAt - 1].tool) }
   }
   async function finishSay() {
     const my = ++sayGen
+    let noEngine = false   // the server has no speech engine: say that, not "didn't catch that"
     g.mic(false).catch(() => {})
     saying = 'working'
     render()
@@ -311,12 +312,12 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
         for (const c of parts) { all.set(c, o); o += c.length }
         text = (await api.stt(all, settings.myLang)).text || ''
       }
-    } catch { text = '' }
+    } catch (e) { text = ''; if (/stt 503/.test(String(e))) noEngine = true }
     if (my !== sayGen) return
     saying = ''
-    if (sayTo) { const to = sayTo; sayTo = null; const other = said(text); if (other && other.tool !== 'ask' && other.tool !== to.id) { if (other.op) { closeApp(); return act(other) } closeApp(); return openTool(other.tool, other.arg) } if (text.trim() && active === to) to.say!(text.trim()); else if (active === to) { const n = words(settings.myLang).notHeard; toolNote = n; render(); setTimeout(() => { if (toolNote === n) { toolNote = ''; render() } }, 3500) } return }
+    if (sayTo) { const to = sayTo; sayTo = null; const other = said(text); if (other && other.tool !== 'ask' && other.tool !== to.id) { if (other.op) { closeApp(); return act(other) } closeApp(); return openTool(other.tool, other.arg) } if (text.trim() && active === to) to.say!(text.trim()); else if (active === to) { const n = noEngine ? 'No speech engine on the server' : words(settings.myLang).notHeard; toolNote = n; render(); setTimeout(() => { if (toolNote === n) { toolNote = ''; render() } }, 3500) } return }
     const it = said(text)
-    if (!it) return flash(words(settings.myLang).notHeard)
+    if (!it) return flash(noEngine ? 'No speech engine on the server' : words(settings.myLang).notHeard)
     await act(it)
   }
   // Quick requests are done on the spot and confirmed; the rest open their tool with the words.
@@ -333,10 +334,10 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   async function loadDay() {
     if (!api?.mode) return
     const get = (id: string, body: unknown) => api!.mode!(id, body).then(x => (x && !x.error ? x : null)).catch(() => null)
-    const [dash, music, stocks, notes, reader, prompter, term] = await Promise.all([
+    const [dash, music, stocks, notes, reader, prompter, term, tasks] = await Promise.all([
       get('dash', { panels: ['event', 'tasks', 'temp', 'range'] }), get('music', { action: 'now' }), get('stocks', { op: 'quotes' }),
-      get('notes', { action: 'list' }), get('reader', { action: 'list' }), get('prompter', { action: 'list' }), get('term', { op: 'list' })])
-    day = dayItems({ dash, music, stocks, notes, reader, prompter, term }, settings.myLang)
+      get('notes', { action: 'list' }), get('reader', { action: 'list' }), get('prompter', { action: 'list' }), get('term', { op: 'list' }), get('tasks', { action: 'list' })])
+    day = dayItems({ dash, music, stocks, notes, reader, prompter, term, tasks }, settings.myLang)
     dayAt = Math.min(dayAt, day.length)
     if (home()) render()
   }

@@ -242,7 +242,7 @@ const keyScroll = document.getElementById('keyscroll')!, keyDouble = document.ge
 const appsLabel = () => {
   // Home shows only while a tool is open; the tools are reached from home itself.
   apps.hidden = !bridge.inApp
-  keyScroll.textContent = bridge.inApp ? 'down: next · up: earlier' : 'up: earlier · down: skip'
+  keyScroll.textContent = bridge.inApp ? 'down: next · up: earlier' : 'down: skip or next · up: earlier'
   keyDouble.textContent = bridge.inApp ? 'home' : 'close'
   keyHold.textContent = bridge.inApp ? 'where the screen offers it' : 'speak a reply, or on home say anything'
   if (bridge.inApp) { meaning.style.visibility = 'hidden'; document.getElementById('mute')!.hidden = true }

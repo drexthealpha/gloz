@@ -16,6 +16,7 @@ export interface DayData {
   reader?: Docs
   prompter?: Docs
   term?: { on?: boolean; allow?: string[]; sample?: boolean } | null
+  tasks?: { source?: string; tasks?: unknown[] } | null
 }
 
 export function dayItems(d: DayData, lang = 'en', now = new Date()): DayItem[] {
@@ -25,7 +26,8 @@ export function dayItems(d: DayData, lang = 'en', now = new Date()): DayItem[] {
   if (d.dash) {
     const s = d.dash.sample
     if (d.dash.events !== undefined) out.push({ tool: 'dash', text: `Next: ${panelText('event', d.dash, lang, now, '', true)}`, sample: s })
-    if (d.dash.tasks) out.push({ tool: 'tasks', text: panelText('tasks', d.dash, lang, now, '', true), sample: s })
+    if (d.tasks?.tasks) out.push({ tool: 'tasks', text: `${d.tasks.tasks.length} tasks due`, sample: d.tasks.source === 'sample' })
+    else if (d.dash.tasks) out.push({ tool: 'tasks', text: panelText('tasks', d.dash, lang, now, '', true), sample: s })
     if (d.dash.weather) out.push({ tool: 'dash', text: `${panelText('temp', d.dash, lang, now, '', true)} · ${panelText('range', d.dash, lang, now, '', true)}`, sample: s })
   }
   if (d.music?.track) out.push({ tool: 'music', text: `${d.music.playing ? 'Playing' : 'Paused'}: ${d.music.track}`, sample: d.music.sample })

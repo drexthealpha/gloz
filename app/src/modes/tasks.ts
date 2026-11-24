@@ -12,11 +12,15 @@ const SAMPLE_TASKS: Task[] = [
   { id: 'sample-4', title: 'Sample: return the library books' },
 ]
 
+const added: { id: string; title: string }[] = []
+const done = new Set<string>()
+// Tests start each case from the plain sample.
+export function resetSampleTasks() { added.length = 0; done.clear() }
 export function sampleTasks(body: any): any {
   const a = body?.action
-  if (a === 'list') return { source: 'sample', tasks: SAMPLE_TASKS }
-  if (a === 'done') return { ok: true, sample: true }
-  if (a === 'add') return { ok: true, sample: true, task: { id: 'sample-new', title: String(body.title ?? '') } }
+  if (a === 'list') return { source: 'sample', tasks: [...added, ...SAMPLE_TASKS].filter(t => !done.has(t.id)) }
+  if (a === 'done') { done.add(String(body.id ?? '')); return { ok: true, sample: true } }
+  if (a === 'add') { const task = { id: `sample-new-${added.length + 1}`, title: String(body.title ?? '') }; added.unshift(task); return { ok: true, sample: true, task } }
   if (a === 'stt') return { text: '' }
   return { error: 'unknown action' }
 }
@@ -79,7 +83,7 @@ export const tasksApp: AppEntry = {
         case 'loading': return { kind: 'status', text: 'Loading tasks', hint: 'hold: add a task' }
         case 'error': return { kind: 'status', text: line, hint: 'tap: try again' }
         case 'list': return tasks.length
-          ? { kind: 'status', text: tasks[at].title || 'Untitled', hint: `${lead}tap: done · down: next · up: earlier · hold: add`, progress: [at + 1, tasks.length] }
+          ? { kind: 'status', text: tasks[at].title || 'Untitled', hint: `${lead}tap: done · down: next · up: earlier · hold: add a task`, progress: [at + 1, tasks.length] }
           : { kind: 'status', text: 'No open tasks', hint: `${lead}hold: add a task` }
         case 'confirm': return { kind: 'status', text: tasks[at].title || 'Untitled', hint: 'tap again to mark done · down: not yet' }
         case 'heard': return draft

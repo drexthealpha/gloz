@@ -39,7 +39,7 @@ function make(ctx: ModeCtx): Mode {
     try {
       const j: Quotes = await ctx.call({ op: 'quotes' })
       if (!j || j.error || !j.quotes?.length) note = j?.error || 'No quotes'
-      else { r = j; note = ''; at = Math.min(at, j.quotes.length - 1); got = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }) }
+      else { r = j; note = ''; at = Math.min(at, j.quotes.length - 1); got = new Date().toLocaleTimeString(ctx.lang(), { hour: '2-digit', minute: '2-digit', second: '2-digit' }) }
     } catch { note = 'No signal' }
     busy = false; ctx.render()
   }
@@ -50,7 +50,7 @@ function make(ctx: ModeCtx): Mode {
       if (busy && !r) return { kind: 'status', text: 'Loading quotes', hint: 'wait a moment' }
       if (!r) return { kind: 'status', text: note || 'No quotes', hint: 'tap: try again' }
       const q = r.quotes[at]
-      const time = r.sample ? `sample ${got}` : busy ? 'updating' : note ? `${note} · ${when(q.t)}` : when(q.t)
+      const time = r.sample ? `sample · updated ${got}` : busy ? 'updating' : note ? `${note} · ${when(q.t)}` : when(q.t)
       return { kind: 'status', text: line(q), hint: `${time} · tap: refresh · down: next · up: earlier`, progress: [at + 1, r.quotes.length] }
     },
     input(i) {

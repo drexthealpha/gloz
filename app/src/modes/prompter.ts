@@ -102,7 +102,8 @@ export const prompterApp: AppEntry = {
         sampleVoice = Boolean(r?.sample)
         replies++
         if (note === 'No voice heard yet') note = ''
-        if (r?.error) { note = r.error; follow(false) }
+        // The reason shows for a moment, then the usual hint (and the way back) returns.
+        if (r?.error) { const e = r.error; note = e; follow(false); setTimeout(() => { if (note === e) { note = ''; if (view === 'script') ctx.render() } }, 4000) }
         else { note = ''; if (following && was === moved && typeof r?.at === 'number') at = Math.min(words.length, Math.max(0, r.at)) }
       } catch { note = 'No signal' }
       busy = false
@@ -119,7 +120,7 @@ export const prompterApp: AppEntry = {
           const other = docs.length > 1 ? ' · hold: other scripts' : ''
           if (at >= words.length) return { kind: 'status', text: 'End of script', hint: `${lead}up: line back${other}` }
           const l = lineOf(at)
-          return { kind: 'status', text: words.slice(starts[l], starts[l + 1] ?? words.length).join(' '), hint: `${lead}tap: ${following ? 'pause' : 'follow voice'} · down: next line${other}`, progress: [l + 1, starts.length] }
+          return { kind: 'status', text: words.slice(starts[l], starts[l + 1] ?? words.length).join(' '), hint: `${lead}tap: ${following ? 'pause' : 'follow my voice'} · down: next line${other}`, progress: [l + 1, starts.length] }
         }
       }
     }

@@ -22,7 +22,7 @@ export interface DashData {
 }
 
 // Sample meetings sit ahead of now, so "Next" is always true.
-const ahead = (m: number) => { const t = new Date(Date.now() + m * 60000); t.setMinutes(0, 0, 0); return t.toISOString() }
+const ahead = (m: number) => { const t = new Date(Date.now() + m * 60000); t.setMinutes(0, 0, 0); if (t.getHours() >= 22 || t.getHours() < 7) { if (t.getHours() >= 22) t.setDate(t.getDate() + 1); t.setHours(9 + Math.floor(m / 120)) } return t.toISOString() }
 export function sampleDash(_body: unknown): DashData {
   return {
     sample: true,
@@ -43,7 +43,7 @@ export function panelText(id: string, d: DashData, lang: string, now: Date, pin:
   const w = d.weather
   const noWeather = located ? 'Weather off' : 'No location'
   switch (id) {
-    case 'time': return hm(now)
+    case 'time': return `Now ${hm(now)}`
     case 'date': return now.toLocaleDateString(lang, { weekday: 'short', day: 'numeric', month: 'short' })
     case 'unread': return d.unread == null ? 'Mail off' : `${d.unread} unread mail`
     case 'event': return d.events === null ? 'Calendar off' : ev(d.events?.[0])
