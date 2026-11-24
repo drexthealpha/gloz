@@ -5,6 +5,7 @@ import { said } from '../app/src/core/say.ts'
 test('say anything: each kind of request goes to the right tool', () => {
   assert.deepEqual(said('Add task call the bank.'), { tool: 'tasks', op: 'add', arg: 'call the bank' })
   assert.deepEqual(said('remind me to send the invoice'), { tool: 'tasks', op: 'add', arg: 'send the invoice' })
+  assert.deepEqual(said('add a task to call mom'), { tool: 'tasks', op: 'add', arg: 'call mom' })
   assert.deepEqual(said('Note: ideas for the board meeting'), { tool: 'notes', op: 'add', arg: 'ideas for the board meeting' })
   assert.deepEqual(said('directions to the Ferry Building'), { tool: 'nav', arg: 'the Ferry Building' })
   assert.deepEqual(said('run uptime'), { tool: 'term', arg: 'uptime' })

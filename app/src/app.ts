@@ -314,7 +314,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
     } catch { text = '' }
     if (my !== sayGen) return
     saying = ''
-    if (sayTo) { const to = sayTo; sayTo = null; if (text.trim() && active === to) to.say!(text.trim()); else if (active === to) { const n = words(settings.myLang).notHeard; toolNote = n; render(); setTimeout(() => { if (toolNote === n) { toolNote = ''; render() } }, 3500) } return }
+    if (sayTo) { const to = sayTo; sayTo = null; const other = said(text); if (other && other.tool !== 'ask' && other.tool !== to.id) { if (other.op) { closeApp(); return act(other) } closeApp(); return openTool(other.tool, other.arg) } if (text.trim() && active === to) to.say!(text.trim()); else if (active === to) { const n = words(settings.myLang).notHeard; toolNote = n; render(); setTimeout(() => { if (toolNote === n) { toolNote = ''; render() } }, 3500) } return }
     const it = said(text)
     if (!it) return flash(words(settings.myLang).notHeard)
     await act(it)
@@ -343,6 +343,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   function closeApp() {
     active?.stop?.()
     active = null
+    void loadDay()   // what changed in the tool (a task done, the next track) shows at once
     g.setMenu(menuItems(settings.myLang, r.on, words(settings.myLang).stopListening, false, aiOn ? settings.translate : null))
     render()
   }

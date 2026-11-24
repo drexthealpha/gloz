@@ -50,7 +50,7 @@ async function weather(lat, lon) {
 // body: { panels: string[], lat?, lon? }
 export async function handle(body, { env }) {
   // Sample meetings sit ahead of now, so "Next" is always true.
-  if (env.GLOZ_SAMPLE === '1') { const ahead = m => { const t = new Date(Date.now() + m * 60000); t.setMinutes(t.getMinutes() < 30 ? 30 : 60, 0, 0); return t.toISOString() }; return { ...SAMPLE, events: [{ at: ahead(60), title: 'Standup' }, { at: ahead(240), title: 'Board review' }] } }
+  if (env.GLOZ_SAMPLE === '1') { const ahead = m => { const t = new Date(Date.now() + m * 60000); t.setMinutes(0, 0, 0); return t.toISOString() }; return { ...SAMPLE, events: [{ at: ahead(120), title: 'Standup' }, { at: ahead(240), title: 'Board review' }] } }
   const want = new Set(Array.isArray(body?.panels) ? body.panels : [])
   const has = (...ids) => ids.some(id => want.has(id))
   const out = {}

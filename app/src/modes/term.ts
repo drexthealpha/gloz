@@ -16,7 +16,7 @@ export function sampleOut(cmd: string): string[] {
 
 export function sampleTerm(body: any): any {
   if (body?.op === 'run') return { lines: [...sampleOut(body?.cmd), 'done'], code: 0, cut: false, timedOut: false, ms: 9, startMs: 3, sample: true }
-  if (body?.op === 'say') return { cmd: 'df', sample: true }
+  if (body?.op === 'say') { const t = String(body.text ?? '').trim().toLowerCase().replace(/^run\s+/, ''); const name = t.split(/\s+/)[0]; return !t ? { cmd: 'df', sample: true } : ['uptime', 'df', 'git'].includes(name) ? { cmd: t, sample: true } : { error: `Not allowed: ${name}`.slice(0, 40) } }
   return { on: true, allow: ['uptime', 'df', 'git'], sample: true }
 }
 

@@ -10,7 +10,7 @@ export function said(text: string): Said | null {
   if (!t) return null
   const m = (re: RegExp) => t.match(re)
   let r: RegExpMatchArray | null
-  if ((r = m(/^(?:add (?:a )?task|new task|task|remind me to)[\s:,]+(.+)$/i))) return { tool: 'tasks', op: 'add', arg: clean(r[1]) }
+  if ((r = m(/^(?:add (?:a )?task|new task|task|remind me to)[\s:,]+(?:to\s+)?(.+)$/i))) return { tool: 'tasks', op: 'add', arg: clean(r[1]) }
   if ((r = m(/^(?:take a note|new note|add (?:a )?note|note(?: that)?)[\s:,]+(.+)$/i))) return { tool: 'notes', op: 'add', arg: clean(r[1]) }
   if ((r = m(/^(?:directions to|navigate to|take me to|route to|how do i get to|go to)\s+(.+)$/i))) return { tool: 'nav', arg: clean(r[1]) }
   if ((r = m(/^(?:run|terminal|command)[\s:,]+(.+)$/i))) return { tool: 'term', arg: clean(r[1]) }

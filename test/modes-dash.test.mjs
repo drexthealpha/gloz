@@ -24,7 +24,7 @@ test('dash: default panels show as short items; battery is not a panel', async (
   const c = m.card()
   assert.match(c.text, /10 unread mail · .*Standup · 4 tasks due · 12°C$/)
   // Just after a load the hint says when; otherwise it offers the presses.
-  assert.match(c.hint, /^updated .* · double tap: back$|(^|· )tap: refresh · double tap: back · hold: choose items$/)
+  assert.match(c.hint, /^(sample · )?updated .* · double tap: back$|(^|· )tap: refresh · double tap: back · hold: choose items$/)
   assert.ok(!PANELS.some(([id]) => /batt/.test(id)))
 })
 

@@ -22,12 +22,12 @@ export interface DashData {
 }
 
 // Sample meetings sit ahead of now, so "Next" is always true.
-const ahead = (m: number) => { const t = new Date(Date.now() + m * 60000); t.setMinutes(t.getMinutes() < 30 ? 30 : 60, 0, 0); return t.toISOString() }
+const ahead = (m: number) => { const t = new Date(Date.now() + m * 60000); t.setMinutes(0, 0, 0); return t.toISOString() }
 export function sampleDash(_body: unknown): DashData {
   return {
     sample: true,
     unread: 10,
-    events: [{ at: ahead(60), title: 'Standup' }, { at: ahead(240), title: 'Board review' }],
+    events: [{ at: ahead(120), title: 'Standup' }, { at: ahead(240), title: 'Board review' }],
     tasks: { due: 4, first: 'Sample: book the dentist' },
     weather: { temp: 12, hi: 15, lo: 7, rain: 40, wind: 18 },
   }
@@ -123,7 +123,7 @@ function make(ctx: ModeCtx): Mode {
       if (note === 'Loading') return { kind: 'status', text: 'Loading your day', hint: 'wait a moment' }
       const pin = ctx.store.get('dash.pin') || ''
       const items = chosen.map(id => panelText(id, data, ctx.lang(), new Date(), pin, Boolean(where)))
-      return { kind: 'status', text: note && note !== 'Loading' ? `${note} · ${items.join(' · ')}` : items.join(' · '), grid: note && note !== 'Loading' ? [note, ...items].slice(0, 12) : items, hint: Date.now() - loadedMs < 4000 ? `updated ${loadedAt} · double tap: back` : `${data.sample ? 'sample · ' : ''}tap: refresh · double tap: back · hold: choose items` }
+      return { kind: 'status', text: note && note !== 'Loading' ? `${note} · ${items.join(' · ')}` : items.join(' · '), grid: note && note !== 'Loading' ? [note, ...items].slice(0, 12) : items, hint: Date.now() - loadedMs < 4000 ? `${data.sample ? 'sample · ' : ''}updated ${loadedAt} · double tap: back` : `${data.sample ? 'sample · ' : ''}tap: refresh · double tap: back · hold: choose items` }
     },
     back() { if (!picking) return false; picking = false; void load(); return true },
     input(i) {
