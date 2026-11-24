@@ -168,7 +168,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
 
   g.onInput = i => {
     if (i === 'exit') return active ? closeApp() : g.exit()
-    if (active) { active.input(i); return }
+    if (active) { openedAt = 0; active.input(i); return }
     if (r.on) {
       if (i === 'tap') roomDo({ t: 'tap' })
       const few = r.lines.length - (r.since ?? 0) < 2
@@ -183,6 +183,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
     if (i === 'tap' && s.view === 'draft' && Date.now() - viewSince < 600) return
     dispatch({ t: i })
   }
+  g.onTurn = () => { if (s.note) dispatch({ t: 'note', text: '' }) }
   g.onAudio = chunk => {
     if (active?.audio) { active.audio(chunk); return }
     if (listening) pcm.push(chunk)

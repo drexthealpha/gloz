@@ -130,7 +130,7 @@ export function step(s: State, ev: Event): { s: State; fx: Effect[] } {
       if (s.view === 'sent') return { s: advance(s, fx), fx }
       return { s, fx }
     case 'next':
-      if (s.view === 'empty') { fx.push({ e: 'later', ms: 2500, ev: { t: 'note', text: '' } }); return { s: { ...s, note: s.online ? '\u0000noMore' : '\u0000laterOnline' }, fx } }
+      if (s.view === 'empty') { fx.push({ e: 'later', ms: 3500, ev: { t: 'note', text: '' } }); return { s: { ...s, note: s.online ? '\u0000noMore' : '\u0000laterOnline' }, fx } }
       if (!msg || s.view === 'listen' || s.view === 'sent' || s.view === 'skipped') return { s, fx }
       fx.push({ e: 'later', ms: 2000, ev: { t: 'done', id: msg?.id } })
       return { s: { ...s, view: 'skipped' }, fx }  // swipe past a message or its reply: skipped, shown for a moment
@@ -139,7 +139,7 @@ export function step(s: State, ev: Event): { s: State; fx: Effect[] } {
         const back = s.skippedMsgs
         return { s: prefetch({ ...s, queue: back, at: 0, skippedMsgs: [], seen: s.seen.filter(id => !back.some(b => b.id === id)), view: 'message' }, fx), fx }
       }
-      if (s.view === 'empty') { fx.push({ e: 'later', ms: 2500, ev: { t: 'note', text: '' } }); return { s: { ...s, note: '\u0000nothingEarlier' }, fx } }
+      if (s.view === 'empty') { fx.push({ e: 'later', ms: 3500, ev: { t: 'note', text: '' } }); return { s: { ...s, note: '\u0000nothingEarlier' }, fx } }
       if (!msg) return { s, fx }
       // Back from words being written goes where the hold began: the reply, if there was one.
       if (s.view === 'thinking' && s.heldFrom === 'draft' && typeof s.drafts[msg.id] === 'object') return { s: { ...s, view: 'draft', heldFrom: undefined }, fx }
@@ -147,7 +147,7 @@ export function step(s: State, ev: Event): { s: State; fx: Effect[] } {
       if (s.view === 'message') { fx.push({ e: 'later', ms: 3500, ev: { t: 'note', text: '' } }); return { s: { ...s, note: '\u0000firstPart' }, fx } }
       return { s, fx }
     case 'hold':
-      if (!msg || s.view === 'empty') { fx.push({ e: 'later', ms: 2500, ev: { t: 'note', text: '' } }); return { s: { ...s, note: '\u0000nothingToReply' }, fx } }
+      if (!msg || s.view === 'empty') { fx.push({ e: 'later', ms: 3500, ev: { t: 'note', text: '' } }); return { s: { ...s, note: '\u0000nothingToReply' }, fx } }
       if (s.view === 'sent' || s.view === 'skipped') return { s, fx }
       fx.push({ e: 'mic', on: true })
       return { s: { ...s, view: 'listen', heard: undefined, heldFrom: s.view === 'draft' ? 'draft' : 'message' }, fx }
@@ -163,7 +163,7 @@ export function step(s: State, ev: Event): { s: State; fx: Effect[] } {
       if (w === 'skip') return { s: advance({ ...s, view: 'skipped' }, fx), fx }   // same as a swipe: still unread at the source
       if (w === 'back') return { s: { ...s, view: 'message' }, fx }
       if (!ev.text.trim()) {
-        fx.push({ e: 'later', ms: 2500, ev: { t: 'note', text: '' } })
+        fx.push({ e: 'later', ms: 3500, ev: { t: 'note', text: '' } })
         return { s: { ...s, view: typeof s.drafts[msg.id] === 'object' ? 'draft' : 'message', note: '\u0000notHeard' }, fx }
       }
       fx.push({ e: 'draft', msg, ask: ev.text })

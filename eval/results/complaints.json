@@ -18,7 +18,8 @@
   "pressesToSend": 2
  },
  "pairing": {
-  "tokenExpiry": "none"
+  "days": 365,
+  "signedOut": 0
  },
  "outbox": {
   "keptAfterRestart": 1

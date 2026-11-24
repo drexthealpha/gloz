@@ -119,7 +119,7 @@ function make(ctx: ModeCtx): Mode {
       if (!chosen.length) return { kind: 'status', text: 'No panels', hint: 'hold: choose panels' }
       const pin = ctx.store.get('dash.pin') || ''
       const items = chosen.map(id => panelText(id, data, ctx.lang(), new Date(), pin, Boolean(where)))
-      return { kind: 'status', text: note && note !== 'Loading' ? `${note} · ${items.join(' · ')}` : items.join(' · '), grid: note && note !== 'Loading' ? [note, ...items].slice(0, 12) : items, hint: `${data.sample ? 'sample · ' : ''}${loadedAt ? `updated ${loadedAt} · ` : ''}tap: refresh · hold: choose panels` }
+      return { kind: 'status', text: note && note !== 'Loading' ? `${note} · ${items.join(' · ')}` : items.join(' · '), grid: note && note !== 'Loading' ? [note, ...items].slice(0, 12) : items, hint: `${data.sample ? 'sample · ' : ''}${loadedAt ? `updated ${loadedAt} · ` : ''}tap: refresh · hold: choose panels · double tap: back` }
     },
     input(i) {
       if (i === 'release') return

@@ -151,3 +151,23 @@ test('five wrong pairing codes stop pairing for a minute, so the code cannot be 
   assert.equal((await call('/pair', { code: app.pairCode() })).status, 429)
   app.server.close()
 })
+
+test('a pairing in daily use never ends; one unused for 90 days ends', async () => {
+  let t = Date.parse('2026-01-01T00:00:00Z')
+  const app = createApp({
+    connectors: [],
+    ai: { ready: () => false, draft: ai.draft, translate: ai.translate },
+    stt: { ready: async () => false, transcribe: async () => ({}) },
+    dataDir: mkdtempSync(join(tmpdir(), 'gloz-')),
+    now: () => t,
+  })
+  await new Promise(r => app.server.listen(0, r))
+  const base = `http://127.0.0.1:${app.server.address().port}`
+  const pair = async () => (await (await fetch(base + '/pair', { method: 'POST', body: JSON.stringify({ code: app.pairCode() }) })).json()).token
+  const ok = async tok => (await fetch(base + '/inbox', { headers: { authorization: `Bearer ${tok}` } })).status !== 401
+  const daily = await pair()
+  const idle = await pair()
+  for (let d = 0; d < 365; d++) { t += 24 * 3600 * 1000; assert.ok(await ok(daily), `day ${d + 1}`) }
+  assert.equal(await ok(idle), false)
+  app.server.close()
+})

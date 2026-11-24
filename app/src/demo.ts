@@ -69,7 +69,11 @@ class DemoBridge {
   }
   onOpen = () => {}
   menu(itemID: number) { if (this.mode === 'app') for (const h of this.handlers) h({ menuItemClickEvent: { itemID } }) }
-  async audioControl() { return true }
+  async audioControl(on?: boolean) {
+    // No microphone here: inside an app, a hold sends a short sound so the app answers with its sample.
+    if (on && this.inApp) setTimeout(() => { const pcm = new Uint8Array(16000); for (let k = 0; k < pcm.length; k += 2) pcm[k + 1] = (k / 2) % 40 < 20 ? 0x20 : 0xe0; for (const h of this.handlers) h({ audioEvent: { audioPcm: pcm } }) }, 300)
+    return true
+  }
   mode: 'app' | 'confirm' | 'closed' = 'app'
   // Like the glasses: ask first, then close.
   async shutDownPageContainer() { this.mode = 'confirm'; this.say('Close Gloz?', 'tap: close · down: keep open'); return true }
@@ -227,7 +231,13 @@ net.onclick = () => {
 const mute = document.getElementById('mute') as HTMLButtonElement
 const unmute = document.getElementById('unmute') as HTMLButtonElement
 const apps = document.getElementById('apps') as HTMLButtonElement
-const appsLabel = () => { apps.textContent = bridge.inApp ? 'Back to messages' : 'Apps' }
+const keyScroll = document.getElementById('keyscroll')!, keyDouble = document.getElementById('keydouble')!, keyHold = document.getElementById('keyhold')!
+const appsLabel = () => {
+  apps.textContent = bridge.inApp ? 'Back to messages' : 'Apps'
+  keyScroll.textContent = bridge.inApp ? 'down: next · up: earlier' : 'up: back · down: skip'
+  keyDouble.textContent = bridge.inApp ? 'back to messages' : 'close'
+  keyHold.textContent = bridge.inApp ? 'speak (sample)' : 'speak'
+}
 apps.onclick = () => { bridge.menu(bridge.inApp ? 10 : 9); setTimeout(appsLabel, 50) }
 setInterval(appsLabel, 500)
 const muteLabel = () => { unmute.hidden = !gloz.muted() }

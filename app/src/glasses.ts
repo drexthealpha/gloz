@@ -34,6 +34,7 @@ export class Glasses {
   private landed = ''
   onInput: (i: Input) => void = () => {}
   onAudio: (pcm: Uint8Array) => void = () => {}
+  onTurn: () => void = () => {}   // the wearer moved to another part of the same card
   onMenu: (id: number) => void = () => {}
 
   constructor(bridge: EvenAppBridge) { this.bridge = bridge; setInterval(() => this.tick(), 400) }
@@ -116,6 +117,7 @@ export class Glasses {
     this.line = n
     this.lineAt = Date.now()
     this.pause()
+    this.onTurn()
     this.paint()
   }
 

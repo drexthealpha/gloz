@@ -15,12 +15,18 @@ import { MODES } from './modes/index.mjs'
 
 const sha = s => createHash('sha256').update(s).digest('hex')
 
-export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, log = console.log }) {
+// A pairing in use never ends; one unused for 90 days ends, so a lost or retired device stops working.
+export const IDLE_MS = 90 * 24 * 3600 * 1000
+const DAY = 24 * 3600 * 1000
+
+export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, log = console.log, now = Date.now }) {
   mkdirSync(dataDir, { recursive: true })
   const file = join(dataDir, 'state.json')
   let state
   try { state = JSON.parse(readFileSync(file, 'utf8')) } catch { state = {} }
   state.tokens ??= []
+  // Older state kept bare hashes: they count as used now.
+  state.tokens = state.tokens.map(t => typeof t === 'string' ? { h: t, used: now() } : t)
   state.sent ??= {}
   state.refs ??= {}
   state.pairCode ??= process.env.GLOZ_PAIR_CODE || String(randomInt(100000, 1000000))
@@ -77,7 +83,15 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
 
   function authed(req) {
     const t = (req.headers.authorization || '').replace(/^Bearer /, '')
-    return t && state.tokens.includes(sha(t))
+    if (!t) return false
+    const h = sha(t)
+    const live = state.tokens.filter(x => now() - x.used < IDLE_MS)
+    if (live.length !== state.tokens.length) { state.tokens = live; save() }
+    const mine = live.find(x => x.h === h)
+    if (!mine) return false
+    // Written at most once a day, so a busy device does not rewrite the file on every request.
+    if (now() - mine.used > DAY) { mine.used = now(); save() }
+    return true
   }
 
   async function handle(req, res) {
@@ -105,7 +119,7 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
       }
       pairLock.wrong = 0
       const token = randomBytes(24).toString('base64url')
-      state.tokens.push(sha(token))
+      state.tokens.push({ h: sha(token), used: now() })
       // Each code pairs once; a new one is printed for the next device.
       if (!process.env.GLOZ_PAIR_CODE) { state.pairCode = String(randomInt(100000, 1000000)); log(`Pairing code for the next device: ${state.pairCode}`) }
       save()

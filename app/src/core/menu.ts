@@ -1,7 +1,7 @@
 // The glasses menu items, in the wearer's language. Each name stays under the
 // menu's 32-byte limit (Even Hub docs, Contextual Menu).
 const M: Record<string, string[]> = {
-  en: ['Bigger text', 'Smaller text', 'Move text up/down', 'Translate on/off', 'Mute this chat', 'Check now', 'Listen to the room', 'Unmute all chats', 'Apps'],
+  en: ['Bigger text', 'Smaller text', 'Move text up/down', 'Translate on/off', 'Mute this chat', 'Check messages now', 'Listen to the room', 'Unmute all chats', 'Apps'],
   ar: ['نص أكبر', 'نص أصغر', 'السطر أعلى/أسفل', 'الترجمة', 'كتم المحادثة', 'تحقق الآن', 'استمع للحديث'],
   fa: ['متن بزرگ‌تر', 'متن کوچک‌تر', 'خط بالا/پایین', 'ترجمه', 'بی‌صدا', 'بررسی', 'گوش به گفتگو'],
   he: ['טקסט גדול', 'טקסט קטן', 'שורה למעלה/מטה', 'תרגום', 'השתק שיחה', 'בדוק עכשיו', 'הקשב לשיחה'],

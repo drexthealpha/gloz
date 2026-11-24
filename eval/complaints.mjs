@@ -51,10 +51,17 @@ const out = {}
   out.strayPress = { screens: Object.keys(screens).length, presses, sendsWithoutReplyShown, pressesToSend: 2 }
 }
 
-// 13 and 81: Gloz's pairing never logs out; and replies survive an app restart (outbox).
+// 13 and 81: a pairing in daily use is never signed out (365 days on a test clock); and replies survive an app restart (outbox).
 {
-  const src = readFileSync(new URL('../server/app.mjs', import.meta.url), 'utf8')
-  out.pairing = { tokenExpiry: /expir/i.test(src) ? 'has expiry' : 'none' }
+  let t = Date.parse('2026-01-01T00:00:00Z')
+  const app = createApp({ connectors: [], ai: { ready: () => false, draft: ai.draft, translate: ai.translate }, stt: { ready: async () => false, transcribe: async () => ({}) }, dataDir: mkdtempSync(join(tmpdir(), 'gloz-pair-')), now: () => t, log: () => {} })
+  await new Promise(r => app.server.listen(0, r))
+  const base = `http://127.0.0.1:${app.server.address().port}`
+  const { token } = await (await fetch(base + '/pair', { method: 'POST', body: JSON.stringify({ code: app.pairCode() }) })).json()
+  let signedOut = 0
+  for (let day = 0; day < 365; day++) { t += 24 * 3600 * 1000; if ((await fetch(base + '/inbox', { headers: { authorization: `Bearer ${token}` } })).status === 401) signedOut++ }
+  app.server.close()
+  out.pairing = { days: 365, signedOut }
   const d = {}
   const store = { get: k => d[k] ?? null, set: (k, v) => { d[k] = v } }
   new Outbox(store, async () => 'retry').add('m', 'Yes')
