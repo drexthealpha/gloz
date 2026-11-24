@@ -11,6 +11,12 @@ const LIMIT_MS = 10000
 const MAX_CHARS = 20000
 
 export const SAMPLE_LIST = { on: true, allow: ['uptime', 'df', 'git'], sample: true }
+// Sample output per sample command, so each command shows what it would print.
+function sampleLines(cmd) {
+  if (cmd === 'df') return ['Filesystem  Size  Used  Avail  Use%', '/dev/sda1    50G   21G    27G   44%']
+  if (cmd === 'git') return ['usage: git <command>', 'status, log, pull, push, ...']
+  return [SAMPLE_RUN.lines[0].replace('10:42:07', new Date().toTimeString().slice(0, 8))]
+}
 export const SAMPLE_RUN = { lines: [' 10:42:07 up 3 days,  2:11,  1 user,  load average: 0.08, 0.12, 0.10', 'done'], code: 0, cut: false, timedOut: false, ms: 9, startMs: 3, sample: true }
 
 const allowed = env => String(env.GLOZ_TERMINAL_ALLOW || '').split(',').map(s => s.trim()).filter(Boolean)
@@ -26,7 +32,7 @@ export function spoken(text) {
 export async function handle(body, { env, stt = transcribe, run = execFile }) {
   const op = body?.op
   if (env.GLOZ_SAMPLE === '1' && op === 'say') { if (body?.pcm) { let t = ''; try { t = (await stt(Buffer.from(String(body.pcm), 'base64'), String(body.lang || 'en'))).text } catch { return { error: 'No speech engine on the server' } } if (!String(t || '').trim()) return { error: 'Nothing heard' } } }
-  if (env.GLOZ_SAMPLE === '1') return op === 'run' ? { ...SAMPLE_RUN, lines: [SAMPLE_RUN.lines[0].replace('10:42:07', new Date().toTimeString().slice(0, 8)), 'done'] } : op === 'say' ? { cmd: 'uptime', sample: true } : SAMPLE_LIST
+  if (env.GLOZ_SAMPLE === '1') return op === 'run' ? { ...SAMPLE_RUN, lines: [...sampleLines(String(body?.cmd || '')), 'done'] } : op === 'say' ? { cmd: 'uptime', sample: true } : SAMPLE_LIST
   if (env.GLOZ_TERMINAL !== '1') return { on: false }
   const allow = allowed(env)
   if (op === 'list') return { on: true, allow }

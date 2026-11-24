@@ -60,7 +60,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   const outbox = new Outbox(store, p => api ? api.send(p.key, p.msgId, p.text) : Promise.resolve('retry'))
 
   function render() {
-    if (active) { const c = active.card(); g.show(Date.now() - openedAt < 1500 ? { ...c, hint: 'double tap: back to messages' } : c); onState?.(s, settings); return }
+    if (active) { const c = active.card(); g.show(Date.now() - openedAt < 1500 ? { ...c, hint: 'double tap: back to messages' } : { ...c, back: 'double tap: back' }); onState?.(s, settings); return }
     g.show(r.on ? { ...roomCard(r, settings.myLang), ...(roomNote ? { text: roomNote } : quiet && !r.paused && !r.lines.length ? { text: words(settings.myLang).nothingHeardYet } : {}) } : card(s, settings.myLang))
     onState?.(s, settings)
   }
@@ -242,13 +242,11 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
 
   g.setLook(settings.size, settings.low, settings.autoPace)
   await g.open(menuItems(settings.myLang, false, undefined, false, settings.translate === true))
-  // Once the server says whether AI is on, the Translate item says what it can do.
-  api?.health?.().then(h => { if (!h?.ai && !active) g.setMenu(menuItems(settings.myLang, r.on, words(settings.myLang).stopListening, false, null)) }).catch(() => {})
   render()
   console.log('[gloz] ready')
   poll()
   setInterval(poll, 3000)
-  api?.health?.().then(h => { aiOn = Boolean(h?.ai) }).catch(() => {})
+  api?.health?.().then(h => { aiOn = Boolean(h?.ai); if (!active) g.setMenu(menuItems(settings.myLang, r.on, words(settings.myLang).stopListening, false, aiOn ? settings.translate : null)) }).catch(() => {})
   // Replies in the outbox go out as soon as the link is back.
   setInterval(async () => {
     if (!outbox.size) return

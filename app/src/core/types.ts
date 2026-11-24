@@ -24,6 +24,7 @@ export interface Card {
   text: string
   hint?: string         // what a tap or hold does here
   progress?: [number, number]
+  back?: string         // the way back, added to the hint when it fits
   parts?: false         // no part counter (an app shows its own page number)
   grid?: string[]       // short items drawn as a grid over the whole display (the dashboard)
 }

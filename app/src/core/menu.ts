@@ -16,7 +16,7 @@ const M: Record<string, string[]> = {
 export function menuItems(lang: string, listening = false, stopWord = 'Stop listening', inApp = false, translating?: boolean | null) {
   const names = [...(M[lang] ?? M.en)]
   // In English the item says what a press will do.
-  if ((M[lang] ?? M.en) === M.en && translating !== undefined) names[3] = translating === null ? 'Translate (needs AI)' : translating ? 'Translate: turn off' : 'Translate: turn on'
+  if ((M[lang] ?? M.en) === M.en && translating !== undefined) names[3] = translating === null ? 'Translate messages (needs AI)' : translating ? 'Translate messages: off' : 'Translate messages: on'
   // Inside an app the way back comes first, then the text controls.
   if (inApp) return [{ itemName: 'Back to messages', itemID: 10 }, ...[0, 1, 2].map(i => ({ itemName: names[i], itemID: i + 1 }))]
   // While listening, the way to stop comes first.

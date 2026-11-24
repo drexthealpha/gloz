@@ -103,6 +103,8 @@ export function drawLine(c: Card, l: Lines, i: number, opts: { pages?: boolean }
     let h = hint
     // A long hint is drawn a little smaller first (down to 80%), and cut only if it still does not fit.
     const fits = () => g.measureText(h).width <= W - PAD * 2 - (pages ? g.measureText(pages).width + 16 : 0)
+    // The way back is added when the whole line still fits at 80%.
+    if (c.back && h) { const save = g.font; h = `${hint} · ${c.back}`; g.font = `${HINT_PX * 0.8}px ${FONT}`; const ok = fits(); g.font = save; if (!ok) h = hint }
     for (let px = HINT_PX; h && !fits() && px > HINT_PX * 0.8; px--) g.font = `${px - 1}px ${FONT}`
     while (h && !fits()) h = h.slice(0, -2).trimEnd() + '…'
     if (h) g.fillText(h, g.direction === 'rtl' ? W - PAD : PAD, y)

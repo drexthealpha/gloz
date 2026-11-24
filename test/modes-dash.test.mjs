@@ -37,7 +37,7 @@ test('dash: hold opens the picker, down and up move, tap toggles, hold saves', a
   m.input('tap')
   assert.equal(m.card().text, 'Time: off')
   m.input('prev')
-  assert.equal(m.card().text, 'Pinned text: off')
+  assert.equal(m.card().text, 'Your note from the phone: off')
   m.input('tap')
   m.input('next'); m.input('next')
   assert.equal(m.card().text, 'Date: on')

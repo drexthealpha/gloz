@@ -6,7 +6,7 @@ export function appsList(ctx: ModeCtx, apps: AppEntry[], open: (a: AppEntry) => 
   return {
     id: 'apps',
     card: () => apps.length
-      ? { kind: 'status', text: apps[at].title(ctx.lang()), hint: 'tap: open · down: next · up: earlier · double tap: messages', progress: [at + 1, apps.length] }
+      ? { kind: 'status', text: apps[at].title(ctx.lang()), hint: 'tap: open · down: next · up: earlier', progress: [at + 1, apps.length] }
       : { kind: 'status', text: 'No apps yet', hint: 'double tap: back to messages' },
     input: i => {
       if (!apps.length) return

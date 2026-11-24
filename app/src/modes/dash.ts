@@ -7,7 +7,7 @@ import { wrap } from '../core/layout.ts'
 export const PANELS: [id: string, name: string][] = [
   ['time', 'Time'], ['date', 'Date'], ['unread', 'Unread mail'], ['event', 'Next event'], ['event2', 'Event after'],
   ['tasks', 'Tasks due'], ['task', 'First task due'], ['temp', 'Temperature'], ['range', 'High and low'],
-  ['rain', 'Rain chance'], ['wind', 'Wind'], ['pin', 'Pinned text'],
+  ['rain', 'Rain chance'], ['wind', 'Wind'], ['pin', 'Your note from the phone'],
 ]
 export const DEFAULT_PANELS = ['time', 'date', 'unread', 'event', 'tasks', 'temp']
 const SERVER = ['unread', 'event', 'event2', 'tasks', 'task', 'temp', 'range', 'rain', 'wind']
@@ -92,12 +92,13 @@ function make(ctx: ModeCtx): Mode {
   let note = 'Loading'
   let where: { lat: number; lon: number } | null = null
   let loadedAt = ''   // when the panels last loaded
+  let loadedMs = 0
   const saved = ctx.store.get('dash.where')
   if (saved) { const [lat, lon] = saved.split(',').map(Number); if (isFinite(lat) && isFinite(lon)) where = { lat, lon } }
 
   async function load() {
     if (!chosen.some(p => SERVER.includes(p))) { note = ''; return ctx.render() }
-    try { data = (await ctx.call({ panels: chosen, lat: where?.lat, lon: where?.lon })) || {}; note = ''; loadedAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) } catch { note = 'No signal' }
+    try { data = (await ctx.call({ panels: chosen, lat: where?.lat, lon: where?.lon })) || {}; note = ''; loadedAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }); loadedMs = Date.now(); setTimeout(() => ctx.render(), 4100) } catch { note = 'No signal' }
     ctx.render()
   }
   async function locate(): Promise<void> {
@@ -119,7 +120,7 @@ function make(ctx: ModeCtx): Mode {
       if (!chosen.length) return { kind: 'status', text: 'No panels', hint: 'hold: choose panels' }
       const pin = ctx.store.get('dash.pin') || ''
       const items = chosen.map(id => panelText(id, data, ctx.lang(), new Date(), pin, Boolean(where)))
-      return { kind: 'status', text: note && note !== 'Loading' ? `${note} · ${items.join(' · ')}` : items.join(' · '), grid: note && note !== 'Loading' ? [note, ...items].slice(0, 12) : items, hint: `${data.sample ? 'sample · ' : ''}${loadedAt ? `${loadedAt} · ` : ''}tap: refresh · hold: panels · double tap: back` }
+      return { kind: 'status', text: note && note !== 'Loading' ? `${note} · ${items.join(' · ')}` : items.join(' · '), grid: note && note !== 'Loading' ? [note, ...items].slice(0, 12) : items, hint: `${data.sample ? 'sample · ' : ''}${Date.now() - loadedMs < 4000 ? `updated ${loadedAt} · ` : ''}tap: refresh · hold: panels · double tap: back` }
     },
     input(i) {
       if (i === 'release') return

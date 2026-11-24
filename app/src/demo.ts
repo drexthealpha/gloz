@@ -71,7 +71,7 @@ class DemoBridge {
   menu(itemID: number) { if (this.mode === 'app') for (const h of this.handlers) h({ menuItemClickEvent: { itemID } }) }
   async audioControl(on?: boolean) {
     // No microphone here: inside an app, a hold sends a short sound so the app answers with its sample.
-    if (on && this.inApp) setTimeout(() => { const pcm = new Uint8Array(16000); for (let k = 0; k < pcm.length; k += 2) pcm[k + 1] = (k / 2) % 40 < 20 ? 0x20 : 0xe0; for (const h of this.handlers) h({ audioEvent: { audioPcm: pcm } }) }, 300)
+    if (on && this.inApp) queueMicrotask(() => { const pcm = new Uint8Array(16000); for (let k = 0; k < pcm.length; k += 2) pcm[k + 1] = (k / 2) % 40 < 20 ? 0x20 : 0xe0; for (const h of this.handlers) h({ audioEvent: { audioPcm: pcm } }) })
     return true
   }
   mode: 'app' | 'confirm' | 'closed' = 'app'
@@ -147,6 +147,7 @@ const gloz = await runGloz(bridge as any, api, s => {
   // When hidden it is also emptied, so nothing out of date stays in the page.
   meaning.textContent = on ? `What ${m.from} wrote, in English: ${(samples as any[]).find(x => x.id === m.id)?.en ?? ''}` : ' '
   again.hidden = s.view !== 'empty'
+  document.getElementById('mute')!.hidden = bridge.inApp || !['message', 'draft'].includes(s.view)
   // The typing box belongs to a reply being spoken; it closes if the wearer moves away.
   const box = document.getElementById('say') as HTMLFormElement
   // Moving away cancels the typed reply: the box closes and nothing is sent or announced.
@@ -278,7 +279,7 @@ fetch('./proof/proof.json').then(r => r.ok ? r.json() : []).then((list: { lang: 
     <p class="said"><b>${p.script}</b>: <span lang="${p.lang}" dir="auto">${p.text.replace(/</g, '&lt;')}</span></p>
     <div class="pair">
       <figure><img src="./proof/${p.lang}-plain.png" alt="Plain G2 text: what the glasses font draws"><figcaption>Plain G2 text: draws nothing</figcaption></figure>
-      ${Array.from({ length: p.pages ?? 1 }, (_, i) => `<figure><img src="./proof/${p.lang}-gloz${i ? '-' + (i + 1) : ''}.png" alt="Gloz: the same message drawn as an image"><figcaption>Gloz${(p.pages ?? 1) > 1 ? ` page ${i + 1} of ${p.pages}` : ''}</figcaption></figure>`).join('')}
+      <div class="gloz">${Array.from({ length: p.pages ?? 1 }, (_, i) => `<figure><img src="./proof/${p.lang}-gloz${i ? '-' + (i + 1) : ''}.png" alt="Gloz: the same message drawn as an image"><figcaption>Gloz${(p.pages ?? 1) > 1 ? ` page ${i + 1} of ${p.pages}` : ''}</figcaption></figure>`).join('')}</div>
     </div>`).join('')
   document.getElementById('proof')!.hidden = false
 }).catch(() => {})
