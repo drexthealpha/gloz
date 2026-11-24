@@ -10,8 +10,8 @@ const MAX_BYTES = 10 * 32000   // 10 s of 16 kHz 16-bit audio
 
 // Sample output per sample command, so each command shows what it would print.
 export function sampleOut(cmd: string): string[] {
-  if (cmd === 'df') return ['Filesystem  Size  Used  Avail  Use%', '/dev/sda1    50G   21G    27G   44%']
-  if (cmd === 'git') return ['usage: git <command>', 'status, log, pull, push, ...']
+  if (cmd === 'df') return ['disk: 21 GB used of 50 GB (44%)']
+  if (cmd === 'git') return ['on branch main, nothing to commit']
   return [` ${new Date().toTimeString().slice(0, 8)} up 3 days,  2:11,  1 user,  load average: 0.08, 0.12, 0.10`]
 }
 
@@ -83,10 +83,10 @@ function make(ctx: ModeCtx): Mode {
       if (state === 'off') return { kind: 'status', text: 'Terminal is off', hint: 'server: set GLOZ_TERMINAL=1 and GLOZ_TERMINAL_ALLOW' }
       if (state === 'listening') return { kind: 'status', text: 'Listening', hint: 'release: write the command' }
       if (state === 'busy') return { kind: 'status', text: 'Working', hint: 'wait a moment' }
-      if (state === 'out') return { kind: 'message', head: `${ran}:`, text: out[line], hint: 'tap: back to commands · down: next line · up: earlier line · hold: speak', progress: [line + 1, out.length] }
+      if (state === 'out') return { kind: 'message', head: `${ran}:`, text: out[line], hint: 'tap: commands · down: next line · up: earlier', progress: [line + 1, out.length] }
       if (note) return { kind: 'status', text: note, hint: 'tap: back · hold: speak' }
       if (!cmds.length) return { kind: 'status', text: 'No commands allowed', hint: 'server: set GLOZ_TERMINAL_ALLOW · hold: speak' }
-      return { kind: 'status', text: cmds[at], hint: `${heardIt ? 'you said this · ' : sample ? 'sample · ' : ''}tap: run · down: next · up: earlier · hold: speak`, progress: [at + 1, cmds.length] }
+      return { kind: 'status', text: cmds[at], hint: `${heardIt && !sample ? 'you said this · ' : sample ? 'sample · ' : ''}tap: run · down: next · up: earlier · hold: speak`, progress: [at + 1, cmds.length] }
     },
     input(i) {
       if (state === 'loading' || state === 'off' || state === 'busy') return

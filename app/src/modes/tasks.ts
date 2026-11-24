@@ -88,7 +88,7 @@ export const tasksApp: AppEntry = {
         case 'thinking': return { kind: 'status', text: 'Writing down', hint: 'wait' }
         case 'heard': return draft
           ? { kind: 'status', text: draft, hint: `${line ? line + ' · ' : ''}tap: add · hold: say again · down: discard` }
-          : { kind: 'status', text: line || 'Nothing heard', hint: /speech/i.test(line) ? 'down: back' : 'hold: speak again · down: back' }
+          : { kind: 'status', text: line || 'Nothing heard', hint: /speech/i.test(line) ? 'down: task list' : 'hold: speak again · down: task list' }
         case 'saving': return { kind: 'status', text: 'Saving', hint: 'wait' }
       }
     }

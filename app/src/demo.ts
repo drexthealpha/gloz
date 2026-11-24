@@ -69,9 +69,13 @@ class DemoBridge {
   }
   onOpen = () => {}
   menu(itemID: number) { if (this.mode === 'app') for (const h of this.handlers) h({ menuItemClickEvent: { itemID } }) }
+  hearing: ReturnType<typeof setInterval> | undefined
   async audioControl(on?: boolean) {
     // No microphone here: inside an app, a hold sends a short sound so the app answers with its sample.
-    if (on && this.inApp) queueMicrotask(() => { const pcm = new Uint8Array(16000); for (let k = 0; k < pcm.length; k += 2) pcm[k + 1] = (k / 2) % 40 < 20 ? 0x20 : 0xe0; for (const h of this.handlers) h({ audioEvent: { audioPcm: pcm } }) })
+    const send = () => { const pcm = new Uint8Array(16000); for (let k = 0; k < pcm.length; k += 2) pcm[k + 1] = (k / 2) % 40 < 20 ? 0x20 : 0xe0; for (const h of this.handlers) h({ audioEvent: { audioPcm: pcm } }) }
+    clearInterval(this.hearing)
+    // While the microphone is on in an app, sample sound arrives every half second.
+    if (on && this.inApp) { queueMicrotask(send); this.hearing = setInterval(() => { if (this.inApp) send() }, 500) }
     return true
   }
   mode: 'app' | 'confirm' | 'closed' = 'app'
@@ -86,7 +90,9 @@ class DemoBridge {
 }
 
 // --- stand-in backend -----------------------------------------------------------
-const SAMPLES: Record<string, (body: any) => any> = { dash: sampleDash, tasks: sampleTasks, notes: sampleNotes, ask: sampleAsk, reader: sampleReader, prompter: samplePrompter, nav: sampleNav, stocks: sampleStocks, music: sampleMusic, term: sampleTerm }
+// No microphone here: what an app hears is sample words, and the teleprompter moves on a few words each time.
+const heardSample = (f: (b: any) => any, words: string) => (b: any) => b?.action === 'stt' ? { text: words } : f(b)
+const SAMPLES: Record<string, (body: any) => any> = { dash: sampleDash, tasks: heardSample(sampleTasks, 'Sample: call the bank'), notes: heardSample(sampleNotes, 'Sample: ideas for the board meeting'), ask: sampleAsk, reader: sampleReader, prompter: (b: any) => b?.action === 'follow' ? { at: (Number(b.from) || 0) + 4, heard: '' } : samplePrompter(b), nav: sampleNav, stocks: sampleStocks, music: sampleMusic, term: sampleTerm }
 class DemoApi implements Api {
   online = true
   sent: { to: string; text: string; meaning?: string }[] = (() => { try { return JSON.parse(sessionStorage.getItem('gloz.demo.sent') || '[]') } catch { return [] } })()
@@ -236,7 +242,7 @@ const keyScroll = document.getElementById('keyscroll')!, keyDouble = document.ge
 const appsLabel = () => {
   apps.textContent = bridge.inApp ? 'Back to messages' : 'Apps'
   keyScroll.textContent = bridge.inApp ? 'down: next · up: earlier' : 'up: back · down: skip'
-  keyDouble.textContent = bridge.inApp ? 'back to messages' : 'close'
+  keyDouble.textContent = bridge.inApp ? 'back' : 'close'
   keyHold.textContent = bridge.inApp ? 'speak (sample)' : 'speak'
 }
 apps.onclick = () => { bridge.menu(bridge.inApp ? 10 : 9); setTimeout(appsLabel, 50) }

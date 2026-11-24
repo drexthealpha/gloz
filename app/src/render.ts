@@ -106,6 +106,7 @@ export function drawLine(c: Card, l: Lines, i: number, opts: { pages?: boolean }
     // The way back is added when the whole line still fits at 80%.
     if (c.back && h) { const save = g.font; h = `${hint} · ${c.back}`; g.font = `${HINT_PX * 0.8}px ${FONT}`; const ok = fits(); g.font = save; if (!ok) h = hint }
     for (let px = HINT_PX; h && !fits() && px > HINT_PX * 0.8; px--) g.font = `${px - 1}px ${FONT}`
+    while (h && !fits() && h.includes(' · ')) h = h.slice(0, h.lastIndexOf(' · '))
     while (h && !fits()) h = h.slice(0, -2).trimEnd() + '…'
     if (h) g.fillText(h, g.direction === 'rtl' ? W - PAD : PAD, y)
     g.direction = 'ltr'
@@ -156,7 +157,9 @@ export function drawGrid(texts: string[], hint: string): HTMLCanvasElement {
     g.direction = 'ltr'
     g.textAlign = 'left'
     let hp = HINT_PX
-    while (hp > HINT_PX * 0.7 && g.measureText(hint).width > W - PAD * 2) { hp -= 1; g.font = `${hp}px ${FONT}` }
+    while (hp > HINT_PX * 0.8 && g.measureText(hint).width > W - PAD * 2) { hp -= 1; g.font = `${hp}px ${FONT}` }
+    // Still too long: whole items drop from the end, never half a word.
+    while (g.measureText(hint).width > W - PAD * 2 && hint.includes(' · ')) hint = hint.slice(0, hint.lastIndexOf(' · '))
     g.fillText(hint, PAD, FULL_H - HINT_PX / 2 - 9)
   }
   return cv

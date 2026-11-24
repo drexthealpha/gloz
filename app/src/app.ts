@@ -60,7 +60,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   const outbox = new Outbox(store, p => api ? api.send(p.key, p.msgId, p.text) : Promise.resolve('retry'))
 
   function render() {
-    if (active) { const c = active.card(); g.show(Date.now() - openedAt < 1500 ? { ...c, hint: 'double tap: back to messages' } : { ...c, back: 'double tap: back' }); onState?.(s, settings); return }
+    if (active) { const c = active.card(); g.show(Date.now() - openedAt < 1500 ? { ...c, hint: active === list ? 'double tap: back to messages' : 'double tap: back to the Apps list' } : { ...c, back: 'double tap: back' }); onState?.(s, settings); return }
     g.show(r.on ? { ...roomCard(r, settings.myLang), ...(roomNote ? { text: roomNote } : quiet && !r.paused && !r.lines.length ? { text: words(settings.myLang).nothingHeardYet } : {}) } : card(s, settings.myLang))
     onState?.(s, settings)
   }
@@ -167,7 +167,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   }
 
   g.onInput = i => {
-    if (i === 'exit') return active ? closeApp() : g.exit()
+    if (i === 'exit') return active === list ? closeApp() : active ? openList() : g.exit()
     if (active) { openedAt = 0; active.input(i); return }
     if (r.on) {
       if (i === 'tap') roomDo({ t: 'tap' })
@@ -204,7 +204,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
     if (id === 6) { const n = await poll(); note = n < 0 ? w.noSignal : n ? w.someNew(n) : w.nothingNew }
     if (id === 8 && !muted.size) note = w.nothingMuted
     else if (id === 8) { const who = [...new Set((s.mutedMsgs ?? []).map(x => x.from))].join(', '); note = who ? w.unmutedWho(who) : w.unmuted; muted.clear(); store.set('gloz.muted', '[]'); after = 0; dispatch({ t: 'unmute' }); poll() }
-    if (id === 9) { if (r.on) roomDo({ t: 'stop' }); openApp(appsList(modeCtx(''), APPS, a => openApp(a.make(modeCtx(a.id))))); return }
+    if (id === 9) { if (r.on) roomDo({ t: 'stop' }); openList(); return }
     if (id === 10) { closeApp(); return }
     if (id === 7) { if (r.on) note = r.lines.length ? w.roomStop : w.roomStopEmpty; roomNote = ''; quiet = false; silentPieces = 0; roomDo({ t: r.on ? 'stop' : 'start' }); g.setMenu(menuItems(settings.myLang, r.on, w.stopListening, false, aiOn ? settings.translate : null)) }
     if (note) dispatch({ t: 'note', text: note, ms: 3500 })   // a menu choice is confirmed long enough to look back
@@ -233,6 +233,9 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
     void m.start?.()
     render()
   }
+  // The Apps list stays the same object, so it keeps its place when the wearer comes back to it.
+  let list: Mode | null = null
+  function openList() { list ??= appsList(modeCtx(''), APPS, a => openApp(a.make(modeCtx(a.id)))); openApp(list) }
   function closeApp() {
     active?.stop?.()
     active = null

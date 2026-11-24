@@ -13,8 +13,8 @@ const MAX_CHARS = 20000
 export const SAMPLE_LIST = { on: true, allow: ['uptime', 'df', 'git'], sample: true }
 // Sample output per sample command, so each command shows what it would print.
 function sampleLines(cmd) {
-  if (cmd === 'df') return ['Filesystem  Size  Used  Avail  Use%', '/dev/sda1    50G   21G    27G   44%']
-  if (cmd === 'git') return ['usage: git <command>', 'status, log, pull, push, ...']
+  if (cmd === 'df') return ['disk: 21 GB used of 50 GB (44%)']
+  if (cmd === 'git') return ['on branch main, nothing to commit']
   return [SAMPLE_RUN.lines[0].replace('10:42:07', new Date().toTimeString().slice(0, 8))]
 }
 export const SAMPLE_RUN = { lines: [' 10:42:07 up 3 days,  2:11,  1 user,  load average: 0.08, 0.12, 0.10', 'done'], code: 0, cut: false, timedOut: false, ms: 9, startMs: 3, sample: true }
