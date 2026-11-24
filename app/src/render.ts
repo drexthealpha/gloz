@@ -64,7 +64,7 @@ export function drawLine(c: Card, l: Lines, i: number, opts: { pages?: boolean }
   g.textAlign = dir === 'rtl' ? 'right' : 'left'
   g.textBaseline = 'middle'
   g.font = `${l.px}px ${FONT}`
-  const hint = (c.hint ?? '').replace(c.kind === 'message' && i === 0 ? /up: earlier part · / : /$^/, '')
+  const hint = (c.hint ?? '').replace(c.kind === 'message' && i === 0 ? / · up: earlier part/ : /$^/, '')
   const label = c.kind === 'draft' && c.head ? c.head.replace(/^↩\s*/, '') : ''
   if (label) {
     g.save()

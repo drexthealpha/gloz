@@ -240,13 +240,14 @@ const unmute = document.getElementById('unmute') as HTMLButtonElement
 const apps = document.getElementById('apps') as HTMLButtonElement
 const keyScroll = document.getElementById('keyscroll')!, keyDouble = document.getElementById('keydouble')!, keyHold = document.getElementById('keyhold')!
 const appsLabel = () => {
-  apps.textContent = bridge.inApp ? 'Back to messages' : 'Apps'
+  // Home shows only while a tool is open; the tools are reached from home itself.
+  apps.hidden = !bridge.inApp
   keyScroll.textContent = bridge.inApp ? 'down: next · up: earlier' : 'up: earlier · down: skip'
-  keyDouble.textContent = bridge.inApp ? 'back' : 'close'
-  keyHold.textContent = bridge.inApp ? 'where the screen offers it' : 'speak a reply'
+  keyDouble.textContent = bridge.inApp ? 'home' : 'close'
+  keyHold.textContent = bridge.inApp ? 'where the screen offers it' : 'speak a reply, or on home say anything'
   if (bridge.inApp) { meaning.style.visibility = 'hidden'; document.getElementById('mute')!.hidden = true }
 }
-apps.onclick = () => { bridge.menu(bridge.inApp ? 10 : 9); setTimeout(appsLabel, 50) }
+apps.onclick = () => { bridge.menu(10); setTimeout(appsLabel, 50) }
 setInterval(appsLabel, 500)
 const muteLabel = () => { unmute.hidden = !gloz.muted() }
 mute.onclick = () => { bridge.menu(5); setTimeout(muteLabel, 50) }

@@ -1,7 +1,7 @@
 // The glasses menu items, in the wearer's language. Each name stays under the
 // menu's 32-byte limit (Even Hub docs, Contextual Menu).
 const M: Record<string, string[]> = {
-  en: ['Bigger text', 'Smaller text', 'Move text up/down', 'Translate on/off', 'Mute this chat', 'Check messages now', 'Listen to the room', 'Unmute all chats', 'Apps'],
+  en: ['Bigger text', 'Smaller text', 'Move text up/down', 'Translate on/off', 'Mute this chat', 'Check messages now', 'Listen to the room', 'Unmute all chats'],
   ar: ['نص أكبر', 'نص أصغر', 'السطر أعلى/أسفل', 'الترجمة', 'كتم المحادثة', 'تحقق الآن', 'استمع للحديث'],
   fa: ['متن بزرگ‌تر', 'متن کوچک‌تر', 'خط بالا/پایین', 'ترجمه', 'بی‌صدا', 'بررسی', 'گوش به گفتگو'],
   he: ['טקסט גדול', 'טקסט קטן', 'שורה למעלה/מטה', 'תרגום', 'השתק שיחה', 'בדוק עכשיו', 'הקשב לשיחה'],
@@ -18,7 +18,7 @@ export function menuItems(lang: string, listening = false, stopWord = 'Stop list
   // In English the item says what a press will do.
   if ((M[lang] ?? M.en) === M.en && translating !== undefined) names[3] = translating === null ? 'Translate needs AI' : translating ? 'Translate: turn off' : 'Translate: turn on'
   // Inside an app the way back comes first, then the text controls.
-  if (inApp) return [{ itemName: 'Back to messages', itemID: 10 }, ...[0, 1, 2].map(i => ({ itemName: names[i], itemID: i + 1 }))]
+  if (inApp) return [{ itemName: 'Home', itemID: 10 }, ...[0, 1, 2].map(i => ({ itemName: names[i], itemID: i + 1 }))]
   // While listening, the way to stop comes first.
   if (listening) return [{ itemName: stopWord, itemID: 7 }, ...names.slice(0, 6).map((itemName, i) => ({ itemName, itemID: i + 1 })), { itemName: M.en[7], itemID: 8 }]
   const all = names.map((itemName, i) => ({ itemName, itemID: i + 1 }))

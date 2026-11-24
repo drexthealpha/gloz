@@ -7,7 +7,9 @@ export interface QA { q: string; a: string }
 const KEY = 'ask.log'
 const MAX_BYTES = 30 * 32000   // 30 s of 16 kHz 16-bit audio
 
-export function sampleAsk(_body: unknown): QA {
+export function sampleAsk(body: any): QA {
+  // A question in words gets a sample line that says where a real answer comes from.
+  if (typeof body?.q === 'string' && body.q.trim()) return { q: `Sample: ${body.q.trim()}`, a: 'With an AI key on the Gloz server, the answer appears here.' }
   return { q: 'Sample: How tall is Mount Everest?', a: 'Mount Everest is 8,849 metres tall, measured by China and Nepal in 2020.' }
 }
 
@@ -33,9 +35,12 @@ function make(ctx: ModeCtx): Mode {
     const parts = pcm
     pcm = []; bytes = 0
     if (!parts.length) { state = 'ready'; note = 'Nothing heard'; return ctx.render() }
+    return query({ pcm: b64(parts), lang: ctx.lang(), history: log })
+  }
+  async function query(body: object) {
     state = 'thinking'; ctx.render()
     try {
-      const r: QA & { error?: string } = await ctx.call({ pcm: b64(parts), lang: ctx.lang(), history: log })
+      const r: QA & { error?: string } = await ctx.call(body)
       if (!r || !r.a) { state = 'ready'; note = r?.error || 'Nothing heard'; return ctx.render() }
       log = [...log, { q: r.q || '', a: r.a }].slice(-10)
       ctx.store.set(KEY, JSON.stringify(log))
@@ -67,6 +72,7 @@ function make(ctx: ModeCtx): Mode {
       if (state !== 'listening' || bytes >= MAX_BYTES) return
       pcm.push(chunk); bytes += chunk.length
     },
+    say(text) { void query({ q: text, lang: ctx.lang(), history: log }) },
     stop() { if (state === 'listening') ctx.mic(false).catch(() => {}) },
   }
 }

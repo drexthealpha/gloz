@@ -98,7 +98,7 @@ function make(ctx: ModeCtx): Mode {
 
   async function load() {
     if (!chosen.some(p => SERVER.includes(p))) { note = ''; return ctx.render() }
-    try { data = (await ctx.call({ panels: chosen, lat: where?.lat, lon: where?.lon })) || {}; note = ''; loadedAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }); loadedMs = Date.now(); setTimeout(() => ctx.render(), 4100) } catch { note = 'No signal' }
+    try { data = (await ctx.call({ panels: chosen, lat: where?.lat, lon: where?.lon })) || {}; note = ''; loadedAt = new Date().toLocaleTimeString(ctx.lang(), { hour: '2-digit', minute: '2-digit', second: '2-digit' }); loadedMs = Date.now(); setTimeout(() => ctx.render(), 4100) } catch { note = 'No signal' }
     ctx.render()
   }
   async function locate(): Promise<void> {

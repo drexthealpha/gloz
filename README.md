@@ -6,7 +6,7 @@
 
 [![CI](https://github.com/drexthealpha/gloz/actions/workflows/ci.yml/badge.svg)](https://github.com/drexthealpha/gloz/actions/workflows/ci.yml) [![live demo](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/drexthealpha/gloz/status/status.json)](https://drexthealpha.github.io/gloz/)
 
-**Try it now, no install, no sign-in:** https://drexthealpha.github.io/gloz/ (the glasses) and https://drexthealpha.github.io/gloz/phone/ (the phone screens) · **Video, <!-- gen:video -->85 s<!-- /gen -->, in the Even Hub simulator:** https://drexthealpha.github.io/gloz/gloz-demo.mp4 · **Package:** [gloz.ehpk](https://github.com/drexthealpha/gloz/releases/latest/download/gloz.ehpk)
+**Try it now, no install, no sign-in:** https://drexthealpha.github.io/gloz/ (the glasses) and https://drexthealpha.github.io/gloz/phone/ (the phone screens) · **Video, <!-- gen:video -->115 s<!-- /gen -->, in the Even Hub simulator:** https://drexthealpha.github.io/gloz/gloz-demo.mp4 · **Package:** [gloz.ehpk](https://github.com/drexthealpha/gloz/releases/latest/download/gloz.ehpk)
 Click to tap, scroll to swipe, hold to speak, double click to close. "Cut the signal" shows a reply waiting through a drop.
 
 ## How it works on the glasses
@@ -22,10 +22,12 @@ One line on the glasses at a time. A new message appears with the sender's name;
 | swipe down | the next message; a skipped one stays unread on your phone |
 | swipe up | back a line, or from the reply back to the message; on the empty screen, brings skipped messages back |
 | double tap | closes Gloz (the glasses ask first) |
-| glasses menu | bigger or smaller text, move the line, translate, mute a chat, check now, listen to the room |
+| glasses menu | bigger or smaller text, move the line, translate, mute a chat, check now, listen to the room, unmute all |
 | Listen to the room | captions of the conversation around you, in your language; tap pauses the microphone, swipe up goes back to any earlier line; the transcript is on the phone to copy or share |
 | phone, Chats on the glasses | pick the chats you want; with any picked, only those reach the glasses |
-| glasses menu, Apps | Dashboard (up to 12 panels you pick), Tasks, Notes, Ask, Reader, Teleprompter, Navigation, Stocks, Now playing and Server commands; each screen says what a press does; double tap goes back to the Apps list, then to messages |
+| swipe down past the last message | your day, one line at a time: next meeting, tasks due, weather, now playing, a stock, your latest note, what you are reading, your script, directions, a server command; tap opens it |
+| hold on that screen and say anything | "add task ...", "note ...", "directions to ...", "read ...", "prompter", "run ...", "play", or any question; Gloz does it, or opens it with your words |
+| double tap in any of them | back home |
 
 Nothing is sent without your tap or your word. Text is drawn as an image with the phone's own fonts, so Arabic, Persian, Hindi, Thai and Hebrew show on the glasses, at the size you pick (6 sizes). A reply written in a language you do not read is shown to you by its meaning. Replies wait in a saved outbox through any drop and go out when the link is back.
 
@@ -85,8 +87,8 @@ What owners asked for in public reviews, what Gloz does, Gloz's measured number,
 | "every time I say "Even AI" the Bluetooth gets disconnected" (31 Mar 2026, Google Play) | No wake word. Gloz listens only while you hold the touchpad or ring. | 0 false wake-ups: nothing listens until you hold | 2.7% missed, at 1 false wake-up per 10 hours |
 | "sometimes directly log out without doing anything" (12 Jan 2026, Google Play) | Gloz pairs once and never signs out a glasses app in use. Only a pairing unused for 90 days ends. | 365 days of daily use on a test clock, 0 forced sign-ins | 6 months without a forced sign-in |
 | "the size of the font ... can be customized" (12 Aug 2026, Trustpilot) | Six text sizes, drawn as images. Pick one on the phone or from the glasses menu. | largest text 4.81 times the glasses' own text | largest text 3.1 times the default |
-| "A third of the display ... constantly displaying date and time" (13 Jul 2026, App Store) | Apps, Dashboard: you pick what fills the display, up to 12 panels (time, mail, next events, tasks, weather, a pinned note); hold on the glasses to choose. | 12 panels you pick on one screen, each up to 28 characters, none under 20 px | 11 fields you pick on one page (a bike computer) |
-| "it shows different images in the left and right eyes" (3 Apr 2026, Google Play) | Apps, Teleprompter: your script one line at a time; a tap starts following your voice, another tap pauses. | 75.2% of updates on the exact word you are reading (481-word script, simulated recognizer text with 20% errors) | 57.7% on the exact word (voice-following reading tutor, recorded speech, 2026) |
+| "A third of the display ... constantly displaying date and time" (13 Jul 2026, App Store) | Your day, dashboard: you pick what fills the display, up to 12 panels (time, mail, next events, tasks, weather, a pinned note); hold on the glasses to choose. | 12 panels you pick on one screen, each up to 28 characters, none under 20 px | 11 fields you pick on one page (a bike computer) |
+| "it shows different images in the left and right eyes" (3 Apr 2026, Google Play) | Teleprompter (say "prompter"): your script one line at a time; a tap starts following your voice, another tap pauses. | 75.2% of updates on the exact word you are reading (481-word script, simulated recognizer text with 20% errors) | 57.7% on the exact word (voice-following reading tutor, recorded speech, 2026) |
 | "why can we not reply to a text message??" (21 May 2026, Google Play) | A drafted reply waits under each message. Tap to see it, tap to send it. | 96 words a minute sent, silent (fixed holding replies; AI drafts need a key) | 20.9 words a minute, silent |
 | "sometimes fail with a "server error"" (6 Feb 2026, Google Play) | If one AI provider fails, the next is tried. If every one fails, a short reply in the sender's language is still ready to send. | 200 of 200 messages had a reply ready with every AI provider failing (600 failed calls) | 99.995% uptime, the best AI API status page (Aug to Nov 2026) |
 | "The text jumping ... frequently causes severe dizziness" (24 Jul 2026, Trustpilot) | One line at a time. A line, or a caption, never changes while it is shown; the next one replaces it whole. | 0 of 54000 shown captions changed afterwards (0%) | 4% of shown words changed afterwards, the most stable streaming recognizer (Google, 2020) |

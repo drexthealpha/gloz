@@ -19,6 +19,8 @@ export function pageStarts(text: string, chars: number): number[] {
   for (let i = 0; i < text.length;) {
     starts.push(i)
     let e = Math.min(text.length, i + chars)
+    const nl = text.indexOf('\n', i)
+    if (nl >= i && nl < e) e = nl + 1
     if (e < text.length) {
       let sp = e - 1
       while (sp > i + chars / 2 && text[sp] !== ' ' && text[sp] !== '\n') sp--
@@ -135,6 +137,7 @@ export const readerApp: AppEntry = {
       id: 'reader',
       card,
       start: load,
+      say(text) { const d = docs.find(x => (x.title || '').toLowerCase().includes(text.toLowerCase())); if (d) void open(d); else { line = `No text called ${text}`.slice(0, 60); show('error') } },
       input(i) {
         if (view === 'error' && i === 'tap') return void load()
         if (i === 'hold' && doc && docs.length > 1) { pick = Math.max(0, docs.indexOf(doc)); return show('pick') }

@@ -4,12 +4,13 @@ import { shows } from './core/chats.ts'
 import type { EvenAppBridge } from '@evenrealities/even_hub_sdk'
 import { start, step, card, type State, type Event, type Effect } from './core/flow.ts'
 import { Outbox, type Store } from './core/outbox.ts'
-import { DEFAULT_SETTINGS, type Settings } from './core/types.ts'
+import { DEFAULT_SETTINGS, type Settings, type Card } from './core/types.ts'
 import { Glasses } from './glasses.ts'
 import { menuItems } from './core/menu.ts'
 import type { Mode, ModeCtx } from './modes/types.ts'
 import { APPS } from './modes/index.ts'
-import { appsList } from './modes/apps.ts'
+import { dayItems, type DayItem } from './core/day.ts'
+import { said, type Said } from './core/say.ts'
 import { words } from './core/words.ts'
 import { holdingReply } from './core/holding.ts'
 import { room, roomStep, roomCard, transcript, type Room, type RoomEvent } from './core/room.ts'
@@ -59,11 +60,21 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   let silentPieces = 0
   let roomNote = ''
   let quiet = false   // listening, and nothing heard yet
-  let active: Mode | null = null   // an app from the Apps list, when one is open
+  let active: Mode | null = null   // a tool (tasks, reader, directions...) while it is open
+  // Home, once the messages are done: the inbox line, then the wearer's day, one item at a time.
+  // A hold there means "say anything": the words go to the tool that does them.
+  let day: DayItem[] = []
+  let dayAt = 0          // 0: the inbox line; 1..n: the day's items
+  let homeNote = ''
+  let saying: '' | 'listening' | 'working' = ''
+  let sayPcm: Uint8Array[] = []
+  let sayGen = 0
+  const home = () => !active && !r.on && s.paired && s.view === 'empty'
 
   const outbox = new Outbox(store, p => api ? api.send(p.key, p.msgId, p.text) : Promise.resolve('retry'))
 
   function render() {
+    if (home() || saying) { g.show(homeCard()); onState?.(saying ? { ...s, view: 'listen' } : s, settings); return }
     if (active) { const c = active.card(); g.show({ ...c, back: 'double tap: back' }); onState?.(s, settings); return }
     g.show(r.on ? { ...roomCard(r, settings.myLang), ...(roomNote ? { text: roomNote } : quiet && !r.paused && !r.lines.length ? { text: words(settings.myLang).nothingHeardYet } : {}) } : card(s, settings.myLang))
     onState?.(s, settings)
@@ -102,6 +113,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   function dispatch(ev: Event) {
     const r = step(s, ev)
     if (r.s.view !== s.view) viewSince = Date.now()
+    if (r.s.view === 'empty' && s.view !== 'empty') { dayAt = 0; void loadDay() }
     if (ev.t === 'note' && ev.text) noteAt = Date.now()
     s = r.s.view !== s.view && ev.t !== 'note' && ev.t !== 'inbox' && r.s.note && r.s.note === s.note && Date.now() - noteAt > 2000 ? { ...r.s, note: undefined } : r.s
     // What was answered, skipped or muted is saved after every change, so a reopen starts from the same place.
@@ -175,8 +187,10 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
 
   g.onInput = i => {
     if (i === 'exit' && active?.back?.()) return render()
-    if (i === 'exit') { const b = doubleTap(active, list); return b === 'close' ? g.exit() : b === 'messages' ? closeApp() : openList() }
+    if (i === 'exit' && saying) { sayGen++; saying = ''; g.mic(false).catch(() => {}); return render() }
+    if (i === 'exit') return doubleTap(active) === 'home' ? closeApp() : g.exit()
     if (active) { active.input(i); return }
+    if (home() || saying) return homeInput(i)
     if (r.on) {
       if (i === 'tap') roomDo({ t: 'tap' })
       const few = r.lines.length - (r.since ?? 0) < 2
@@ -193,6 +207,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   }
   g.onTurn = () => { if (s.note) dispatch({ t: 'note', text: '' }) }
   g.onAudio = chunk => {
+    if (saying === 'listening') { sayPcm.push(chunk); return }
     if (active?.audio) { active.audio(chunk); return }
     if (listening) pcm.push(chunk)
     if (r.on && !r.paused) {
@@ -212,7 +227,6 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
     if (id === 6) { const n = await poll(); note = n < 0 ? w.noSignal : n ? w.someNew(n) : w.nothingNew }
     if (id === 8 && !muted.size) note = w.nothingMuted
     else if (id === 8) { const who = [...new Set((s.mutedMsgs ?? []).map(x => x.from))].join(', '); note = who ? w.unmutedWho(who) : w.unmuted; muted.clear(); store.set('gloz.muted', '[]'); after = 0; dispatch({ t: 'unmute' }); poll() }
-    if (id === 9) { if (r.on) roomDo({ t: 'stop' }); openList(); return }
     if (id === 10) { closeApp(); return }
     if (id === 7) { if (r.on) note = r.lines.length ? w.roomStop : w.roomStopEmpty; roomNote = ''; quiet = false; silentPieces = 0; roomDo({ t: r.on ? 'stop' : 'start' }); g.setMenu(menuItems(settings.myLang, r.on, w.stopListening, false, aiOn ? settings.translate : null)) }
     if (note) dispatch({ t: 'note', text: note, ms: 3500 })   // a menu choice is confirmed long enough to look back
@@ -221,7 +235,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
     render()
   }
 
-  // Apps from the glasses menu: each gets the wearer's language, its own server route and the microphone.
+  // Each tool gets the wearer's language, its own server route and the microphone.
   function modeCtx(id: string): ModeCtx {
     return {
       call: body => (api?.mode ? api.mode(id, body) : Promise.reject(new Error('not paired'))),
@@ -232,16 +246,94 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
       store,
     }
   }
-  function openApp(m: Mode) {
+  function openApp(m: Mode): Promise<void> {
     active?.stop?.()
     active = m
     g.setMenu(menuItems(settings.myLang, false, words(settings.myLang).stopListening, true))
-    void m.start?.()
+    const started = Promise.resolve(m.start?.()).then(() => {})
     render()
+    return started
   }
-  // The Apps list stays the same object, so it keeps its place when the wearer comes back to it.
-  let list: Mode | null = null
-  function openList() { list ??= appsList(modeCtx(''), APPS, a => openApp(a.make(modeCtx(a.id)))); openApp(list) }
+  const TOOLS = Object.fromEntries(APPS.map(a => [a.id, a]))
+  // Opens the tool behind a day item or a request; words said for it are handed over once it has loaded.
+  function openTool(tool: string, arg?: string) {
+    const a = TOOLS[tool]
+    if (!a) return
+    const m = a.make(modeCtx(a.id))
+    void openApp(m).then(() => { if (arg && active === m) m.say?.(arg) })
+  }
+
+  // Home: the inbox line first (tap checks now), then the day; text is the item, the hint says each press.
+  function homeCard(): Card {
+    const w = words(settings.myLang)
+    if (saying === 'listening') return { kind: 'status', text: 'Listening · say what you want', hint: 'let go: done · double tap: cancel' }
+    if (saying === 'working') return { kind: 'status', text: 'Working on it', hint: 'wait a moment' }
+    const base = card(s, settings.myLang)
+    if (s.note && !homeNote) return base
+    const n = day.length + 1
+    const skipped = s.skippedMsgs?.length ?? 0
+    if (dayAt === 0) return { kind: 'status', text: homeNote || base.text, hint: ['tap: check now', day.length && 'down: your day', skipped && w.showSkipped(skipped), 'hold: say anything'].filter(Boolean).join(' · '), progress: day.length ? [1, n] : undefined }
+    const it = day[dayAt - 1]
+    return { kind: 'status', text: homeNote || it.text, hint: [it.sample && 'sample', it.tool === 'nav' ? 'tap: say where' : 'tap: open', dayAt < day.length && 'down: next', 'up: earlier', 'hold: say anything'].filter(Boolean).join(' · '), progress: [dayAt + 1, n] }
+  }
+  function flash(text: string) {
+    homeNote = text
+    render()
+    setTimeout(() => { if (homeNote === text) { homeNote = ''; render() } }, 3500)
+  }
+  function homeInput(i: string) {
+    if (saying === 'listening') { if (i === 'release' || i === 'tap') void finishSay(); return }
+    if (saying === 'working') { if (i === 'prev') { sayGen++; saying = ''; render() } return }   // the demo's Cancel
+    if (i === 'hold') { saying = 'listening'; sayPcm = []; homeNote = ''; g.mic(true).catch(() => {}); return render() }
+    if (i === 'release') return
+    if (i === 'next') { if (dayAt < day.length) { dayAt++; homeNote = ''; render() } else flash('That is all for now'); return }
+    if (i === 'prev') { if (dayAt > 0) { dayAt--; homeNote = ''; return render() } return dispatch({ t: 'prev' }) }
+    if (i === 'tap') { if (dayAt === 0) return dispatch({ t: 'tap' }); openTool(day[dayAt - 1].tool) }
+  }
+  async function finishSay() {
+    const my = ++sayGen
+    g.mic(false).catch(() => {})
+    saying = 'working'
+    render()
+    let text = ''
+    try {
+      if (!api) throw new Error('not paired')
+      const parts = sayPcm
+      sayPcm = []
+      if (parts.length && !loud(parts)) text = ''
+      else {
+        const all = new Uint8Array(parts.reduce((n, c) => n + c.length, 0))
+        let o = 0
+        for (const c of parts) { all.set(c, o); o += c.length }
+        text = (await api.stt(all, settings.myLang)).text || ''
+      }
+    } catch { text = '' }
+    if (my !== sayGen) return
+    saying = ''
+    const it = said(text)
+    if (!it) return flash(words(settings.myLang).notHeard)
+    await act(it)
+  }
+  // Quick requests are done on the spot and confirmed; the rest open their tool with the words.
+  async function act(it: Said) {
+    const call = (id: string, body: unknown) => (api?.mode ? api.mode(id, body) : Promise.reject(new Error('not paired')))
+    try {
+      if (it.tool === 'tasks' && it.op === 'add') { const r = await call('tasks', { action: 'add', title: it.arg }); flash(r?.error || `Task added: ${it.arg} ✓`); return void loadDay() }
+      if (it.tool === 'notes' && it.op === 'add') { const r = await call('notes', { action: 'add', text: it.arg }); flash(r?.error || `Note saved: ${it.arg} ✓`); return void loadDay() }
+      if (it.tool === 'music' && it.op) { const r = await call('music', { action: it.op }); flash(r?.error || r?.need || (r?.track ? `${r.playing ? 'Playing' : 'Paused'}: ${r.track}` : 'Done ✓')); return void loadDay() }
+    } catch { return flash(words(settings.myLang).noSignal) }
+    openTool(it.tool, it.arg)
+  }
+  async function loadDay() {
+    if (!api?.mode) return
+    const get = (id: string, body: unknown) => api!.mode!(id, body).then(x => (x && !x.error ? x : null)).catch(() => null)
+    const [dash, music, stocks, notes, reader, prompter, term] = await Promise.all([
+      get('dash', { panels: ['event', 'tasks', 'temp', 'range'] }), get('music', { action: 'now' }), get('stocks', { op: 'quotes' }),
+      get('notes', { action: 'list' }), get('reader', { action: 'list' }), get('prompter', { action: 'list' }), get('term', { op: 'list' })])
+    day = dayItems({ dash, music, stocks, notes, reader, prompter, term }, settings.myLang)
+    dayAt = Math.min(dayAt, day.length)
+    if (home()) render()
+  }
   function closeApp() {
     active?.stop?.()
     active = null
@@ -255,6 +347,8 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   console.log('[gloz] ready')
   poll()
   setInterval(poll, 3000)
+  void loadDay()
+  setInterval(() => { if (home()) void loadDay() }, 60000)
   api?.health?.().then(h => { aiOn = Boolean(h?.ai); if (!active) g.setMenu(menuItems(settings.myLang, r.on, words(settings.myLang).stopListening, false, aiOn ? settings.translate : null)) }).catch(() => {})
   // Replies in the outbox go out as soon as the link is back.
   setInterval(async () => {
@@ -270,7 +364,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
       // Translation needs AI on the server: without it the switch stays off and the glasses say why.
       if (next.translate && !aiOn) { next = { ...next, translate: false }; dispatch({ t: 'note', text: words(settings.myLang).needsAi }) }
       settings = { ...settings, ...next }; saveSettings(settings); g.setLook(settings.size, settings.low, settings.autoPace); render() },
-    setApi(a: Api) { api = a; dispatch({ t: 'paired' }) },
+    setApi(a: Api) { api = a; dispatch({ t: 'paired' }); void loadDay() },
     transcript: () => store.get('gloz.transcript') || '',
     check() { poll() },
     unmuteAll() { muted.clear(); store.set('gloz.muted', '[]'); after = 0; dispatch({ t: 'unmute' }); poll() },

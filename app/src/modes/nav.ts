@@ -122,6 +122,7 @@ export function makeNav(ctx: ModeCtx): Mode & { moved: (p: [number, number]) => 
 
   return {
     id: 'nav',
+    say(text: string) { note = ''; void ask({ op: 'say', text, lang: ctx.lang() }) },
     moved,
     card(): Card {
       if (state === 'listening') return { kind: 'status', text: 'Listening', hint: 'release: find the place' }

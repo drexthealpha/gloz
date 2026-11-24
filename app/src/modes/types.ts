@@ -19,6 +19,7 @@ export interface Mode {
   // tap, next (swipe down), prev (swipe up), hold, release; exit never reaches an app.
   input: (i: Exclude<Input, 'exit'>) => void
   audio?: (pcm: Uint8Array) => void
+  say?: (text: string) => void   // words said on the home screen, handed to this tool
   back?: () => boolean   // a double tap inside the app: true when the app went back a screen itself
   start?: () => void | Promise<void>
   stop?: () => void

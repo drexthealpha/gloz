@@ -12,3 +12,7 @@ dist-demo/
 *.ehpk
 out/
 dist-check/
+
+# Logs a run leaves behind
+log_*.txt
+*.log

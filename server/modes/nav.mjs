@@ -99,8 +99,8 @@ export async function handle(body, { env, stt = transcribe }) {
       return await route(from, { name: String(t.name || 'destination'), lat: t.lat, lon: t.lon, profile: t.profile }, env)
     }
     if (body?.op === 'say') {
-      let text
-      try { text = (await stt(Buffer.from(String(body.pcm || ''), 'base64'), String(body.lang || 'en'))).text } catch { return { error: 'No speech engine on the server' } }
+      let text = typeof body.text === 'string' ? body.text : undefined
+      if (text === undefined) try { text = (await stt(Buffer.from(String(body.pcm || ''), 'base64'), String(body.lang || 'en'))).text } catch { return { error: 'No speech engine on the server' } }
       const { profile, q } = parse(text || '')
       if (!q) return { error: 'Nothing heard' }
       const p = await search(q, from[0], from[1])

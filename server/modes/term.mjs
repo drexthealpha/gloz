@@ -32,13 +32,13 @@ export function spoken(text) {
 export async function handle(body, { env, stt = transcribe, run = execFile }) {
   const op = body?.op
   if (env.GLOZ_SAMPLE === '1' && op === 'say') { if (body?.pcm) { let t = ''; try { t = (await stt(Buffer.from(String(body.pcm), 'base64'), String(body.lang || 'en'))).text } catch { return { error: 'No speech engine on the server' } } if (!String(t || '').trim()) return { error: 'Nothing heard' } } }
-  if (env.GLOZ_SAMPLE === '1') return op === 'run' ? { ...SAMPLE_RUN, lines: [...sampleLines(String(body?.cmd || '')), 'done'] } : op === 'say' ? { cmd: 'df', sample: true } : SAMPLE_LIST
+  if (env.GLOZ_SAMPLE === '1') return op === 'run' ? { ...SAMPLE_RUN, lines: [...sampleLines(String(body?.cmd || '')), 'done'] } : op === 'say' ? { cmd: typeof body?.text === 'string' && body.text.trim() ? spoken(body.text) : 'df', sample: true } : SAMPLE_LIST
   if (env.GLOZ_TERMINAL !== '1') return { on: false }
   const allow = allowed(env)
   if (op === 'list') return { on: true, allow }
   if (op === 'say') {
-    let text
-    try { text = (await stt(Buffer.from(String(body.pcm || ''), 'base64'), String(body.lang || 'en'))).text } catch { return { error: 'No speech engine on the server' } }
+    let text = typeof body.text === 'string' ? body.text : undefined
+    if (text === undefined) try { text = (await stt(Buffer.from(String(body.pcm || ''), 'base64'), String(body.lang || 'en'))).text } catch { return { error: 'No speech engine on the server' } }
     const cmd = spoken(text || '')
     if (!cmd) return { error: 'Nothing heard' }
     const name = cmd.split(' ')[0]

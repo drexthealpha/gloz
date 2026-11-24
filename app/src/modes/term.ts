@@ -56,10 +56,10 @@ function make(ctx: ModeCtx): Mode {
     ctx.render()
   }
 
-  async function heard(parts: Uint8Array[]) {
+  async function heard(parts: Uint8Array[] | string) {
     state = 'busy'; ctx.render()
     try {
-      const r = await ctx.call({ op: 'say', pcm: b64(parts), lang: ctx.lang() })
+      const r = await ctx.call(typeof parts === 'string' ? { op: 'say', text: parts, lang: ctx.lang() } : { op: 'say', pcm: b64(parts), lang: ctx.lang() })
       if (r?.cmd) { cmds = [r.cmd, ...cmds.filter(c => c !== r.cmd)]; at = 0; heardIt = true } else note = r?.error || 'Nothing heard'
     } catch { note = 'No signal' }
     state = 'pick'; ctx.render()
@@ -121,6 +121,7 @@ function make(ctx: ModeCtx): Mode {
       pcm.push(chunk); bytes += chunk.length
     },
     start: list,
+    say(text) { void heard(text) },
     stop() { if (state === 'listening') ctx.mic(false).catch(() => {}) },
   }
 }
