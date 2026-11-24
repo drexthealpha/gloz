@@ -98,15 +98,11 @@ test('the app: tap asks first, tap again marks done; down cancels', async () => 
   assert.deepEqual(m.card().progress, [2, 3])
 })
 
-test('the app: hold, speak, release, tap adds the task', async () => {
-  const { ctx, calls, mics } = fakeCtx(b => b.action === 'stt' ? { text: 'Buy tape' } : sampleTasks(b))
+test('the app: words said wait on screen, tap adds the task', async () => {
+  const { ctx, calls } = fakeCtx(b => sampleTasks(b))
   const m = tasksApp.make(ctx)
   await m.start()
-  m.input('hold')
-  assert.equal(m.card().text, 'Listening')
-  m.audio(new Uint8Array(32000))
-  m.input('release'); await tick()
-  assert.deepEqual(mics, [true, false])
+  m.say('Buy tape')
   assert.equal(m.card().text, 'Buy tape')
   m.input('tap'); await tick()
   assert.deepEqual(calls.at(-1), { action: 'add', title: 'Buy tape' })
@@ -122,7 +118,7 @@ test('the app: nothing heard and no signal show lines, never a blank', async () 
   assert.equal(m.card().text, 'No signal')
   r = null
   m.input('tap'); await tick()
-  m.input('hold'); m.input('release'); await tick()
+  m.say(''); await tick()
   assert.equal(m.card().text, 'Nothing heard')
   m.input('next')
   assert.equal(m.card().text, 'Sample: book the dentist')

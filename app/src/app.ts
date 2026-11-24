@@ -324,8 +324,8 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   async function act(it: Said) {
     const call = (id: string, body: unknown) => (api?.mode ? api.mode(id, body) : Promise.reject(new Error('not paired')))
     try {
-      if (it.tool === 'tasks' && it.op === 'add') { const r = await call('tasks', { action: 'add', title: it.arg }); flash(r?.error || `Task added: ${short(it.arg)} ✓`); return void loadDay() }
-      if (it.tool === 'notes' && it.op === 'add') { const r = await call('notes', { action: 'add', text: it.arg }); flash(r?.error || `Note saved: ${short(it.arg)} ✓`); return void loadDay() }
+      if (it.tool === 'tasks' && it.op === 'add') { const r = await call('tasks', { action: 'add', title: it.arg }); flash(r?.error || `✓ Task: ${short(it.arg)}`); return void loadDay() }
+      if (it.tool === 'notes' && it.op === 'add') { const r = await call('notes', { action: 'add', text: it.arg }); flash(r?.error || `✓ Note: ${short(it.arg)}`); return void loadDay() }
       if (it.tool === 'music' && it.op) { const r = await call('music', { action: it.op }); flash(r?.error || r?.need || (r?.track ? `${r.playing ? 'Playing' : 'Paused'}: ${r.track}` : 'Done ✓')); return void loadDay() }
     } catch { return flash(words(settings.myLang).noSignal) }
     openTool(it.tool, it.arg)

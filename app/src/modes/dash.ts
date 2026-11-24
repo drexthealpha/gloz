@@ -21,11 +21,13 @@ export interface DashData {
   weather?: { temp: number; hi: number; lo: number; rain: number; wind: number } | null
 }
 
+// Sample meetings sit ahead of now, so "Next" is always true.
+const ahead = (m: number) => { const t = new Date(Date.now() + m * 60000); t.setMinutes(t.getMinutes() < 30 ? 30 : 60, 0, 0); return t.toISOString() }
 export function sampleDash(_body: unknown): DashData {
   return {
     sample: true,
     unread: 10,
-    events: [{ at: '2026-11-24T09:30:00Z', title: 'Standup' }, { at: '2026-11-24T14:00:00Z', title: 'Board review' }],
+    events: [{ at: ahead(60), title: 'Standup' }, { at: ahead(240), title: 'Board review' }],
     tasks: { due: 4, first: 'Sample: book the dentist' },
     weather: { temp: 12, hi: 15, lo: 7, rain: 40, wind: 18 },
   }
@@ -115,13 +117,13 @@ function make(ctx: ModeCtx): Mode {
     card(): Card {
       if (picking) {
         const [id, name] = PANELS[at]
-        return { kind: 'status', text: `${name}: ${chosen.includes(id) ? 'on' : 'off'}`, hint: 'tap: on or off · down: next · hold: show dashboard', progress: [at + 1, PANELS.length] }
+        return { kind: 'status', text: `${name}: ${chosen.includes(id) ? 'on' : 'off'}`, hint: 'tap: on or off · down: next · up: earlier · hold: done', progress: [at + 1, PANELS.length] }
       }
       if (!chosen.length) return { kind: 'status', text: 'No panels', hint: 'hold: choose panels' }
       if (note === 'Loading') return { kind: 'status', text: 'Loading your day', hint: 'wait a moment' }
       const pin = ctx.store.get('dash.pin') || ''
       const items = chosen.map(id => panelText(id, data, ctx.lang(), new Date(), pin, Boolean(where)))
-      return { kind: 'status', text: note && note !== 'Loading' ? `${note} · ${items.join(' · ')}` : items.join(' · '), grid: note && note !== 'Loading' ? [note, ...items].slice(0, 12) : items, hint: `${data.sample ? 'sample · ' : ''}tap: refresh · double tap: back · hold: choose items${Date.now() - loadedMs < 4000 ? ` · updated ${loadedAt}` : ''}` }
+      return { kind: 'status', text: note && note !== 'Loading' ? `${note} · ${items.join(' · ')}` : items.join(' · '), grid: note && note !== 'Loading' ? [note, ...items].slice(0, 12) : items, hint: Date.now() - loadedMs < 4000 ? `updated ${loadedAt} · double tap: back` : `${data.sample ? 'sample · ' : ''}tap: refresh · double tap: back · hold: choose items` }
     },
     back() { if (!picking) return false; picking = false; void load(); return true },
     input(i) {

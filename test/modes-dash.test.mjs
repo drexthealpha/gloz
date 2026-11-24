@@ -17,13 +17,14 @@ function fakeCtx(reply) {
 }
 
 test('dash: default panels show as short items; battery is not a panel', async () => {
-  const ctx = fakeCtx(SAMPLE)
+  const ctx = fakeCtx(sampleDash({}))
   const m = dashApp.make(ctx)
   await m.start()
   assert.deepEqual(ctx.calls[0].panels, DEFAULT_PANELS)
   const c = m.card()
   assert.match(c.text, /10 unread mail · .*Standup · 4 tasks due · 12°C$/)
-  assert.match(c.hint, /(^|· )tap: refresh · double tap: back · hold: choose items( · updated .*)?$/)
+  // Just after a load the hint says when; otherwise it offers the presses.
+  assert.match(c.hint, /^updated .* · double tap: back$|(^|· )tap: refresh · double tap: back · hold: choose items$/)
   assert.ok(!PANELS.some(([id]) => /batt/.test(id)))
 })
 
@@ -63,7 +64,10 @@ test('dash: no signal, services not set up, and no location each say so', async 
   ctx.store.set('dash.panels', '["time","date"]')
   await dashApp.make(ctx).start()
   assert.equal(ctx.calls.length, 0)
-  assert.deepEqual(sampleDash({}), SAMPLE)
+  // The sample is the server's sample, with meetings always ahead of now.
+  const sd = sampleDash({})
+  assert.deepEqual({ ...sd, events: [] }, SAMPLE)
+  assert.ok(Date.parse(sd.events[0].at) > Date.now())
 })
 
 async function withFetch(fn, route) {
@@ -81,7 +85,9 @@ test('dash server: no Google keys gives null fields; sample mode gives the sampl
     assert.deepEqual(await handle({ panels: ['temp'] }, { env: {} }), { weather: null })
     assert.equal(seen.length, 0)
   }, () => { throw new Error('no network') })
-  assert.deepEqual(await handle({ panels: ['temp'] }, { env: { GLOZ_SAMPLE: '1' } }), SAMPLE)
+  const hs = await handle({ panels: ['temp'] }, { env: { GLOZ_SAMPLE: '1' } })
+  assert.deepEqual({ ...hs, events: [] }, SAMPLE)
+  assert.ok(Date.parse(hs.events[0].at) > Date.now())
 })
 
 test('dash server: Open-Meteo once per place (cached), with a plain User-Agent', async () => {

@@ -7,8 +7,6 @@ import type { Card } from '../core/types.ts'
 
 export interface Doc { id: string; title: string }
 
-// Up to 40 s of speech per hold (16 kHz, 16-bit mono), which keeps one request under the server's 2 MB.
-const MAX_PCM = 40 * 32000
 
 export function joinPcm(parts: Uint8Array[]): Uint8Array {
   const all = new Uint8Array(parts.reduce((n, c) => n + c.length, 0))
@@ -23,28 +21,6 @@ export function b64(u: Uint8Array): string {
   return btoa(s)
 }
 
-// Hold starts the microphone, release stops it; the speech goes to the app's server route,
-// which turns it into text with the server's speech engine.
-export function voice(ctx: ModeCtx) {
-  let parts: Uint8Array[] = []
-  let bytes = 0
-  let on = false
-  return {
-    get on() { return on },
-    start() { parts = []; bytes = 0; on = true; ctx.mic(true).catch(() => {}) },
-    add(p: Uint8Array) { if (on && bytes < MAX_PCM) { parts.push(p); bytes += p.length } },
-    // The words heard, '' for nothing; an error line when the server cannot turn speech into text.
-    async stop(): Promise<{ text: string; error?: string }> {
-      on = false
-      ctx.mic(false).catch(() => {})
-      if (bytes < 3200) return { text: '' }
-      try {
-        const r = await ctx.call({ action: 'stt', pcm: b64(joinPcm(parts)), lang: ctx.lang() })
-        return r?.error ? { text: '', error: r.error } : { text: String(r?.text ?? '').trim() }
-      } catch { return { text: '', error: 'No signal' } }
-    },
-  }
-}
 
 // --- sample data, also served by the server with no account set up --------------------------
 
@@ -65,7 +41,7 @@ export function sampleNotes(body: any): any {
 
 // --- the app --------------------------------------------------------------------------------
 
-type View = 'loading' | 'error' | 'list' | 'read' | 'listening' | 'thinking' | 'heard' | 'saving' | 'note'
+type View = 'loading' | 'error' | 'list' | 'read' | 'heard' | 'saving' | 'note'
 
 export const notesApp: AppEntry = {
   id: 'notes',
@@ -78,7 +54,6 @@ export const notesApp: AppEntry = {
     let draft = ''
     let line = ''
     let sample = false
-    const v = voice(ctx)
     const show = (to: View) => { view = to; ctx.render() }
 
     async function load() {
@@ -126,8 +101,6 @@ export const notesApp: AppEntry = {
           ? { kind: 'status', text: notes[at].title || 'Untitled', hint: `tap: read · down: next · up: earlier · ${hold}`, progress: [at + 1, notes.length] }
           : { kind: 'status', text: sample ? 'No notes (sample)' : 'No notes yet', hint: hold }
         case 'read': return { kind: 'message', text: text || '(empty note)', hint: 'tap: all notes · down: next note' }
-        case 'listening': return { kind: 'status', text: 'Listening', hint: 'let go: done' }
-        case 'thinking': return { kind: 'status', text: 'Writing down', hint: 'wait' }
         case 'heard': return draft
           ? { kind: 'message', text: draft, hint: `${line ? line + ' · ' : ''}tap: save · hold: add more · down: discard` }
           : { kind: 'status', text: line || 'Nothing heard', hint: /speech/i.test(line) ? 'down: notes list' : 'hold: speak again · down: notes list' }
@@ -140,17 +113,10 @@ export const notesApp: AppEntry = {
       id: 'notes',
       card,
       start: load,
-      stop: () => { if (v.on) ctx.mic(false).catch(() => {}) },
-      audio: p => v.add(p),
+      // Words said add to a note being written; a tap saves it.
+      say(text) { draft = (view === 'heard' ? `${draft} ${text}` : text).trim(); line = ''; show('heard') },
       back() { if (view !== 'heard') return false; draft = ''; line = 'Not saved'; show('note'); setTimeout(() => { if (view === 'note') void load() }, 2500); return true },
       input(i) {
-        if (view === 'listening') {
-          if (i !== 'release') return
-          show('thinking')
-          void v.stop().then(r => { line = r.error ?? ''; draft = (draft + ' ' + r.text).trim(); show('heard') })
-          return
-        }
-        if (i === 'hold' && view !== 'saving' && view !== 'thinking') { if (view !== 'heard') draft = ''; line = ''; v.start(); return show('listening') }
         if (view === 'heard') {
           if (i === 'tap' && draft) return void save()
           if (i === 'next' || i === 'prev') { draft = ''; line = ''; return void load() }

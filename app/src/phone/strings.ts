@@ -9,7 +9,7 @@ export const STRINGS = {
   myLanguage: s('My language', 'Label: the language the wearer reads; replies are shown in it', 24),
   saved: s('Saved ✓', 'Shown for a moment after a setting changes', 12),
   pairTitle: s('Pair Gloz with your server', 'Heading of the pairing screen', 40),
-  onlyChats: s('Turn on a chat and only the chats turned on reach the glasses', 'Heading of the list of chats the wearer can pick', 70),
+  onlyChats: s('All chats reach the glasses until you turn some on; then only those do', 'Heading of the list of chats the wearer can pick', 70),
   allChats: s('Every chat reaches the glasses', 'Chats row when none is picked or muted', 40),
   onlyPicked: s('Only the chats you picked reach the glasses', 'Chats row when some are picked', 50),
   chats: s('Chats', 'Button that opens the list of chats to pick or unmute', 12),
@@ -59,7 +59,7 @@ export const STRINGS = {
   help2: s('Hold and say your own words for the reply.', 'Gesture help, line 2', 60),
   help3: s('Swipe down to skip. Up at the end brings them back.', 'Gesture help, line 3', 60),
   help4: s('Double tap to close Gloz.', 'Gesture help, line 4', 60),
-  listen: s('Listen', 'Plays the instruction beside it out loud', 12),
+  listen: s('Hear this', 'Plays the instruction beside it out loud', 12),
   stop: s('Stop', 'Stops the instruction that is playing', 12),
   noScript: s('Gloz needs JavaScript to run. Open it in the Even Realities app.', 'Shown when scripts are off', 80),
 } satisfies Record<string, S>

@@ -2,7 +2,6 @@
 // Tap twice marks one done; hold, speak, let go, then tap adds one.
 import type { AppEntry, Mode, ModeCtx } from './types.ts'
 import type { Card } from '../core/types.ts'
-import { voice } from './notes.ts'
 
 export interface Task { id: string; title: string }
 
@@ -22,7 +21,7 @@ export function sampleTasks(body: any): any {
   return { error: 'unknown action' }
 }
 
-type View = 'loading' | 'error' | 'list' | 'confirm' | 'listening' | 'thinking' | 'heard' | 'saving'
+type View = 'loading' | 'error' | 'list' | 'confirm' | 'heard' | 'saving'
 
 export const tasksApp: AppEntry = {
   id: 'tasks',
@@ -34,7 +33,6 @@ export const tasksApp: AppEntry = {
     let draft = ''
     let line = ''
     let note = ''
-    const v = voice(ctx)
     const show = (to: View) => { view = to; ctx.render() }
     const flash = (s: string) => { note = s; setTimeout(() => { if (note === s) { note = ''; ctx.render() } }, 3000) }
 
@@ -84,8 +82,6 @@ export const tasksApp: AppEntry = {
           ? { kind: 'status', text: tasks[at].title || 'Untitled', hint: `${lead}tap: done · down: next · up: earlier · hold: add`, progress: [at + 1, tasks.length] }
           : { kind: 'status', text: 'No open tasks', hint: `${lead}hold: add a task` }
         case 'confirm': return { kind: 'status', text: tasks[at].title || 'Untitled', hint: 'tap again to mark done · down: not yet' }
-        case 'listening': return { kind: 'status', text: 'Listening', hint: 'let go: done' }
-        case 'thinking': return { kind: 'status', text: 'Writing down', hint: 'wait' }
         case 'heard': return draft
           ? { kind: 'status', text: draft, hint: `${line ? line + ' · ' : ''}tap: add · hold: say again · down: discard` }
           : { kind: 'status', text: line || 'Nothing heard', hint: /speech/i.test(line) ? 'down: task list' : 'hold: speak again · down: task list' }
@@ -97,17 +93,9 @@ export const tasksApp: AppEntry = {
       id: 'tasks',
       card,
       start: load,
-      stop: () => { if (v.on) ctx.mic(false).catch(() => {}) },
-      audio: p => v.add(p),
+      say(text) { draft = text.trim(); line = ''; show('heard') },
       back() { if (view !== 'heard') return false; draft = ''; flash('Not added'); show('list'); return true },
       input(i) {
-        if (view === 'listening') {
-          if (i !== 'release') return
-          show('thinking')
-          void v.stop().then(r => { line = r.error ?? ''; draft = r.text; show('heard') })
-          return
-        }
-        if (i === 'hold' && view !== 'saving' && view !== 'thinking' && view !== 'loading') { draft = ''; line = ''; v.start(); return show('listening') }
         if (view === 'error' && i === 'tap') return void load()
         if (view === 'heard') {
           if (i === 'tap' && draft) return void add()

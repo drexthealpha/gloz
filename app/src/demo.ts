@@ -186,7 +186,7 @@ canvas.addEventListener('wheel', e => {
   wheelAt = Date.now()
 }, { passive: false })
 canvas.addEventListener('keydown', e => {
-  const k: Record<string, number> = { Enter: CLICK, ' ': CLICK, ArrowDown: DOWN, ArrowRight: DOWN, ArrowUp: UP, ArrowLeft: UP, Escape: UP }
+  const k: Record<string, number> = { Enter: CLICK, ' ': CLICK, ArrowDown: DOWN, ArrowRight: DOWN, ArrowUp: UP, ArrowLeft: UP, Escape: bridge.inApp ? DOUBLE : UP }
   if (k[e.key] === undefined) return
   e.preventDefault()
   flushClick()
