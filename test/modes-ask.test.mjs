@@ -62,7 +62,7 @@ test('ask server: no key gives one plain line; sample mode gives the sample', as
   assert.deepEqual(await handle({ q: 'hi' }, { env: {} }), { q: '', a: NO_KEY })
   assert.deepEqual(await handle({}, { env: { GLOZ_SAMPLE: '1' } }), SAMPLE)
   // A typed question gets a sample line that says where a real answer comes from, never a made-up answer.
-  assert.deepEqual(await handle({ q: 'hi' }, { env: { GLOZ_SAMPLE: '1' } }), { q: 'Sample: hi', a: 'With an AI key on the Gloz server, the answer appears here.' })
+  assert.deepEqual(await handle({ q: 'hi' }, { env: { GLOZ_SAMPLE: '1' } }), { q: 'hi', a: 'Sample answer: with an AI key on the Gloz server, the real answer appears here.' })
   assert.deepEqual(sampleAsk({}), SAMPLE)
 })
 

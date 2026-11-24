@@ -8,7 +8,7 @@ const KEY = 'ask.log'
 
 export function sampleAsk(body: any): QA {
   // A question in words gets a sample line that says where a real answer comes from.
-  if (typeof body?.q === 'string' && body.q.trim()) return { q: `Sample: ${body.q.trim()}`, a: 'With an AI key on the Gloz server, the answer appears here.' }
+  if (typeof body?.q === 'string' && body.q.trim()) return { q: body.q.trim(), a: 'Sample answer: with an AI key on the Gloz server, the real answer appears here.' }
   return { q: 'Sample: How tall is Mount Everest?', a: 'Mount Everest is 8,849 metres tall, measured by China and Nepal in 2020.' }
 }
 

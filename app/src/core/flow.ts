@@ -232,7 +232,7 @@ function cardOf(s: State, lang: string): Card {
   switch (s.view) {
     case 'pair': return { kind: 'status', text: w.pair, hint: w.checkAgain }
     case 'empty': {
-      const t = s.checkedAt ? ` · ${w.checkedTime(new Date(s.checkedAt).toTimeString().slice(0, 5))}` : ''
+      const t = s.checkedAt ? ` · ${w.checkedTime(new Date(s.checkedAt).toLocaleTimeString(lang, { hour: '2-digit', minute: '2-digit' }))}` : ''
       const back = (s.skippedMsgs?.length ? ` · ${w.showSkipped(s.skippedMsgs.length)}` : '') + (s.mutedMsgs?.length ? ` · ${w.mutedCount(s.mutedMsgs.length)}` : '')
       return { kind: 'status', text: net || (s.queued ? w.waiting(s.queued) : w.empty + t), hint: (s.online ? w.checkNow : w.tryAgain) + back }
     }

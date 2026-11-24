@@ -6,11 +6,11 @@ import { wrap } from '../core/layout.ts'
 import { sampleTasks } from './tasks.ts'
 
 export const PANELS: [id: string, name: string][] = [
-  ['time', 'Time'], ['date', 'Date'], ['unread', 'Unread mail'], ['event', 'Next event'], ['event2', 'Event after'],
+  ['time', 'Time'], ['date', 'Date'], ['unread', 'Unread mail'], ['event', 'Next event'], ['event2', 'Second event'],
   ['tasks', 'Tasks due'], ['task', 'First task due'], ['temp', 'Temperature'], ['range', 'High and low'],
   ['rain', 'Rain chance'], ['wind', 'Wind'], ['pin', 'Your note from the phone'],
 ]
-export const DEFAULT_PANELS = ['time', 'date', 'unread', 'event', 'tasks', 'temp']
+export const DEFAULT_PANELS = ['time', 'date', 'event', 'tasks', 'temp', 'range']
 const SERVER = ['unread', 'event', 'event2', 'tasks', 'task', 'temp', 'range', 'rain', 'wind']
 
 // Server reply. A field is null when that service is not set up, missing when not asked for.
@@ -119,12 +119,12 @@ function make(ctx: ModeCtx): Mode {
     card(): Card {
       if (picking) {
         const [id, name] = PANELS[at]
-        return { kind: 'status', text: `${name}: ${chosen.includes(id) ? 'on' : 'off'}`, hint: 'tap: on or off · down: next · up: earlier · hold: done', progress: [at + 1, PANELS.length] }
+        return { kind: 'status', text: `${name}: ${chosen.includes(id) ? 'on' : 'off'}`, hint: 'tap: on or off · down: next · up: earlier · hold or double tap: done', progress: [at + 1, PANELS.length] }
       }
       if (!chosen.length) return { kind: 'status', text: 'No panels', hint: 'hold: choose panels' }
       if (note === 'Loading') return { kind: 'status', text: 'Loading your day', hint: 'wait a moment' }
       const pin = ctx.store.get('dash.pin') || ''
-      const items = chosen.map(id => panelText(id, data, ctx.lang(), new Date(), pin, Boolean(where)))
+      const items = chosen.map(id => panelText(id, data, ctx.lang(), new Date(), pin, Boolean(where))).filter((t, i, all) => all.indexOf(t) === i)   // one 'No location' or 'Calendar off', not two
       return { kind: 'status', text: note && note !== 'Loading' ? `${note} · ${items.join(' · ')}` : items.join(' · '), grid: note && note !== 'Loading' ? [note, ...items].slice(0, 12) : items, hint: Date.now() - loadedMs < 4000 ? `${data.sample ? 'sample · ' : ''}updated ${loadedAt} · double tap: back` : `${data.sample ? 'sample · ' : ''}tap: refresh · double tap: back · hold: choose items` }
     },
     back() { if (!picking) return false; picking = false; void load(); return true },

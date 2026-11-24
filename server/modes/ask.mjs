@@ -28,7 +28,7 @@ async function call(p, system, messages) {
 
 // body: { pcm: base64, lang, history: [{q, a}] } or { q } for a typed question.
 export async function handle(body, { env }) {
-  if (env.GLOZ_SAMPLE === '1') { if (body?.pcm) { let t = ''; try { t = (await transcribe(Buffer.from(String(body.pcm), 'base64'), String(body.lang || 'en'))).text } catch { return { error: 'No speech engine on the server' } } if (!String(t || '').trim()) return { error: 'Nothing heard' } } if (typeof body?.q === 'string' && body.q.trim()) return { q: `Sample: ${body.q.trim()}`, a: 'With an AI key on the Gloz server, the answer appears here.' }; return SAMPLE }
+  if (env.GLOZ_SAMPLE === '1') { if (body?.pcm) { let t = ''; try { t = (await transcribe(Buffer.from(String(body.pcm), 'base64'), String(body.lang || 'en'))).text } catch { return { error: 'No speech engine on the server' } } if (!String(t || '').trim()) return { error: 'Nothing heard' } } if (typeof body?.q === 'string' && body.q.trim()) return { q: body.q.trim(), a: 'Sample answer: with an AI key on the Gloz server, the real answer appears here.' }; return SAMPLE }
   const list = providers(env)
   if (!list.length) return { q: '', a: NO_KEY }
   const lang = String(body?.lang || 'en')

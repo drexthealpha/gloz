@@ -77,7 +77,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
 
   function render() {
     if (home() || saying) { g.show(homeCard()); onState?.(saying ? { ...s, view: 'listen' } : s, settings); return }
-    if (active) { const c = active.card(); g.show(toolNote ? { ...c, hint: toolNote } : { ...c, back: 'double tap: back' }); onState?.(s, settings); return }
+    if (active) { const c = active.card(); g.show(toolNote ? { ...c, hint: toolNote } : c.hint?.includes('double tap') ? c : { ...c, back: 'double tap: back' }); onState?.(s, settings); return }
     g.show(r.on ? { ...roomCard(r, settings.myLang), ...(roomNote ? { text: roomNote } : quiet && !r.paused && !r.lines.length ? { text: words(settings.myLang).nothingHeardYet } : {}) } : card(s, settings.myLang))
     onState?.(s, settings)
   }
@@ -280,7 +280,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
     if (dayAt === 0) return { kind: 'status', text: homeNote || base.text, hint: ['tap: check now', day.length && 'down: your day', skipped && w.showSkipped(skipped), 'hold: say anything'].filter(Boolean).join(' · '), progress: day.length ? [1, n] : undefined }
     const it = day[dayAt - 1]
     if (homeNote) return { kind: 'status', text: homeNote, hint: 'down: next · hold: say anything', progress: [dayAt + 1, n] }
-    return { kind: 'status', text: it.text, hint: [it.sample && 'sample', it.tool === 'dash' ? 'tap: whole day' : 'tap: open', 'down: next', 'up: earlier', 'hold: say anything'].filter(Boolean).join(' · '), progress: [dayAt + 1, n] }
+    return { kind: 'status', text: it.text, hint: [it.sample && 'sample', it.tool === 'dash' ? 'tap: today at a glance' : 'tap: open', 'down: next', 'up: earlier', 'hold: say anything'].filter(Boolean).join(' · '), progress: [dayAt + 1, n] }
   }
   function flash(text: string) {
     homeNote = text

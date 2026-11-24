@@ -22,7 +22,7 @@ test('dash: default panels show as short items; battery is not a panel', async (
   await m.start()
   assert.deepEqual(ctx.calls[0].panels, DEFAULT_PANELS)
   const c = m.card()
-  assert.match(c.text, /10 unread mail · .*Standup · 4 tasks due · 12°C$/)
+  assert.match(c.text, /Standup · 4 tasks due · 12°C · High 15° · low 7°$/)
   // Just after a load the hint says when; otherwise it offers the presses.
   assert.match(c.hint, /^(sample · )?updated .* · double tap: back$|(^|· )tap: refresh · double tap: back · hold: choose items$/)
   assert.ok(!PANELS.some(([id]) => /batt/.test(id)))
@@ -43,13 +43,13 @@ test('dash: hold opens the picker, down and up move, tap toggles, hold saves', a
   m.input('next'); m.input('next')
   assert.equal(m.card().text, 'Date: on')
   m.input('hold')
-  assert.deepEqual(JSON.parse(ctx.store.get('dash.panels')), ['date', 'unread', 'event', 'tasks', 'temp', 'pin'])
+  assert.deepEqual(JSON.parse(ctx.store.get('dash.panels')), ['date', 'event', 'tasks', 'temp', 'range', 'pin'])
   ctx.store.set('dash.pin', 'Gate B12')
   assert.match(m.card().text, /Gate B12$/)
   // A reopen keeps the choice.
   const again = dashApp.make(ctx)
   await again.start()
-  assert.deepEqual(ctx.calls.at(-1).panels, ['date', 'unread', 'event', 'tasks', 'temp', 'pin'])
+  assert.deepEqual(ctx.calls.at(-1).panels, ['date', 'event', 'tasks', 'temp', 'range', 'pin'])
 })
 
 test('dash: no signal, services not set up, and no location each say so', async () => {
@@ -58,7 +58,7 @@ test('dash: no signal, services not set up, and no location each say so', async 
   assert.match(m.card().text, /^No signal · /)
   m = dashApp.make(fakeCtx({ unread: null, events: null, tasks: null, weather: null }))
   await m.start()
-  assert.match(m.card().text, /Mail off · Calendar off · Tasks off · No location$/)
+  assert.match(m.card().text, /Calendar off · Tasks off · No location$/)
   // Time and date alone need no server.
   const ctx = fakeCtx(SAMPLE)
   ctx.store.set('dash.panels', '["time","date"]')
