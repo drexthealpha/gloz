@@ -21,16 +21,12 @@ if (h) {
 }
 if (t) blocks.time = read('time.md').trim()
 
-const rows = complaintRows()
-const order = ['beaten', 'matched', 'no number to beat', 'different measure', 'not beaten', 'not measured yet', 'not built', 'outside the job']
-rows.sort((a, b) => order.indexOf(a.v) - order.indexOf(b.v) || a.n - b.n)
-const count = v => rows.filter(r => r.v === v).length
-blocks.complaints = [
-  `Of the ${rows.length} complaints an app can answer in full or in part: ${order.filter(count).map(v => `${count(v)} ${v}`).join(', ')}.`,
-  '',
-  '| # | What a G2 owner wrote | What Gloz does | Gloz | Best today | Result |',
-  '|---|---|---|---|---|---|',
-  ...rows.map(r => `| ${r.n} | "${r.q}" (${r.d}) | ${r.fix} | ${r.gloz} | ${r.best} | ${r.v} |`),
+// Only measured wins: a row shows when Gloz's measured number beats the best found anywhere.
+const rows = complaintRows().filter(r => r.v === 'beaten').sort((a, b) => a.n - b.n)
+blocks.wins = [
+  '| What G2 owners asked for | What Gloz does | Gloz | Best elsewhere |',
+  '|---|---|---|---|',
+  ...rows.map(r => `| "${r.q}" (${r.d}) | ${r.fix} | ${r.gloz} | ${r.best} |`),
 ].join('\n')
 
 const path = new URL('../README.md', import.meta.url)

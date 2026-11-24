@@ -6,7 +6,7 @@
 | Thai | not shown | 3 | 0/20 | 17/20 | yes |
 | Hebrew | not shown | 4 | 0/20 | 17/20 | yes |
 | Japanese | 1.5 | 4 | 19/20 | 19/20 | yes |
-| Korean | 1.5 | 4 | 19/20 | 16/20 | yes |
+| Korean | 1.5 | 4 | 19/20 | 15/20 | yes |
 | Chinese | 1 | 2 | 18/20 | 16/20 | yes |
 | Russian | 2 | 4 | 20/20 | 20/20 | yes |
 | English | 1.5 | 4 | 20/20 | 20/20 | yes |

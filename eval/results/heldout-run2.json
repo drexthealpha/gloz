@@ -1,0 +1,3931 @@
+{
+ "protocol": "eval/PROTOCOL.md",
+ "size": 3,
+ "ladder": [
+  0,
+  1,
+  1.5,
+  2,
+  3,
+  4,
+  5,
+  6,
+  8
+ ],
+ "pass": 0.1,
+ "wins": 10,
+ "by": {
+  "Arabic": {
+   "n": 20,
+   "plain": [
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1
+   ],
+   "gloz": [
+    6,
+    4,
+    2,
+    4,
+    5,
+    4,
+    5,
+    5,
+    4,
+    5,
+    -1,
+    4,
+    -1,
+    4,
+    6,
+    5,
+    -1,
+    4,
+    -1,
+    4
+   ],
+   "plainA": 0,
+   "glozA": 16,
+   "plainMedian": -1,
+   "glozMedian": 4
+  },
+  "Persian": {
+   "n": 20,
+   "plain": [
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1
+   ],
+   "gloz": [
+    5,
+    4,
+    5,
+    5,
+    -1,
+    5,
+    -1,
+    5,
+    4,
+    -1,
+    1.5,
+    4,
+    5,
+    -1,
+    5,
+    4,
+    4,
+    5,
+    -1,
+    5
+   ],
+   "plainA": 0,
+   "glozA": 15,
+   "plainMedian": -1,
+   "glozMedian": 4
+  },
+  "Hindi": {
+   "n": 20,
+   "plain": [
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1
+   ],
+   "gloz": [
+    3,
+    4,
+    4,
+    4,
+    -1,
+    5,
+    4,
+    4,
+    4,
+    5,
+    4,
+    2,
+    4,
+    4,
+    4,
+    4,
+    4,
+    5,
+    4,
+    4
+   ],
+   "plainA": 0,
+   "glozA": 19,
+   "plainMedian": -1,
+   "glozMedian": 4
+  },
+  "Thai": {
+   "n": 20,
+   "plain": [
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1
+   ],
+   "gloz": [
+    3,
+    -1,
+    -1,
+    3,
+    3,
+    3,
+    3,
+    4,
+    3,
+    3,
+    4,
+    3,
+    4,
+    4,
+    -1,
+    3,
+    3,
+    3,
+    3,
+    4
+   ],
+   "plainA": 0,
+   "glozA": 17,
+   "plainMedian": -1,
+   "glozMedian": 3
+  },
+  "Hebrew": {
+   "n": 20,
+   "plain": [
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1
+   ],
+   "gloz": [
+    -1,
+    3,
+    4,
+    4,
+    -1,
+    -1,
+    4,
+    4,
+    4,
+    5,
+    4,
+    4,
+    4,
+    4,
+    5,
+    4,
+    3,
+    4,
+    3,
+    3
+   ],
+   "plainA": 0,
+   "glozA": 17,
+   "plainMedian": -1,
+   "glozMedian": 4
+  },
+  "Japanese": {
+   "n": 20,
+   "plain": [
+    1.5,
+    1.5,
+    2,
+    1,
+    1.5,
+    2,
+    2,
+    1.5,
+    1.5,
+    1.5,
+    1,
+    1.5,
+    -1,
+    1.5,
+    2,
+    2,
+    1.5,
+    2,
+    1.5,
+    1.5
+   ],
+   "gloz": [
+    4,
+    4,
+    4,
+    3,
+    4,
+    4,
+    4,
+    4,
+    4,
+    3,
+    1.5,
+    4,
+    2,
+    3,
+    4,
+    5,
+    4,
+    -1,
+    4,
+    4
+   ],
+   "plainA": 19,
+   "glozA": 19,
+   "plainMedian": 1.5,
+   "glozMedian": 4
+  },
+  "Korean": {
+   "n": 20,
+   "plain": [
+    1.5,
+    1.5,
+    1.5,
+    1.5,
+    1.5,
+    1.5,
+    1.5,
+    1.5,
+    1.5,
+    1.5,
+    1.5,
+    1,
+    1.5,
+    -1,
+    2,
+    1,
+    1.5,
+    1.5,
+    1,
+    2
+   ],
+   "gloz": [
+    4,
+    4,
+    -1,
+    4,
+    5,
+    4,
+    4,
+    4,
+    -1,
+    4,
+    5,
+    3,
+    4,
+    4,
+    4,
+    4,
+    3,
+    -1,
+    -1,
+    4
+   ],
+   "plainA": 19,
+   "glozA": 16,
+   "plainMedian": 1.5,
+   "glozMedian": 4
+  },
+  "Chinese": {
+   "n": 20,
+   "plain": [
+    1,
+    -1,
+    0,
+    -1,
+    1,
+    1,
+    1.5,
+    1,
+    1,
+    1.5,
+    1.5,
+    1.5,
+    1,
+    1.5,
+    1.5,
+    1.5,
+    1.5,
+    1,
+    0,
+    1.5
+   ],
+   "gloz": [
+    2,
+    -1,
+    2,
+    -1,
+    2,
+    -1,
+    2,
+    3,
+    1,
+    2,
+    1.5,
+    2,
+    2,
+    1.5,
+    1.5,
+    3,
+    2,
+    2,
+    -1,
+    3
+   ],
+   "plainA": 18,
+   "glozA": 16,
+   "plainMedian": 1,
+   "glozMedian": 2
+  },
+  "Russian": {
+   "n": 20,
+   "plain": [
+    1.5,
+    2,
+    2,
+    1.5,
+    2,
+    1.5,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    1.5,
+    2,
+    2,
+    2,
+    2,
+    2
+   ],
+   "gloz": [
+    2,
+    4,
+    4,
+    4,
+    4,
+    2,
+    5,
+    4,
+    4,
+    4,
+    4,
+    5,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
+   ],
+   "plainA": 20,
+   "glozA": 20,
+   "plainMedian": 2,
+   "glozMedian": 4
+  },
+  "English": {
+   "n": 20,
+   "plain": [
+    1.5,
+    1.5,
+    1.5,
+    1.5,
+    1.5,
+    2,
+    1.5,
+    1.5,
+    0,
+    2,
+    2,
+    2,
+    2,
+    2,
+    1.5,
+    2,
+    2,
+    0,
+    1.5,
+    1
+   ],
+   "gloz": [
+    3,
+    3,
+    2,
+    4,
+    4,
+    3,
+    3,
+    3,
+    3,
+    4,
+    5,
+    4,
+    4,
+    3,
+    4,
+    4,
+    4,
+    4,
+    4,
+    4
+   ],
+   "plainA": 20,
+   "glozA": 20,
+   "plainMedian": 1.5,
+   "glozMedian": 4
+  }
+ },
+ "results": [
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "id": 1655849,
+   "expected": "من أين أتيت بهذه الأطباق؟",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 6,
+    "A": "من أين أتيت بهذه الأطباق؟",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "id": 8833216,
+   "expected": "سامي يمكنه مشاهدة فيلم.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "سامي يمكنه مشاهدة فيلم.",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "id": 2000913,
+   "expected": "هل لديك أي فكرة عن من يستطيع فعل مِثل هذا الشيء؟",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 2,
+    "A": "هل لديك أي فكرة عن من يستطيع فعل مثل هذا الشيء؟",
+    "cerA": 0.0263,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "id": 7986133,
+   "expected": "أنا وتوم كلانا مشغولان",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "أنا وتوم كلانا مشغولان",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "id": 422722,
+   "expected": "أسرعنا إلى محطة القطار.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 5,
+    "A": "أسرعنا إلى محطة القطار.",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "id": 11684449,
+   "expected": "سيلتقي زيري بريمة غدا.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "سيلتقي زيري بريمة غدا.",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "id": 4531891,
+   "expected": "لم أكن أتوقّع أن يحدث هذا.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 5,
+    "A": "لم أكن أتوقع أن يحدث هذا.",
+    "cerA": 0.0476,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "id": 10242913,
+   "expected": "كان زيري غريب الأطوار.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 5,
+    "A": "كان زيري غريب الأطوار.",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "id": 4480105,
+   "expected": "علينا الخلود إلى النوم.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "علينا الخلود إلى النوم.",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "id": 11985934,
+   "expected": "هل سبق لك و أن رأيت الثلج؟",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 5,
+    "A": "هل سيق لك و أن رأيت الثلج؟",
+    "cerA": 0.05,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "id": 6542008,
+   "expected": "أنت من اقترح هذا الفيلم.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": -1,
+    "A": "مترح هذا الفيلم.\nأنت من اقترح",
+    "cerA": 0.8,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "id": 7744449,
+   "expected": "كان توم في بيت ماري.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "كان توم في بيت ماري.",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "id": 10739747,
+   "expected": "إن الجزائر بحاجة لمراكز إعادة تصنيع حديثة.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": -1,
+    "A": "إن الجزائر بحاجة لمراكز إعادة ",
+    "cerA": 0.3056,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "id": 7238070,
+   "expected": "كان على سامي أن يغادر.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "كان على سامي أن يغادر.",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "id": 5824225,
+   "expected": "الجميع يشاهد جمال و هو يرقص.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 6,
+    "A": "الجميع يشاهد جمال و هو يرقص.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "id": 10914950,
+   "expected": "الجزائر بحاجة لفنادق جديدة.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 5,
+    "A": "الجزائر بحاجة لفنادق جديدة.",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "id": 7004853,
+   "expected": "لم يكن سامي يعلم بعلاقة ليلى مع فريد.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": -1,
+    "A": "لم يكن سامي يعلم بعلاقة ",
+    "cerA": 0.3667,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "id": 1581558,
+   "expected": "هما تستمعان للمذياع.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "هما تستمعان للمذياع.",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "id": 1932974,
+   "expected": "لا أستطيع تحدث الإنجليزية بشكل جيد مِثلِهِ.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": -1,
+    "A": "لا أستطيع تحدث الإنجليزية ",
+    "cerA": 0.4054,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "id": 1871533,
+   "expected": "انها لا جيدة ولا سيئة.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "انها لا جيدة ولا سيئة.",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "id": 912542,
+   "expected": "کمابیش می‌دانم کجا است.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 5,
+    "A": "کمابیش می‌دانم کجا است.",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "id": 712532,
+   "expected": "رویای او فضانورد شدن است.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "رویای او فضانورد شدن است.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "id": 822378,
+   "expected": "به هنگام پاییز طوفان بسیار می آید.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 5,
+    "A": "به هنگام پاییز طوفان بسیار می اید.",
+    "cerA": 0.0357,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "id": 2065011,
+   "expected": "کلمه فرانسوی \"شا\" به معنای گربه است.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 5,
+    "A": "کلمه فرانسوی \"شا\" به معنای گربه است.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "id": 1555419,
+   "expected": "گاهی به او سر می زنم.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "id": 3667602,
+   "expected": "امیلی مادره. (بچه داره)",
+   "plain": {
+    "survive": -1,
+    "A": "ری",
+    "cerA": 0.95
+   },
+   "gloz": {
+    "survive": 5,
+    "A": "امیلی مادره. (بچه داره)",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "id": 12165183,
+   "expected": "جایی که همه نظر یکسانی دارند، هیچکس زیاد فکر نمی‌کند.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": -1,
+    "A": "جایی که همه نظر یکسانی دارند. هیچکس زیاد فکر ",
+    "cerA": 0.2045,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "id": 798570,
+   "expected": "شما بهتر از او شنا می‌کنید.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 5,
+    "A": "شما بهتر از او شنا می‌کنید.",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "id": 730719,
+   "expected": "جمع کردن 5 با 10 آسان است.",
+   "plain": {
+    "survive": -1,
+    "A": "5 ۵۰",
+    "cerA": 0.95
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "جمع کردن 5 با 10 آسان است.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "id": 7497198,
+   "expected": "نگران شدن مانند پرداختن یک بدهی است که مدیون نیستید.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": -1,
+    "A": "نگران شدن مانند پرداختن یک بدهی است که مدیون ",
+    "cerA": 0.1628,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "id": 1044848,
+   "expected": "دل‌شاد بودن، عمر انسان را طولانی می‌کند.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 1.5,
+    "A": "دل‌شاد بودن. عمر انسان را طولانی می‌کند.",
+    "cerA": 0.0294,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "id": 9867174,
+   "expected": "از همه خواستم که به من حسادت کنند.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "از همه خواستم که به من حسادت کنند.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "id": 9358642,
+   "expected": "جعبه پر از توت فرنگی بود.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 5,
+    "A": "جعبه پر از توت فرنگی بود.",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "id": 12138339,
+   "expected": "کمونیسم یعنی فقر عمومی.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "id": 7252998,
+   "expected": "با کلمات روشن توضیح بده.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 5,
+    "A": "با کلمات روشن توضیح بده.",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "id": 787187,
+   "expected": "من ساعت 11 منتظرتان بودم.",
+   "plain": {
+    "survive": -1,
+    "A": "11 .",
+    "cerA": 0.8571
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "من ساعت 11 منتظرتان بودم.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "id": 13501337,
+   "expected": "ببند این طناب را یه یک درخت.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "ببند این طناب را یه یک درخت.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "id": 1485418,
+   "expected": "زبانت رو به من نشان بده.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 5,
+    "A": "زبانت رو به من نشان بده.",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "id": 11113842,
+   "expected": "آن در کل واقعاً آن جوری نیست.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": -1,
+    "A": "آن در کل واقعاً آن جوری [ سا تست اب",
+    "cerA": 0.2609,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "id": 8358740,
+   "expected": "برادرم چندین سال در تهران کار کرد",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 5,
+    "A": "برادرم چندین سال در تهران کار کرد",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "id": 12408713,
+   "expected": "उस तालाब पर एक सुंदर पुल है।",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "उस तालाब पर एक सुंदर पुल है।",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "id": 2173890,
+   "expected": "मैं सोचता था कि तुम दोनो में बहुत सी बातें एक दुसरे से मिलती जुलती होगी।",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "मैं सोचता था कि तुम दोनो में बहुत सी बातें एक दुसरे से मिलती जुलती होगी।",
+    "cerA": 0,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "id": 487595,
+   "expected": "मुम्बई भारत की पहली और दुनिया की दूसरी सर्वाधिक आबादी वाली नगरी है।",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "मुम्बई भारत की पहली और दुनिया की दूसरी सर्वाधिक आबादी वाली नगरी है।",
+    "cerA": 0,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "id": 10047976,
+   "expected": "क्या उन्होंने आप पर बलात्कार किया?",
+   "plain": {
+    "survive": -1,
+    "A": "ः",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "क्‍या उन्होंने आप पर बलात्कार किया?",
+    "cerA": 0.0345,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "id": 484007,
+   "expected": "कि वह अम्रीका जाएगा, यह तो पक्का है।",
+   "plain": {
+    "survive": -1,
+    "A": "श",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": -1,
+    "A": "कि वह अग्रीका जाएगा, यह तो पवका है।",
+    "cerA": 0.1034,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "id": 9013220,
+   "expected": "मुझे लगता है कि हमने उसे खो दिया।",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 5,
+    "A": "मुझे लगता है कि हमने उसे खो दिया।",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "id": 4638819,
+   "expected": "यह तसवीर मेरे चाचा की है।",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "यह तसवीर मेरे चाचा की है।",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "id": 10270807,
+   "expected": "क्या तू कभी किसी परीक्षा में असफल हुआ है?",
+   "plain": {
+    "survive": -1,
+    "A": "ः",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "क्या तू कभी किसी परीक्षा में असफल हुआ है?",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "id": 8686472,
+   "expected": "क्या वह इस शहर में काम करती है?",
+   "plain": {
+    "survive": -1,
+    "A": "ः",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "क्‍या वह इस शहर में काम करती है?",
+    "cerA": 0.0417,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "id": 10977284,
+   "expected": "आपका चिकन सूप बढ़िया है।",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 5,
+    "A": "आपका चिकन सूप बढ़िया है।",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "id": 2075276,
+   "expected": "मैं चीनी नहीं समझता, मगर सीखना चाहता हूं।",
+   "plain": {
+    "survive": -1,
+    "A": "श",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "मैं चीनी नहीं समझता, मगर सीखना चाहता हूं।",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "id": 486262,
+   "expected": "वह पिछले साल क्योटो गया था।",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 2,
+    "A": "वह पिछले साल क्योटो गया या।",
+    "cerA": 0.0455,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "id": 451301,
+   "expected": "मेरे पिता नें अपनी वसीयत में मुझे बहुत सारे पैसे छोड़े थे।",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "मेरे पिता नें अपनी वसीयत में मुझे बहुत सारे पैसे छोड़े थे।",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "id": 487482,
+   "expected": "बहतर होगा कि तुम उससे सलाह न माँगो।",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "बहतर होगा कि तुम उससे सलाह न माँगो।",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "id": 2072507,
+   "expected": "उसकी शादी के बारे में उससे कोई सवाल मत पूछना।",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "उसकी शादी के बारे में उससे कोई सवाल मत पूछना।",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "id": 509985,
+   "expected": "माफ़ कीजिएगा, यहाँ कोई बैठा हुआ है क्या?",
+   "plain": {
+    "survive": -1,
+    "A": "ः \"",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "माफ़ कीजिएगा, यहाँ कोई बैठा हुआ है क्या?",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "id": 3534966,
+   "expected": "नर्क एक ऐसी जगह जो बदबूदार है और किसी को कोई पसंद नहीं हैं ।",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "नर्क एक ऐसी जगह जो बदबूदार है और किसी को कोई पसंद नहीं हैं ।",
+    "cerA": 0,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "id": 10047713,
+   "expected": "मुझे पीला अच्छा लगता है।",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 5,
+    "A": "मुझे पीला अच्छा लगता है।",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "id": 3881660,
+   "expected": "आपको समझ क्यों नहीं आता?",
+   "plain": {
+    "survive": -1,
+    "A": "ः",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "आपको समझ क्यों नहीं आता?",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "id": 588591,
+   "expected": "मैंने बीयर पीना छोड़ दिया है।",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "मैंने बीयर पीना छोड़ दिया है।",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "id": 10554178,
+   "expected": "สิ่งที่คุณสงสัยเป็นความจริง",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "สิงทีคุณสงสัยเป็นความจริง",
+    "cerA": 0.0741,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "id": 7789825,
+   "expected": "ฉันมีงานที่ต้องทำมากมาย",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": -1,
+    "A": "ฉันมีงานทีต้องทํามากมาย",
+    "cerA": 0.1304,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "id": 10334045,
+   "expected": "ถ้าคุณจะทำต้องทำวันนี้",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": -1,
+    "A": "ถ้าคุณจะทําต้องทําวันนี",
+    "cerA": 0.2273,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "id": 12728399,
+   "expected": "ฉันไปที่ร้านหนังสือมา แล้วก็ซื้อหนังสือที่ดูน่าสนใจมา",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "ฉันไปทีร้านหนังสือมา แล้วก็ ซื้อหนังสือที่ดูน่าสนใจมา",
+    "cerA": 0.0192,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "id": 11127299,
+   "expected": "ทอมบอกว่าเขาว่ายน้ำเก่ง",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "ทอมบอกว่าเขาว่ายนําเก่ง",
+    "cerA": 0.087,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "id": 11491717,
+   "expected": "เธอตัดสินใจย้ายไปเบลเยียม",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "เธอตัดสินใจย้ายไปเบลเยียม",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "id": 12579220,
+   "expected": "หล่อนเปลี่ยนไปมากจากตอนนั้น",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "หล่อนเปลี่ยนไปมากจาก ตอนนัน",
+    "cerA": 0.037,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "id": 10692486,
+   "expected": "เราจะแก้ปัญหานี้อย่างไร",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "เราจะแก้ปัญหานือย่างไร",
+    "cerA": 0.087,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "id": 8673146,
+   "expected": "คุณซื้อดอกไม้กี่ดอก?",
+   "plain": {
+    "survive": -1,
+    "A": "ๆ",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "คุณซือดอกไม้กีดอก?",
+    "cerA": 0.1,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "id": 12729878,
+   "expected": "ฉันกำลังหาของขวัญให้กับเพื่อนของฉัน",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "ฉันกําลังหาของขวัญให้กับ เพื่อนของฉัน",
+    "cerA": 0.0571,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "id": 12728354,
+   "expected": "หล่อนเป็นพนักงานไปรษณีย์",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "หล่อนเป็นพนักงานไปรษณีย์",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "id": 12579343,
+   "expected": "ฉันขอถามแบบโง่ ๆ เลยได้ไหม",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "ฉันขอถามแบบโง่ ๆ เลยได้ ไหม",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "id": 12715655,
+   "expected": "หล่อนบอกลูกชายของหล่อนให้ทำตัวดี ๆ เวลาอยู่บ้าน",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "หล่อนบอกลูกชายของหล่อน ให้ทําตัวดี ๆ เวลาอยู่บ้าน",
+    "cerA": 0.0444,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "id": 10220293,
+   "expected": "ผมจะเล่นเทนนิสวันจันทร์หน้า",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "ผมจะเล่นเทนนิสวันจันทร์ หน้า",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "id": 8717401,
+   "expected": "ฉันเจอสิ่งที่ฉันกำลังมองหา",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": -1,
+    "A": "ฉันเจอสิงทีฉันกําลังมองหา",
+    "cerA": 0.1538,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "id": 8675863,
+   "expected": "คุณจะเห็นความแตกต่าง",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "คุณจะเห็นความแตกต่าง",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "id": 8675894,
+   "expected": "ฉันไม่มีอะไรจะพูดอีกแล้ว",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "ฉันไม่มีอะไรจะพูดอีกแล้ว",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "id": 8669070,
+   "expected": "คุณคือทุกสิ่งทุกอย่างของฉัน",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "คุณคือทุกสิงทุกอย่างของฉัน",
+    "cerA": 0.037,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "id": 8670334,
+   "expected": "ทอมพูดสองภาษาต่างประเทศ",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "ทอมพูดสองภาษาต่าง ประเทศ",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "id": 12581741,
+   "expected": "ฉันได้รับสืบทอดสินทรัพย์จากพ่อ",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "ฉันได้รับสืบทอดสินทรัพย์ จากพ่อ",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "id": 1414277,
+   "expected": "צלצל אלי מחר בתשע בבוקר.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": -1,
+    "A": "צלצל אלי מחר כתשע ככוקר.",
+    "cerA": 0.15,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "id": 5762083,
+   "expected": "רוב האנשים מצחצחים את שיניהם לפחות פעמים ביום.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "רוכ האנשים מצחצחים את שיניהם לפחות פעמים ביום.",
+    "cerA": 0.0256,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "id": 3027973,
+   "expected": "האם הוא הבעלים של המכונית הזאת?",
+   "plain": {
+    "survive": -1,
+    "A": "0",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "האם הוא הכעלים של המכונית הזאת?",
+    "cerA": 0.0385,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "id": 1499965,
+   "expected": "אינני מוסר את שמי האמתי לאף אתר אינטרנט.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "אינני מוסר את שמי האמתי לאף אתר אינטרנט.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "id": 1486544,
+   "expected": "מרי משתמשת בְּאָבְנַיִם.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": -1,
+    "A": "מרי משתמשת בָּאָכָנים.",
+    "cerA": 0.2273,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "id": 1851311,
+   "expected": "בוא נעשן את הזבל הזה.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": -1,
+    "A": "כוא נעשן את הזכל הזה.",
+    "cerA": 0.1176,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "id": 2010598,
+   "expected": "אני לא יכולה להפסיק את זה.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "אני לא יכולה להפסיק את זה.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "id": 2146246,
+   "expected": "פניו של פטר האדימו ממאמץ.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "פניו של פטר האדימו ממאמץ.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "id": 5712384,
+   "expected": "אמי סוף סוף הסכימה לתכנית שלנו.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "אמי סוף סוף הסכימה לתכנית שכנו.",
+    "cerA": 0.0385,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "id": 6004832,
+   "expected": "בכנות, הרומן החדש שלו לא מעניין במיוחד.",
+   "plain": {
+    "survive": -1,
+    "A": ", .",
+    "cerA": 0.9394
+   },
+   "gloz": {
+    "survive": 5,
+    "A": "בכנות, הרומן החדש שלו לא מעניין במיוחד.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "id": 4672145,
+   "expected": "אני בטוחה שתום היה רדום.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "אני כטוחה שתום היה רדום.",
+    "cerA": 0.05,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "id": 2125467,
+   "expected": "תום מנגן בגיטרה טוב מכל אחד שאני מכירה.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "תום מנגן כגיטרה טוב מכל אחד שאני מכירה.",
+    "cerA": 0.0313,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "id": 538009,
+   "expected": "הם לא הסכימו להוריד את המחיר.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "הם לא הסכימו להוריד את המחיר.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "id": 1857256,
+   "expected": "ביקשתי את מספר הטלפון שלו.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "כיקשתי את מספר הטלפון שלו.",
+    "cerA": 0.0455,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "id": 2105247,
+   "expected": "איך הייתה הנסיעה שלך?",
+   "plain": {
+    "survive": -1,
+    "A": "0",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 5,
+    "A": "איך הייתה הנסיעה שלך?",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "id": 5959663,
+   "expected": "תום צילם המון תמונות בחופש שלו.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "תום צילם המון תמונות כחופש שלו.",
+    "cerA": 0.0385,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "id": 6052325,
+   "expected": "התדרדרנו למצב כמעט נואש.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "התדרדרנו למצכ כמעט נואש.",
+    "cerA": 0.0476,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "id": 2659053,
+   "expected": "תפסתי מראה של מצעד בדרכי הביתה.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "תפסתי מראה של מצעד בדרכי הכיתה.",
+    "cerA": 0.0385,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "id": 12828054,
+   "expected": "השופט הראה את הכרטיס הצהוב על התנהגות לא ספורטיבית.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "השופט הראה את הכרטיס הצהוכ על התנהגות לא ספורטיכית.",
+    "cerA": 0.0465,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "id": 8152464,
+   "expected": "ילדי יכולים כולם לדבר צרפתית.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "ילדי יכולים כולם לדבר צרפתית.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "id": 79260,
+   "expected": "有能な大蔵大臣の創意になる処置は、行き詰まった国の財政から赤字をなくすのに役立った。",
+   "plain": {
+    "survive": 1.5,
+    "A": "有 能 な 大 蔵 大 臣 の 創意 に な る 処 買 は 、 行 き 詰 まっ た 国 の 財政 か\nら 赤 字 を な くす の に 役立っ た 。",
+    "cerA": 0.0238
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "有 能 な\n能 な 大 蔵 大 臣 の 創意 に な る 処 皿 は 、 行 き 詰 まっ た 国 の 財政 か ら 赤 字 を な くす の に 役立っ た 。",
+    "cerA": 0.0714,
+    "screens": 4
+   }
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "id": 168014,
+   "expected": "私がジョンと電話で話している最中に、交換手が割り込んできた。",
+   "plain": {
+    "survive": 1.5,
+    "A": "私 が ジョ ン と 電話 で 話し て いる 最 中 に 、 交 換 手 が 割り 込ん で き\nた 。",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "私 が ジョ ン と 電話 で 話し て いる 最 中 に 、 交 換 手 が 割り 込ん で きた 。",
+    "cerA": 0,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "id": 890119,
+   "expected": "新しい職場で上手くやっていけるか不安だなあ。",
+   "plain": {
+    "survive": 2,
+    "A": "新しい 職場 で 上 手 く や っ て いけ る か 不安 だ な あ 。",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "新しい 職場 で 上 手 く や っ て いけ る か 不安 だ な あ 。",
+    "cerA": 0,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "id": 203861,
+   "expected": "ダウンタウンという言葉はすべての町の繁華街をさす。",
+   "plain": {
+    "survive": 1,
+    "A": "ダウ ンタ ウン と いう 言葉 は すべ て の 町 の 繁華 街 を さす 。",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "ダウ ンタ ウン と いう 青葉 は すべ て の 町 の 繁華 街 を さす 。",
+    "cerA": 0.04,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "id": 203088,
+   "expected": "ダンサーたちはラテン音楽の曲目の間、実に活気づいた。",
+   "plain": {
+    "survive": 1.5,
+    "A": "ダン サー た ち は ラ テン 音楽 の 曲目 の 間 、 実 に 活気 づい た 。",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "ダン サー た ち は ラ テン 音楽 の 曲目 の 間 、 実 に 活気 づい た 。",
+    "cerA": 0,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "id": 199214,
+   "expected": "なぜまだ彼がきていないのか私にはわからない。",
+   "plain": {
+    "survive": 2,
+    "A": "な ぜ ま だ 彼 が き て いな い の か 私 に は わか ら な い 。",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "な ぜ ま だ 彼 が き て いな い の か 秋 に は わか ら な い 。",
+    "cerA": 0.0455,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "id": 5845200,
+   "expected": "私には新しい彼氏がいる。だけど、元カレはまだそのことを知らない。",
+   "plain": {
+    "survive": 2,
+    "A": "私 に は 新しい 彼氏 が いる 。 だ けど 、 元 カレ は まだ その こと を 知\nら な い 。",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "私 に は 新しい 彼氏 が いる 。 だ けど 、 元 カレ は まだ その こと を 知ら な い 。",
+    "cerA": 0,
+    "screens": 4
+   }
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "id": 121226,
+   "expected": "犯罪が増加していることは紛れもない事実だ。",
+   "plain": {
+    "survive": 1.5,
+    "A": "犯 因 が 増加 し て いる こと は 紛れ も な い 事 実 だ 。",
+    "cerA": 0.0476
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "犯 苦 が 増加 し て いる こと は 紛れ も な い 事 実 だ 。",
+    "cerA": 0.0476,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "id": 2185602,
+   "expected": "誰の鳥かごにもハゲタカがいないのは何故かな。",
+   "plain": {
+    "survive": 1.5,
+    "A": "誰 の 鳥かご に も ハゲ タカ が いな い の は 何故 か な 。",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "誰 の 鳥かご に も ハゲ タカ が いな い の は 何故 か な 。",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "id": 229869,
+   "expected": "ある種の動物は嵐の訪れを感じ取る事ができる。",
+   "plain": {
+    "survive": 1.5,
+    "A": "ある 種 の 動物 は 嵐 の 訪れ を 感じ 取る 事 が で きる 。",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "ある 種 の 動物 は 嵐 の 訪れ を 感じ 取る 事 が で きる 。",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "id": 75676,
+   "expected": "容姿端麗、頭脳明晰、運動神経抜群、家は金持ちで、ついでに学生会の副会長をしてたりもする、いわゆるパーフェクトな奴だ。",
+   "plain": {
+    "survive": 1,
+    "A": "容姿 端麗 、 頭 脳 明 過 、 運 動 神経 抜群 、 家 は 金持ち で 、 つ いで に\n学生 会 の 副 会 長 を し て た り も する 、 い わ ゆ る パー フェ クト な 奴\nだ 。",
+    "cerA": 0.0172
+   },
+   "gloz": {
+    "survive": 1.5,
+    "A": "容姿 端唄 、 頭 脳 明 過 、 運動 神経 抜群 、 家 は 金持ち で 、 つ いで に 学生 会 の 副 会 長 を し て た り も する 、 い わ ゆ る パー フェ クト な 奴 だ 。",
+    "cerA": 0.0345,
+    "screens": 6
+   }
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "id": 1054571,
+   "expected": "昨日、卵をいくつ手に入れることができましたか。",
+   "plain": {
+    "survive": 1.5,
+    "A": "昨日 、 卵 を いく つ 手 に 入れ る こと が で きま し た か 。",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "昨日 、 卵 を いく つ 手 に 入れ る こと が で きま し た か 。",
+    "cerA": 0,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "id": 11009577,
+   "expected": "こんなとこに置いて、しおれちゃってるじゃん。",
+   "plain": {
+    "survive": -1,
+    "A": "こん な と ど とこ に 買い て 、 し お れ ち ゃ っ て る じゃ ん 。",
+    "cerA": 0.1364
+   },
+   "gloz": {
+    "survive": 2,
+    "A": "こん な と どこ に 貢い て 、 し お れ ち ゃ っ て る じゃ ん 。",
+    "cerA": 0.0909,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "id": 1112566,
+   "expected": "彼女はこの作家の熱心なファンのようだ。短編を寄せているだけのアンソロジーもきちんと揃えている。",
+   "plain": {
+    "survive": 1.5,
+    "A": "彼女 は この 作家 の 熱心 な ファ ン の よう だ 。 短 編 を 寄せ て いる だ\nけ の アン ソロ ジー も きち ん と 揃え て いる 。",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "彼女 は この 作家 の 熱心 な ファ ン の よう だ 。 短編 を 寄せ て いる だ け の アン ソロ ジー も きち ん と 揃え て いる 。",
+    "cerA": 0,
+    "screens": 5
+   }
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "id": 147655,
+   "expected": "春が来ると人々はのぐさを摘みに出かけます。",
+   "plain": {
+    "survive": 2,
+    "A": "春 が 来る と 人 々 は の ぐさ を 摘み に 出かけ ます 。",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "春 が 来る と 人 々 は の ぐさ を 摘み に 出かけ ます 。",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "id": 195887,
+   "expected": "ほんの、とるに足らないものが、しばしば人中で、大きなことをいう。",
+   "plain": {
+    "survive": 2,
+    "A": "ほん の 、 と る に 足ら な いも の が 、 し ば し ば 人 中 で 、 大 きなこ と\nを いう 。",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 5,
+    "A": "ほん の 、 と る に 足ら な い も の が 、 し ば し ば 人 中 で 、 大 きなこ と を いう 。",
+    "cerA": 0,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "id": 172003,
+   "expected": "今日では車の値段は広い範囲に渡っている。",
+   "plain": {
+    "survive": 1.5,
+    "A": "今日 で は 車 の 値段 は 広い 範囲 に 渡っ て いる 。",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "今日 で は 車 の 値段 は 広い 範囲 に 渡っ て いる 。",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "id": 8963924,
+   "expected": "もっと早く私に言ってくれたらよかったのに。",
+   "plain": {
+    "survive": 2,
+    "A": "も っ と 早く 私 に 言っ て くれ た ら よ か っ た の に 。",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": -1,
+    "A": "も っ と 上 早く 秋 に 吾 っ て く れ た ら よ か っ た の に 。",
+    "cerA": 0.1429,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "id": 159337,
+   "expected": "私はどうにか笑いを抑えるのに大変苦労した。",
+   "plain": {
+    "survive": 1.5,
+    "A": "私 は どう に か 笑い を 抑え る の に 大 変 苦 労 し た 。",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "私 は どう に か 笑い を 抑え る の に 大 変 苦 労 し た 。",
+    "cerA": 0,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "id": 78065,
+   "expected": "両親が二人とも私の計画に反対しているわけではない。",
+   "plain": {
+    "survive": 1.5,
+    "A": "両親 が 二 人 と も 私 の 計画 に 反対 し て いる わけ で は な い 。",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "両親 が 二 人 と も 私 の 計画 に 反対 し て いる わけ で は な い 。",
+    "cerA": 0,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "id": 2870614,
+   "expected": "겨울에 이 모자를 쓰고 다녀야 될 것 같아.",
+   "plain": {
+    "survive": 1.5,
+    "A": "겨물에 이 모자를 쓰고 다녀야 될 것 같아.",
+    "cerA": 0.0588
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "겨울에 이 모자를 쓰고 다녀야 될 것 같아.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "id": 10576575,
+   "expected": "톰은 시간이 좀 더 필요하다고 말했다.",
+   "plain": {
+    "survive": 1.5,
+    "A": "톰은 시간이 좀 더 필요하다고 말했다.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "톰은 시간이 좀 더 필요하다고 말했다.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "id": 3680974,
+   "expected": "날 도와주겠다는 그의 제안은 거절할 생각이다.",
+   "plain": {
+    "survive": 1.5,
+    "A": "날 도와주겠다는 그의 제안은 거절할 생각이다.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": -1,
+    "A": "|\n게[    ㅇㅇ\n르    그     그의\n[는\n\n|  겠\n\n외\n\n| 도 제안은 거절할 생각이다.",
+    "cerA": 0.7,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "id": 2088355,
+   "expected": "이 인류학자에 따르면 이 지역에서는 옛날 관습이 아직도 행해지고 있다.",
+   "plain": {
+    "survive": 1.5,
+    "A": "이 인류학자에 따르면 이 지역에서는 옛날 관습이 아직도 행해지고\n있다",
+    "cerA": 0.0333
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "이 인류학자에 따르면 이 지역에서는 옛날 관습이 아직도 행해지고 있다.",
+    "cerA": 0,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "id": 1008003,
+   "expected": "슬론 스퀘어로 가는 다음 기차가 언제 있습니까?",
+   "plain": {
+    "survive": 1.5,
+    "A": "슬론 스퀘어로 가는 다음 기차가 언제 있습니까?",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 5,
+    "A": "슬론 스퀘어로 가는 다음 기차가 언제 있습니까?",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "id": 4963566,
+   "expected": "톰과 메리는 매우 작은 아파트에 살고 있어요.",
+   "plain": {
+    "survive": 1.5,
+    "A": "톰과 메리는 매우 작은 아파트에 살고 있어요.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "톰과 메리는 매우 작은 아파트에 살고 있어요.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "id": 5989195,
+   "expected": "그는 이제 너를 귀찮게 하지 않을 거야.",
+   "plain": {
+    "survive": 1.5,
+    "A": "그는 이제 너를 귀찮게 하지 않을 거야",
+    "cerA": 0.0625
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "그는 이제 너를 귀찮게 하지 않을 거야.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "id": 8362122,
+   "expected": "톰이 메리를 아주 잘 안다고 생각하진 않는데.",
+   "plain": {
+    "survive": 1.5,
+    "A": "톰이 메리를 아주 잘 안다고 생각하진 않는데.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "토\n톰이 메리를 아주 잘 안다고 생각하진 않는데.",
+    "cerA": 0.0526,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "id": 13287979,
+   "expected": "하츠모우데는, 처음으로 참배 한다라는 의미입니다.",
+   "plain": {
+    "survive": 1.5,
+    "A": "하츠모우데는, 처음으로 참배 한다라는 의미입니다.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": -1,
+    "A": "는, 서음으로\n\n츠모우   으ㄷ\n으\n\n데는,\n\n우\n\n하츠모 참배 한다라는 의미입니다.",
+    "cerA": 0.5652,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "id": 952504,
+   "expected": "아비투어를 1.5의 성적으로 합격했다.",
+   "plain": {
+    "survive": 1.5,
+    "A": "아비투어를 1.5의 성적으로 합격했다.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "아비투어를 1.5의 성적으로 합격했다.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "id": 11110650,
+   "expected": "우리 딸은 스페인 사람인 동시에 폴란드 사람이다.",
+   "plain": {
+    "survive": 1.5,
+    "A": "우리 딸은 스페인 사람인 동시에 폴란드 사람이다.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 5,
+    "A": "우리 딸은 스페인 사람인 동시에 폴란드 사람이다.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "id": 5385,
+   "expected": "나는 언젠가는 프랑스에 꼭 가야되는데, 그게 언제인지는 모르겠어.",
+   "plain": {
+    "survive": 1,
+    "A": "나는 언젠가는 프랑스에 꼭 가야되는데, 그게 언제인지는 모르겠어.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "나는 언젠가는 프랑스에 꼭 가야되는데, 그게 언제인지는 모르겠어.",
+    "cerA": 0,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "id": 13118638,
+   "expected": "그녀는 우리가 막 떠났을 때 도착했다.",
+   "plain": {
+    "survive": 1.5,
+    "A": "그녀는 우리가 막 떠났을 때 도착했다.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "그녀는 우리가 막 떠났을 때 도착했다.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "id": 1637178,
+   "expected": "난민들은 여러 교회 기구로부터 지원을 받는다.",
+   "plain": {
+    "survive": -1,
+    "A": "난민들은 여러 교회 기구로부터 지원을 받는다.\n브\n브\n| 로\n|   |\n『민들은",
+    "cerA": 0.5
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "난민들은 여러 교회 기구로부터 지원을 받는다.",
+    "cerA": 0,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "id": 13755271,
+   "expected": "톰은 한 시간에 내가 일주일 동안 버는 것보다 더 많이 번다.",
+   "plain": {
+    "survive": 2,
+    "A": "톰은 한 시간에 내가 일주일 동안 버는 것보다 더 많이 번다.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "톰은 한 시간에 내가 일주일 동안 버는 것보다 더 많이 번다.",
+    "cerA": 0,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "id": 13575940,
+   "expected": "어젯밤에 실험실 모기한테 거의 물려 죽을 뻔했어요.",
+   "plain": {
+    "survive": 1,
+    "A": "어젯밤에 실험실 모기한테 거의 물려 죽을 뻔했어요.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "어젯밤에 실험실 모기한테 거의 물려 죽을 뻔했어요.",
+    "cerA": 0,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "id": 11106705,
+   "expected": "다음으로 뭘 해야 할지 당신의 조언이 필요하다.",
+   "plain": {
+    "survive": 1.5,
+    "A": "다음으로 뭘 해야 할지 당신의 조언이 필요하다.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "다음으로 월 해야 할지 당신의 조언이 필요하다.",
+    "cerA": 0.05,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "id": 13058663,
+   "expected": "좋은 게임은 많지만 취향인 게임을 찾는 건 힘들어.",
+   "plain": {
+    "survive": 1.5,
+    "A": "좋은 게임은 많지만 취향인 게임을 찾는 건 힘들어.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": -1,
+    "A": "좋은 게임은 많지만 취향인 게임을 찾는 건 수] 드\n힘들어.",
+    "cerA": 0.1429,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "id": 13248367,
+   "expected": "사용자명에 하이픈을 사용할 수 있다면 좋을 텐데.",
+   "plain": {
+    "survive": 1,
+    "A": "사용자명에 하이픈을 사용할 수 있다면 좋을 텐데.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": -1,
+    "A": "사용자명에 하이픈을 슴Ｌ -ㅅ     조 ㅇ\n사용알 수 있다면 좋을 텐데.",
+    "cerA": 0.3333,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "id": 3674964,
+   "expected": "난 야구 시합을 티비로 보는 것보다 좋아하는 것이 없다.",
+   "plain": {
+    "survive": 2,
+    "A": "난 야구 시합을 티비로 보는 것보다 좋아하는 것이 없다.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "난 야구 시합을 티비로 보는 것보다 좋아하는 것이 없다.",
+    "cerA": 0,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "id": 13874958,
+   "expected": "她的生日是 3 月 8 日，正好是婦女節。",
+   "plain": {
+    "survive": 1,
+    "A": "她 的 生日 是 3 月 8 日 ， 正 好 是 如 女 节 。",
+    "cerA": 0.0588
+   },
+   "gloz": {
+    "survive": 2,
+    "A": "她 的 生日 是 3 月 8 日 ， 正好 是 妇女 节 。",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "id": 13509832,
+   "expected": "寶玉伸手要，襲人遞過，寶玉掖在被中，笑道：「這可去不成了。」",
+   "plain": {
+    "survive": -1,
+    "A": "宝玉 伸手 要 ， 蔓 人 第 过 ， 裤 玉 掖 在 被 中 ， 笑 道 : 【这 可 去 不 成 了\no",
+    "cerA": 0.2333
+   },
+   "gloz": {
+    "survive": -1,
+    "A": "宝玉 伸手 要 ， 村 人 尼 过 ， 宝玉 掖 在 被 中 ， 笑 道 : 「 这 可 去 不 成 了 。]j",
+    "cerA": 0.1667,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "id": 2095544,
+   "expected": "她过去参加派对，总是战战兢兢笨手笨脚的。",
+   "plain": {
+    "survive": 0,
+    "A": "她 过 去 参加 派对 ， 总 是 战 战 世 敬 笨 手 笨 脚 的 。",
+    "cerA": 0.1
+   },
+   "gloz": {
+    "survive": 2,
+    "A": "她 过 去 参加 派对 ， 总 是 战 战 疯 移 笨 手 笨 脚 的 。",
+    "cerA": 0.1,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "id": 13826830,
+   "expected": "我在不真正了解「語音學」是什麼意思、甚至可能連字母都不熟悉的情況下，自己能夠想到「p」是「b」的較硬版本，「t」對「d」、「k」對「g」、「s」對「z」也是同樣的關係。",
+   "plain": {
+    "survive": -1,
+    "A": "我 在 不 真正 了 解 【语音 学 」 是 什么 意思 、 甚 至 可 能 连 字 母 都 不 熟\n悉 的 情况 下 ， 自 己 能 豹 想到 fp」 是 中 」 的 较 硬 版 本 ， ftJ 对\nIdJ 、 rkJ 对 fgJ 、 1sJ 对 1z4 也 是 同样 的 关 傈 。",
+    "cerA": 0.2143
+   },
+   "gloz": {
+    "survive": -1,
+    "A": "我 在 不 具 正 了 解 | 语音 学 」 是 什么 意思 、 甚至 台 b\n至 可 能 过 字母 都 不 熟悉 的 情况 下 ， 自 己 能 多 想到 「p」 是 [bj」 的 较 硬 版 本 ， [可 对 [dj 、[ kj 对 19j、[sj 当 上 zj] 也 是 同 柑 的 天 傈 。",
+    "cerA": 0.3333,
+    "screens": 8
+   }
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "id": 905861,
+   "expected": "例如，中國的大眾運輸毫無疑問地優於英國，但英國的公共福利可能比中國的好。",
+   "plain": {
+    "survive": 1,
+    "A": "例如 ， 中 国 的 大 家 运输 毫 无 疑问 地 优 於 英国 ， 但 英国 的 公共 福利\n可 能 比 中 国 的 好 。",
+    "cerA": 0.0278
+   },
+   "gloz": {
+    "survive": 2,
+    "A": "例如 ， 中 国 的 大 容 运 输 毫 无 疑问 地 优 於 英国 ， 但 英国 的 公共 福利 可 能 比 中 国 的 好 。",
+    "cerA": 0.0278,
+    "screens": 4
+   }
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "id": 838492,
+   "expected": "記住該記住的，忘記該忘記的。改變能改變的，接受不能改變的。",
+   "plain": {
+    "survive": 1,
+    "A": "记 住 该 记 住 的 ， 忘 记 该 忘记 的 。 改 变 能 改变 的 ， 接 受 不 能 改变 的",
+    "cerA": 0.0345
+   },
+   "gloz": {
+    "survive": -1,
+    "A": "记 住 该 记 住 的 ， 忘 记 该 忘记 的 。 改 能 改 释 的 ， 接受 不 能 改 释 的 。",
+    "cerA": 0.1034,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "id": 420920,
+   "expected": "从小不锻炼，一天到晚做功课，这下子就搞成驮背近视眼。",
+   "plain": {
+    "survive": 1.5,
+    "A": "从 小 不 锻炼 ， 一 天 到 晚 做 功课 ， 这 下 子 就 搞 成 驮 背 近 视 眼 。",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 2,
+    "A": "从 小 不 银 炼 ， 一 天 到 晚 做 功课 ， 这 下 子 就 搞 成 驮 背 近视 眼 。",
+    "cerA": 0.0385,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "id": 892915,
+   "expected": "當講笑話的人自己先笑時，這個笑話就失去了一切意義。",
+   "plain": {
+    "survive": 1,
+    "A": "当 讲 笑话 的 人 自己 先 笑 时 ， 这 个 笑话 就 失去 了 一 切 意义 。",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "当 讲 关 话 的 人 自己 先 和 时 ， 这 个 笑话 就 失去 了 一 切 意义 。",
+    "cerA": 0.08,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "id": 380560,
+   "expected": "我打电话给你，一来是想请你吃饭，二来是想告诉你我儿子要结婚了。",
+   "plain": {
+    "survive": 1,
+    "A": "我 打 电 话 给 你 ， 一 来 是 想 请 你 吃饭 ， 二 来 是 想 告诉 你 我 儿子 要 结\n婚 了 。",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 1,
+    "A": "我 打 电 话 给 你 ， 一 来 是 想 请 你 吃饭 ， 二 来 是 想 告诉 你 我 儿子 要 结婚 了 。",
+    "cerA": 0,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "id": 9958567,
+   "expected": "他们说你不应该轻信谣言，但说起来容易做起来难。",
+   "plain": {
+    "survive": 1.5,
+    "A": "他 们 说 你 不 应 该 轻信 谣言 ， 但 说 起 来 容易 做 起 来 难 。",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 2,
+    "A": "他 们 说 你 不 应 该 轻信 谣言 ， 但 说 起 来 容易 做 起 来 难 。",
+    "cerA": 0,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "id": 845976,
+   "expected": "女病者抬头把身体靠在以金字塔的样子排成的绚丽绣花垫。",
+   "plain": {
+    "survive": 1.5,
+    "A": "女 病 者 抬头 把 身体 靠 在 以 金字 塔 的 样子 排 成 的 绚丽 绣花 垫 。",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 1.5,
+    "A": "女 病 者 抬头 把 身体 靠 在 以 金字 塔 的 样子 排 成 的 绚丽 绣花 过 。",
+    "cerA": 0.0385,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "id": 2731507,
+   "expected": "你們要是用刀劍刺向我們，我们难道不會流血嗎？",
+   "plain": {
+    "survive": 1.5,
+    "A": "你 们 要 是 用 刀剑 刺 向 我 们 ， 我 们 难道 不 会 流血 吗 ?",
+    "cerA": 0.0455
+   },
+   "gloz": {
+    "survive": 2,
+    "A": "你 们 要 是 用 刀剑 刺 向 我 们 ， 我 们 难道 不 会 流血 路?",
+    "cerA": 0.0909,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "id": 927783,
+   "expected": "如果建築物本身是一個實體又同時可以提供空間給他人居住，那麼地球上什麼不是建築物呢？",
+   "plain": {
+    "survive": 1,
+    "A": "如 果 建 筑 物 本 身 是 一 个 实体 又 同时 可 以 提供 空间 给 他 人 居住 ， 那\n摩 地球 上 什么 不 是 建筑 物 呢 ?",
+    "cerA": 0.0488
+   },
+   "gloz": {
+    "survive": 2,
+    "A": "如 果 建 筑 物 本 身 是 一 个 实体 又 同时 可 以 提供 空间 给 他 人 居住 ， 那 床 地 球 上 什么 不 是 建筑 愧 呢 ?",
+    "cerA": 0.0732,
+    "screens": 4
+   }
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "id": 858908,
+   "expected": "當然，我在日本時透過課本了解中國，可是我自己在中國看到的跟那些課本描述的完全不一樣。",
+   "plain": {
+    "survive": 1.5,
+    "A": "当然 ， 我 在 日 本 时 透 过 课本 了 解 中 国 ， 可 是 我 自己 在 中 国 看 到 的\n跟 那 些 课本 描述 的 完全 不 一 样 。",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 1.5,
+    "A": "当然 ， 我 在 日 本 时 透明 课本 了 解 中 国 ， 可 是 我 自己 在 中 国 看 到 的 跟 那 些 课本 描述 的 完全 不 一 样 。",
+    "cerA": 0.0238,
+    "screens": 4
+   }
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "id": 781676,
+   "expected": "他們說她和她的丈夫不可能對任何事達成協議。",
+   "plain": {
+    "survive": 1.5,
+    "A": "他 们 说 她 和 她 的 丈夫 不 可 能 对 任何 事 过 成 协议 。",
+    "cerA": 0.0476
+   },
+   "gloz": {
+    "survive": 1.5,
+    "A": "他 们 说 她 和 她 的 叉 夫 不 可 能 对 任何 事 过 成 协议 。",
+    "cerA": 0.0952,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "id": 7773132,
+   "expected": "汤姆总是说话声音太小，我几乎听不懂他在说什么。",
+   "plain": {
+    "survive": 1.5,
+    "A": "汤姆 总 是 说 话 声音 太 小 ， 我 几乎 听 不 懂 他 在 说 什么 。",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "汤姆 总 是 说 话 声 音 太 小 ， 我 几乎 听 不 懂 他 在 说 什么 。",
+    "cerA": 0,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "id": 604462,
+   "expected": "你这样不分昼夜地工作，将会伤害自己的健康。",
+   "plain": {
+    "survive": 1.5,
+    "A": "你 这 样 不 分 昼夜 地 工作 ， 将 会 伤害 自己 的 健康 。",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 2,
+    "A": "你 这 样 不 分 昼夜 地 工作 ， 将 会 伤害 自己 的 健康 。",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "id": 13917251,
+   "expected": "冷氣濾網好久沒清了，難怪吹出來的風有點怪味。",
+   "plain": {
+    "survive": 1,
+    "A": "冷气 滤 网 好 久 没 清 了 ， 准 怪 吹 出 来 的 风 有 点 怪 味 。",
+    "cerA": 0.0455
+   },
+   "gloz": {
+    "survive": 2,
+    "A": "冷气 滤 网 好 久 没 清 了 ， 难怪 吹出 来 的 风 有 点 怪 味 。",
+    "cerA": 0,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "id": 13537037,
+   "expected": "晚自習教室裡一片寂靜，只聽見筆在紙上摩擦的聲音。",
+   "plain": {
+    "survive": 0,
+    "A": "晚 自习 教室 里 一 片 寂 静 ， 只 戏 见 笔 在 纸 上 摩 擦 的 声音 。",
+    "cerA": 0.0417
+   },
+   "gloz": {
+    "survive": -1,
+    "A": "晚 自习 教室 和 里 一 片 京 静 ， 只 英 见 笔 在 纸 上 摩 探 的 声音 。",
+    "cerA": 0.1667,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "id": 2055645,
+   "expected": "时间对一个有智慧的人而言，就如钻石般珍贵；但对愚人来说，却像是一把泥土，一点价值也没有。",
+   "plain": {
+    "survive": 1.5,
+    "A": "时 间 对 一 个 有 智慧 的 人 而 言 ， 就 如 铅 石 般 珍 贵 ; 但 对 愚人 来 说 ，\n却 像 是 一 把 泥土 ， 一 点 价值 也 没有 。",
+    "cerA": 0.0455
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "时 间 对 一 个 有 智慧 的 人 而 言 ， 就 如 钻石 般 珍 贵 ; 但 对 恩人 来 咒 ， 却 像 是 一 把 泥土 ， 一 点 价值 也 没有 。",
+    "cerA": 0.0682,
+    "screens": 5
+   }
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "id": 3028427,
+   "expected": "Я приехала в школу на машине.",
+   "plain": {
+    "survive": 1.5,
+    "A": "Я приехала в школу на машине.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 2,
+    "A": "Я приехала в школу на машине.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "id": 6174474,
+   "expected": "Теперь я пытаюсь компенсировать пять лет своего отсутствия на Татоэбе.",
+   "plain": {
+    "survive": 2,
+    "A": "Теперь я пытаюсь компенсировать пять лет своего\nотсутствия на Татоэбе.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "Теперь я пытаюсь компенсировать пять лет своего отсутствия на Татоэбе.",
+    "cerA": 0,
+    "screens": 4
+   }
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "id": 3299376,
+   "expected": "Прекрати это ребячество.",
+   "plain": {
+    "survive": 2,
+    "A": "Прекрати это ребячество.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "Прекрати это ребячество.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "id": 8595570,
+   "expected": "Что у тебя обычно на ужин?",
+   "plain": {
+    "survive": 1.5,
+    "A": "Что у тебя обычно на ужин?",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "Что у тебя обычно на ужин?",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "id": 10742456,
+   "expected": "Я ещё не ходил в душ.",
+   "plain": {
+    "survive": 2,
+    "A": "Я ещё не ходил в душ.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "Я ещё не ходил в душ.",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "id": 6977653,
+   "expected": "Том стоит на обочине шоссе и голосует всем проезжающим легковушкам, но никто не останавливается.",
+   "plain": {
+    "survive": 1.5,
+    "A": "Том стоит на обочине шоссе и голосует всем\nпроезжающим легковушкам, но никто не\nостанавливается,",
+    "cerA": 0.012
+   },
+   "gloz": {
+    "survive": 2,
+    "A": "Том стоит на обочине шоссе и голосует всем проезжающим легковушкам, но никто не останавливается.",
+    "cerA": 0,
+    "screens": 5
+   }
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "id": 2628846,
+   "expected": "Я говорил Тому, что это было странно.",
+   "plain": {
+    "survive": 2,
+    "A": "Я говорил Тому, что это было странно.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 5,
+    "A": "Я говорил Тому, что это было странно.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "id": 8308390,
+   "expected": "Звонок не работает. Стучите.",
+   "plain": {
+    "survive": 2,
+    "A": "Звонок не работает. Стучите.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "Звонок не работает. Стучите.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "id": 7423469,
+   "expected": "Том не из Австралии?",
+   "plain": {
+    "survive": 2,
+    "A": "Том не из Австралии?",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "Том не из Австралии?",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "id": 8288548,
+   "expected": "Том никогда не забывал сделать домашнее задание.",
+   "plain": {
+    "survive": 2,
+    "A": "Том никогда не забывал сделать домашнее задание.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "Том никогда не забывал сделать домашнее задание.",
+    "cerA": 0,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "id": 5969628,
+   "expected": "Удивительно, что ты не в тюрьме.",
+   "plain": {
+    "survive": 2,
+    "A": "Удивительно, что ты не в тюрьме.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "Удивительно, что ты не в тюрьме.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "id": 4493238,
+   "expected": "Могу поспорить на сто долларов, что Том голубой.",
+   "plain": {
+    "survive": 2,
+    "A": "Могу поспорить на сто долларов, что Том голубой.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 5,
+    "A": "Могу поспорить на сто долларов, что Том голубой.",
+    "cerA": 0,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "id": 5542305,
+   "expected": "Это стоит баснословных денег.",
+   "plain": {
+    "survive": 2,
+    "A": "Это стоит баснословных денег.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "Это стоит баснословных денег.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "id": 13574297,
+   "expected": "Я уже никогда не смогу ему доверять.",
+   "plain": {
+    "survive": 2,
+    "A": "Я уже никогда не смогу ему доверять.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "Я уже никогда не смогу ему доверять.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "id": 3777822,
+   "expected": "Том хочет открыть собственный ресторан.",
+   "plain": {
+    "survive": 1.5,
+    "A": "Том хочет открыть собственный ресторан.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "Том хочет открыть собственный ресторан.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "id": 13950593,
+   "expected": "Том отрастил бороду и усы.",
+   "plain": {
+    "survive": 2,
+    "A": "Том отрастил бороду и усы.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "Том отрастил бороду и усы.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "id": 3011994,
+   "expected": "За весной идёт лето.",
+   "plain": {
+    "survive": 2,
+    "A": "За весной идёт лето.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "За весной идёт лето.",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "id": 13783713,
+   "expected": "Какой она высоты? Метра два есть?",
+   "plain": {
+    "survive": 2,
+    "A": "Какой она высоты? Метра два есть?",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "Какой она высоты? Метра два есть?",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "id": 4753480,
+   "expected": "Стакан упал на пол и разбился вдребезги.",
+   "plain": {
+    "survive": 2,
+    "A": "Стакан упал на пол и разбился вдребезги.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "Стакан упал на поли разбился вдребезги.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "id": 8821028,
+   "expected": "Том уже точно знает, когда поедет.",
+   "plain": {
+    "survive": 2,
+    "A": "Том уже точно знает, когда поедет.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "Том уже точно знает, когда поедет.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "id": 11369996,
+   "expected": "Ziri said he was in the house.",
+   "plain": {
+    "survive": 1.5,
+    "A": "Ziri said he was in the house.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "Ziri said he was in the house.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "id": 7152645,
+   "expected": "Something happened in Australia.",
+   "plain": {
+    "survive": 1.5,
+    "A": "Something happened in Australia.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "Something happened in Australia.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "id": 11169634,
+   "expected": "Ziri got some corn for the ewe.",
+   "plain": {
+    "survive": 1.5,
+    "A": "Ziri got some corn for the ewe.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 2,
+    "A": "Ziri got some corn for the ewe.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "id": 2609438,
+   "expected": "In molecular gastronomy, no boundaries are set on the creativity of the cooks.",
+   "plain": {
+    "survive": 1.5,
+    "A": "In molecular gastronomy, no boundaries are set on the creativity\nof the cooks.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "In molecular gastronomy, no boundaries are set on the creativity of the cooks.",
+    "cerA": 0,
+    "screens": 4
+   }
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "id": 12272685,
+   "expected": "Didn't Tom tell you I was in Boston?",
+   "plain": {
+    "survive": 1.5,
+    "A": "Didn't Tom tell you Iwas in Boston?",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "Didn't Tom tell you | was in Boston?",
+    "cerA": 0.0345,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "id": 11731828,
+   "expected": "The spa offers facials and skin treatments.",
+   "plain": {
+    "survive": 2,
+    "A": "The spa offers facials and skin treatments.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "The spa offers facials and skin treatments.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "id": 9015835,
+   "expected": "\"What nationality are his neighbors?\" \"Irish.\"",
+   "plain": {
+    "survive": 1.5,
+    "A": "\"What nationality are his neighbors?\" \"Irish.\"",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "\"What nationality are his neighbors?\" \"Irish.\"",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "id": 12273079,
+   "expected": "I just finished my homework.",
+   "plain": {
+    "survive": 1.5,
+    "A": "1 just finished my homework.",
+    "cerA": 0.0417
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "| just finished my homework.",
+    "cerA": 0.0417,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "id": 12916600,
+   "expected": "I had no reason to lie.",
+   "plain": {
+    "survive": 0,
+    "A": "I had no reason to lie.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "| had no reason to lie.",
+    "cerA": 0.0556,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "id": 9194493,
+   "expected": "What use could this be to Tom?",
+   "plain": {
+    "survive": 2,
+    "A": "What use could this be to Tom?",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "What use could this be to Tom?",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "id": 10596886,
+   "expected": "Do we have any cake left?",
+   "plain": {
+    "survive": 2,
+    "A": "Do we have any cake left?",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 5,
+    "A": "Do we have any cake left?",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "id": 3057417,
+   "expected": "Tom forgot that he once told Mary that only she gave his life any meaning.",
+   "plain": {
+    "survive": 2,
+    "A": "Tom forgot that he once told Mary that only she gave his life any\nmeaning.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "Tom forgot that he once told Mary that only she gave his life any meaning.",
+    "cerA": 0,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "id": 5745168,
+   "expected": "Tom pushed Mary backwards.",
+   "plain": {
+    "survive": 2,
+    "A": "Tom pushed Mary backwards.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "Tom pushed Mary backwards.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "id": 11944104,
+   "expected": "Yuri actually turned out to be a pretty interesting guy.",
+   "plain": {
+    "survive": 2,
+    "A": "Yuri actually turned out to be a pretty interesting guy.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "Yuri actually turned out to be a pretty interesting guy.",
+    "cerA": 0,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "id": 3729003,
+   "expected": "I have so much to teach you.",
+   "plain": {
+    "survive": 1.5,
+    "A": "I have so much to teach you.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "| have so much to teach you.",
+    "cerA": 0.0455,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "id": 44292,
+   "expected": "The poor old man was reduced to just a skeleton.",
+   "plain": {
+    "survive": 2,
+    "A": "The poor old man was reduced to just a skeleton.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "The poor old man was reduced to just a skeleton.",
+    "cerA": 0,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "id": 11587391,
+   "expected": "Matthew doesn't have a carpet.",
+   "plain": {
+    "survive": 2,
+    "A": "Matthew doesn't have a carpet.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "Matthew doesn't have a carpet.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "id": 2327213,
+   "expected": "I found an apartment.",
+   "plain": {
+    "survive": 0,
+    "A": "[ found an apartment.",
+    "cerA": 0.0556
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "| found an apartment.",
+    "cerA": 0.0556,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "id": 8537283,
+   "expected": "I'm just concentrating on playing golf.",
+   "plain": {
+    "survive": 1.5,
+    "A": "I'm just concentrating on playing golf.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "I'm just concentrating on playing golf.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "id": 3395515,
+   "expected": "I can't do this now.",
+   "plain": {
+    "survive": 1,
+    "A": "[can't do this now.",
+    "cerA": 0.0625
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "| can't do this now.",
+    "cerA": 0.0625,
+    "screens": 1
+   }
+  }
+ ]
+}
