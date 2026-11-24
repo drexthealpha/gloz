@@ -30,11 +30,14 @@ const SAMPLE_NOTES: Record<string, { title: string; text: string }> = {
   'sample-3': { title: 'Sample: books to read', text: 'Sample: books to read\nA history of the bicycle. The short stories from the library list. Anything on bread at home.' },
 }
 
+const savedNotes: { id: string; title: string; text: string }[] = []
+// Tests start each case from the plain sample.
+export function resetSampleNotes() { savedNotes.length = 0 }
 export function sampleNotes(body: any): any {
   const a = body?.action
-  if (a === 'list') return { source: 'sample', notes: Object.entries(SAMPLE_NOTES).map(([id, n]) => ({ id, title: n.title })) }
-  if (a === 'read') { const n = SAMPLE_NOTES[body.id]; return n ? { text: n.text } : { error: 'Note not found' } }
-  if (a === 'add') return { ok: true, sample: true, id: 'sample-new' }
+  if (a === 'list') return { source: 'sample', notes: [...savedNotes.map(n => ({ id: n.id, title: n.title })), ...Object.entries(SAMPLE_NOTES).map(([id, n]) => ({ id, title: n.title }))] }
+  if (a === 'read') { const n = SAMPLE_NOTES[body.id] ?? savedNotes.find(x => x.id === body.id); return n ? { text: n.text } : { error: 'Note not found' } }
+  if (a === 'add') { const text = String(body.text ?? ''); const n = { id: `sample-new-${savedNotes.length + 1}`, title: text.slice(0, 40), text }; savedNotes.unshift(n); return { ok: true, sample: true, id: n.id } }
   if (a === 'stt') return { text: '' }
   return { error: 'unknown action' }
 }

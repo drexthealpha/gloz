@@ -152,7 +152,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
           const all = new Uint8Array(pcm.reduce((n, c) => n + c.length, 0))
           let o = 0
           for (const c of pcm) { all.set(c, o); o += c.length }
-          try { dispatch({ t: 'heard', text: (await api.stt(all, settings.myLang)).text }) } catch { dispatch({ t: 'heard', text: '' }) }
+          try { dispatch({ t: 'heard', text: (await api.stt(all, settings.myLang)).text }) } catch (e) { dispatch({ t: 'heard', text: '' }); if (/stt 503/.test(String(e))) dispatch({ t: 'note', text: 'No speech engine on the server', ms: 3500 }) }
         }
         return
       case 'refresh': { const n = await poll(); const w = words(settings.myLang); dispatch({ t: 'note', text: n < 0 ? w.laterOnline : n ? w.someNew(n) : w.nothingNew }); return }
@@ -268,9 +268,10 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   }
 
   // Home: the inbox line first (tap checks now), then the day; text is the item, the hint says each press.
+  const SAY_WHAT: Record<string, string> = { nav: 'where', tasks: 'the task', notes: 'the note', ask: 'your question', term: 'the command', reader: 'the title' }
   function homeCard(): Card {
     const w = words(settings.myLang)
-    if (saying === 'listening') return { kind: 'status', text: 'Listening · say what you want', hint: 'let go: done · double tap: cancel' }
+    if (saying === 'listening') return { kind: 'status', text: `Listening · say ${SAY_WHAT[sayTo?.id ?? ''] ?? 'what you want'}`, hint: 'let go: done · double tap: cancel' }
     if (saying === 'working') return { kind: 'status', text: 'Working on it', hint: 'wait a moment' }
     const base = card(s, settings.myLang)
     if (s.note && !homeNote) return base
@@ -321,7 +322,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
     await act(it)
   }
   // Quick requests are done on the spot and confirmed; the rest open their tool with the words.
-  const short = (t = '') => (t.length > 16 ? t.slice(0, 15).replace(/\s+\S*$/, '') + '…' : t)
+  const short = (t = '') => (t.length > 22 ? t.slice(0, 21).replace(/\s+\S*$/, '') + '…' : t)
   async function act(it: Said) {
     const call = (id: string, body: unknown) => (api?.mode ? api.mode(id, body) : Promise.reject(new Error('not paired')))
     try {

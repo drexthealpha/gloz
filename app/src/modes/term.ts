@@ -16,7 +16,7 @@ export function sampleOut(cmd: string): string[] {
 
 export function sampleTerm(body: any): any {
   if (body?.op === 'run') return { lines: [...sampleOut(body?.cmd), 'done'], code: 0, cut: false, timedOut: false, ms: 9, startMs: 3, sample: true }
-  if (body?.op === 'say') { const t = String(body.text ?? '').trim().toLowerCase().replace(/^run\s+/, ''); const name = t.split(/\s+/)[0]; return !t ? { cmd: 'df', sample: true } : ['uptime', 'df', 'git'].includes(name) ? { cmd: t, sample: true } : { error: `Not allowed: ${name}`.slice(0, 40) } }
+  if (body?.op === 'say') { const t = String(body.text ?? '').trim().toLowerCase().replace(/^run\s+/, ''); const name = t.split(/\s+/)[0]; return !t ? { cmd: 'df', sample: true } : ['uptime', 'df', 'git'].includes(name) ? { cmd: t, sample: true } : { error: `Not allowed: ${name}. Allowed: uptime, df, git`.slice(0, 80) } }
   return { on: true, allow: ['uptime', 'df', 'git'], sample: true }
 }
 
@@ -75,7 +75,7 @@ function make(ctx: ModeCtx): Mode {
       if (state === 'busy') return { kind: 'status', text: 'Working', hint: 'wait a moment' }
       // One output line per screen, fitted to it; the hint offers only presses that move.
       if (state === 'out') return { kind: 'status', text: `${ran}: ${out[line]}`, hint: [sample && 'sample', 'tap: all commands', line < out.length - 1 && 'down: next line', line > 0 && 'up: earlier'].filter(Boolean).join(' · '), progress: [line + 1, out.length] }
-      if (note) return { kind: 'status', text: note, hint: 'tap: back · hold: speak' }
+      if (note) return { kind: 'status', text: note, hint: 'tap: ok · hold: say a command' }
       if (!cmds.length) return { kind: 'status', text: 'No commands allowed', hint: 'server: set GLOZ_TERMINAL_ALLOW · hold: speak' }
       return { kind: 'status', text: cmds[at], hint: `${heardIt ? (sample ? 'heard (sample) · ' : 'you said this · ') : sample ? 'sample · ' : ''}tap: run · down: next · hold: say a command`, progress: [at + 1, cmds.length] }
     },

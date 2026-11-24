@@ -17,6 +17,8 @@ export function perLine(ctx: ModeCtx): number {
 export function pageStarts(text: string, chars: number): number[] {
   const starts: number[] = []
   for (let i = 0; i < text.length;) {
+    while (i < text.length && (text[i] === '\n' || text[i] === ' ')) i++
+    if (i >= text.length) break
     starts.push(i)
     let e = Math.min(text.length, i + chars)
     const nl = text.indexOf('\n', i)
@@ -77,6 +79,7 @@ export const readerApp: AppEntry = {
     let starts: number[] = [0]
     let page = 0
     let sample = false
+    let resumed = false   // opened at the place saved last time
     let line = ''
     const show = (to: View) => { view = to; ctx.render() }
     const key = () => `reader.place.${doc?.id}`
@@ -109,12 +112,14 @@ export const readerApp: AppEntry = {
         const at = Number(ctx.store.get(key())) || 0
         page = 0
         while (page + 1 < starts.length && starts[page + 1] <= at) page++
+        resumed = page > 0
         ctx.store.set('reader.doc', d.id)
         show('page')
       } catch { line = 'No signal'; show('error') }
     }
 
     function go(p: number) {
+      resumed = false
       if (p >= starts.length) return show('end')
       page = Math.max(0, p)
       ctx.store.set(key(), String(starts[page]))
@@ -127,7 +132,7 @@ export const readerApp: AppEntry = {
         case 'loading': return { kind: 'status', text: 'Loading', hint: 'wait' }
         case 'error': return { kind: 'status', text: line, hint: 'tap: try again' }
         case 'pick': return { kind: 'status', text: docs[pick].title || 'Untitled', hint: 'tap: read · down: next · up: earlier', progress: [pick + 1, docs.length] }
-        case 'page': return { kind: 'message', text: slice(page).trim() || ' ', hint: `${sample ? 'sample · ' : ''}line ${page + 1}/${starts.length} · down: next line · up: line back${other}`, parts: false, progress: [page + 1, starts.length] }
+        case 'page': return { kind: 'message', text: slice(page).trim() || ' ', hint: `${sample ? 'sample · ' : ''}${resumed ? 'where you left off · ' : ''}line ${page + 1}/${starts.length} · down: next line · up: line back${other}`, parts: false, progress: [page + 1, starts.length] }
         case 'where': return { kind: 'status', text: `Line ${page + 1} of ${starts.length}`, hint: `tap: back to the text${other}` }
         case 'end': return { kind: 'status', text: 'End of text', hint: `up: last page${other}` }
       }

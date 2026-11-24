@@ -42,7 +42,7 @@ export async function handle(body, { env, stt = transcribe, run = execFile }) {
     const cmd = spoken(text || '')
     if (!cmd) return { error: 'Nothing heard' }
     const name = cmd.split(' ')[0]
-    return allow.includes(name) ? { cmd } : { error: `Not allowed: ${name}`.slice(0, 60) }
+    return allow.includes(name) ? { cmd } : { error: `Not allowed: ${name}. Allowed: ${allow.join(', ')}`.slice(0, 80) }
   }
   if (op === 'run') {
     const [name, ...args] = String(body.cmd || '').trim().split(/\s+/)

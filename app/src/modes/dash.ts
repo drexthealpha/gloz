@@ -39,7 +39,8 @@ const cut = (s: string, n = 28) => ([...s].length > n ? [...s].slice(0, n - 1).j
 // One short item per panel.
 export function panelText(id: string, d: DashData, lang: string, now: Date, pin: string, located: boolean): string {
   const hm = (t: Date) => t.toLocaleTimeString(lang, { hour: '2-digit', minute: '2-digit' })
-  const ev = (e?: { at: string; allDay?: boolean; title: string }) => (e ? cut(e.allDay ? e.title : `${hm(new Date(e.at))} ${e.title}`) : 'No events')
+  const day = (t: Date) => (t.toDateString() === now.toDateString() ? '' : t.toDateString() === new Date(now.getTime() + 864e5).toDateString() ? 'Tomorrow ' : `${t.toLocaleDateString(lang, { weekday: 'short' })} `)
+  const ev = (e?: { at: string; allDay?: boolean; title: string }) => (e ? cut(e.allDay ? `${day(new Date(e.at))}${e.title}` : `${day(new Date(e.at))}${hm(new Date(e.at))} ${e.title}`) : 'No events')
   const w = d.weather
   const noWeather = located ? 'Weather off' : 'No location'
   switch (id) {
