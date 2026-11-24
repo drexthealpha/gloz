@@ -48,6 +48,7 @@ export const prompterApp: AppEntry = {
     let starts: number[] = [0]
     let at = 0                 // index of the next word to say
     let following = false
+    let sampleVoice = false   // the demo follows a sample voice, and says so
     let busy = false
     let note = ''
     let line = ''
@@ -96,6 +97,7 @@ export const prompterApp: AppEntry = {
       const was = moved
       try {
         const r = await ctx.call({ action: 'follow', pcm: b64(joinPcm(parts)), lang: ctx.lang(), from, at: at - from, words: words.slice(from, at + 80).join(' ') })
+        sampleVoice = Boolean(r?.sample)
         if (r?.error) { note = r.error; follow(false) }
         else { note = ''; if (following && was === moved && typeof r?.at === 'number') at = Math.min(words.length, Math.max(0, r.at)) }
       } catch { note = 'No signal' }
@@ -109,7 +111,7 @@ export const prompterApp: AppEntry = {
         case 'error': return { kind: 'status', text: line, hint: 'tap: try again' }
         case 'pick': return { kind: 'status', text: docs[pick].title || 'Untitled', hint: 'tap: use this script · down: next · up: earlier', progress: [pick + 1, docs.length] }
         case 'script': {
-          const lead = note ? `${note} · ` : following ? 'Following · ' : ''
+          const lead = note ? `${note} · ` : following ? (sampleVoice ? 'Following a sample voice · ' : 'Following · ') : ''
           const other = docs.length > 1 ? ' · hold: other scripts' : ''
           if (at >= words.length) return { kind: 'status', text: 'End of script', hint: `${lead}up: line back${other}` }
           const l = lineOf(at)

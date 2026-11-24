@@ -9,7 +9,7 @@ import type { Doc } from './notes.ts'
 export function perLine(ctx: ModeCtx): number {
   let size = 3
   try { size = Number(JSON.parse(ctx.store.get('gloz.settings') || '{}').size) || 3 } catch {}
-  return Math.max(8, Math.floor(552 / (SIZES[Math.min(6, Math.max(1, size)) - 1] * 0.52)))
+  return Math.max(8, Math.floor(552 / (SIZES[Math.min(6, Math.max(1, size)) - 1] * 0.45)))
 }
 
 // Splits text into pages of about `chars` characters, at a space where there is one.
@@ -31,7 +31,7 @@ export function pageStarts(text: string, chars: number): number[] {
 }
 
 // One page holds six display lines; the glasses show them one at a time.
-const LINES_PER_PAGE = 6
+const LINES_PER_PAGE = 1
 
 const SAMPLE_TEXT = `Sample text: On walking to work
 

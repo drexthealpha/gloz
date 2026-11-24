@@ -92,7 +92,7 @@ class DemoBridge {
 // --- stand-in backend -----------------------------------------------------------
 // No microphone here: what an app hears is sample words, and the teleprompter moves on a few words each time.
 const heardSample = (f: (b: any) => any, words: string) => (b: any) => b?.action === 'stt' ? { text: words } : f(b)
-const SAMPLES: Record<string, (body: any) => any> = { dash: sampleDash, tasks: heardSample(sampleTasks, 'Sample: call the bank'), notes: heardSample(sampleNotes, 'Sample: ideas for the board meeting'), ask: sampleAsk, reader: sampleReader, prompter: (b: any) => b?.action === 'follow' ? { at: (Number(b.from) || 0) + 4, heard: '' } : samplePrompter(b), nav: sampleNav, stocks: sampleStocks, music: sampleMusic, term: sampleTerm }
+const SAMPLES: Record<string, (body: any) => any> = { dash: sampleDash, tasks: heardSample(sampleTasks, 'Sample: call the bank'), notes: heardSample(sampleNotes, 'Sample: ideas for the board meeting'), ask: sampleAsk, reader: sampleReader, prompter: (b: any) => b?.action === 'follow' ? { at: (Number(b.from) || 0) + 4, heard: '', sample: true } : samplePrompter(b), nav: sampleNav, stocks: sampleStocks, music: sampleMusic, term: sampleTerm }
 class DemoApi implements Api {
   online = true
   sent: { to: string; text: string; meaning?: string }[] = (() => { try { return JSON.parse(sessionStorage.getItem('gloz.demo.sent') || '[]') } catch { return [] } })()
@@ -241,7 +241,7 @@ const apps = document.getElementById('apps') as HTMLButtonElement
 const keyScroll = document.getElementById('keyscroll')!, keyDouble = document.getElementById('keydouble')!, keyHold = document.getElementById('keyhold')!
 const appsLabel = () => {
   apps.textContent = bridge.inApp ? 'Back to messages' : 'Apps'
-  keyScroll.textContent = bridge.inApp ? 'down: next · up: earlier' : 'up: back · down: skip'
+  keyScroll.textContent = bridge.inApp ? 'down: next · up: earlier' : 'up: earlier · down: skip'
   keyDouble.textContent = bridge.inApp ? 'back' : 'close'
   keyHold.textContent = bridge.inApp ? 'speak (sample)' : 'speak'
 }
@@ -284,7 +284,7 @@ fetch('./proof/proof.json').then(r => r.ok ? r.json() : []).then((list: { lang: 
   document.getElementById('pairs')!.innerHTML = list.map(p => `
     <p class="said"><b>${p.script}</b>: <span lang="${p.lang}" dir="auto">${p.text.replace(/</g, '&lt;')}</span></p>
     <div class="pair">
-      <figure><img src="./proof/${p.lang}-plain.png" alt="Plain G2 text: what the glasses font draws"><figcaption>Plain G2 text: draws nothing</figcaption></figure>
+      <figure><img src="./proof/${p.lang}-plain.png" alt="Plain G2 text: what the glasses font draws"><figcaption>Plain G2 text: the words do not show</figcaption></figure>
       <div class="gloz">${Array.from({ length: p.pages ?? 1 }, (_, i) => `<figure><img src="./proof/${p.lang}-gloz${i ? '-' + (i + 1) : ''}.png" alt="Gloz: the same message drawn as an image"><figcaption>Gloz${(p.pages ?? 1) > 1 ? ` page ${i + 1} of ${p.pages}` : ''}</figcaption></figure>`).join('')}</div>
     </div>`).join('')
   document.getElementById('proof')!.hidden = false

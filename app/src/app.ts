@@ -56,12 +56,11 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   let roomNote = ''
   let quiet = false   // listening, and nothing heard yet
   let active: Mode | null = null   // an app from the Apps list, when one is open
-  let openedAt = 0                 // when it opened: the way back is shown for the first 3 s
 
   const outbox = new Outbox(store, p => api ? api.send(p.key, p.msgId, p.text) : Promise.resolve('retry'))
 
   function render() {
-    if (active) { const c = active.card(); g.show(Date.now() - openedAt < 1500 ? { ...c, hint: active === list ? 'double tap: back to messages' : 'double tap: back to the Apps list' } : { ...c, back: 'double tap: back' }); onState?.(s, settings); return }
+    if (active) { const c = active.card(); g.show({ ...c, back: 'double tap: back' }); onState?.(s, settings); return }
     g.show(r.on ? { ...roomCard(r, settings.myLang), ...(roomNote ? { text: roomNote } : quiet && !r.paused && !r.lines.length ? { text: words(settings.myLang).nothingHeardYet } : {}) } : card(s, settings.myLang))
     onState?.(s, settings)
   }
@@ -169,7 +168,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
 
   g.onInput = i => {
     if (i === 'exit') { const b = doubleTap(active, list); return b === 'close' ? g.exit() : b === 'messages' ? closeApp() : openList() }
-    if (active) { openedAt = 0; active.input(i); return }
+    if (active) { active.input(i); return }
     if (r.on) {
       if (i === 'tap') roomDo({ t: 'tap' })
       const few = r.lines.length - (r.since ?? 0) < 2
@@ -228,8 +227,6 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   function openApp(m: Mode) {
     active?.stop?.()
     active = m
-    openedAt = Date.now()
-    setTimeout(() => { if (active === m) render() }, 1600)
     g.setMenu(menuItems(settings.myLang, false, words(settings.myLang).stopListening, true))
     void m.start?.()
     render()
