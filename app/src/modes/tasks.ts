@@ -59,7 +59,7 @@ export const tasksApp: AppEntry = {
         if (r?.error) { flash(r.error); return show('list') }
         tasks = tasks.filter(x => x !== t)
         at = Math.min(at, Math.max(0, tasks.length - 1))
-        flash(r?.sample ? 'Done here only (sample)' : 'Marked done')
+        flash(r?.sample ? '✓ Done (sample)' : '✓ Done')
       } catch { flash('No signal: not marked') }
       show('list')
     }
@@ -72,7 +72,7 @@ export const tasksApp: AppEntry = {
         tasks = [r?.task ?? { id: '', title: draft }, ...tasks]
         at = 0
         draft = ''
-        flash(r?.sample ? 'Added here only (sample)' : 'Added')
+        flash(r?.sample ? '✓ Added in Gloz (sample)' : '✓ Added')
         show('list')
       } catch { line = 'No signal: not added'; show('heard') }
     }

@@ -179,7 +179,7 @@ test('the app: list, read, voice note, save', async () => {
   assert.match(m.card().hint, /tap: save/)
   m.input('tap'); await tick()
   assert.deepEqual(calls.at(-1), { action: 'add', text: 'call the printer' })
-  assert.equal(m.card().text, 'Saved here only: no notes account set up')
+  assert.equal(m.card().text, 'Saved in Gloz (no notes account)')
 })
 
 test('the app: no signal and setup lines show, never a blank', async () => {

@@ -88,7 +88,7 @@ export const notesApp: AppEntry = {
       try {
         const r = await ctx.call({ action: 'add', text: draft })
         if (r?.error) { line = r.error; return show('error') }
-        line = r?.sample ? 'Saved here only: no notes account set up' : 'Saved'
+        line = r?.sample ? 'Saved in Gloz (no notes account)' : 'Saved'
         draft = ''
         show('note')
         setTimeout(() => { if (view === 'note') void load() }, 2500)

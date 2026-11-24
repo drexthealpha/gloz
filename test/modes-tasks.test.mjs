@@ -96,7 +96,7 @@ test('the app: tap asks first, tap again marks done; down cancels', async () => 
   m.input('tap'); m.input('tap'); await tick()
   assert.deepEqual(calls.at(-1), { action: 'done', id: 'sample-2' })
   assert.equal(m.card().text, 'Sample: buy bread and milk')
-  assert.match(m.card().hint, /^Done here only \(sample\) · /)
+  assert.match(m.card().hint, /^✓ Done \(sample\) · /)
   assert.deepEqual(m.card().progress, [2, 3])
 })
 

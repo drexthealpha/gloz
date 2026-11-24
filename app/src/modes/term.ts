@@ -51,7 +51,7 @@ function make(ctx: ModeCtx): Mode {
     state = 'busy'; ctx.render()
     try {
       const r = await ctx.call({ op: 'say', text, lang: ctx.lang() })
-      if (r?.cmd) { cmds = [r.cmd, ...cmds.filter(c => c !== r.cmd)]; at = 0; heardIt = true } else note = r?.error || 'Nothing heard'
+      if (r?.cmd) { note = ''; cmds = [r.cmd, ...cmds.filter(c => c !== r.cmd)]; at = 0; heardIt = true } else note = r?.error || 'Nothing heard'
     } catch { note = 'No signal' }
     state = 'pick'; ctx.render()
   }

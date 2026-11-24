@@ -55,7 +55,7 @@ export function panelText(id: string, d: DashData, lang: string, now: Date, pin:
     case 'temp': return w ? `${Math.round(w.temp)}°C` : noWeather
     case 'range': return w ? `High ${Math.round(w.hi)}° · low ${Math.round(w.lo)}°` : noWeather
     case 'rain': return w ? `Rain ${Math.round(w.rain)}%` : noWeather
-    case 'wind': return w ? `${Math.round(w.wind)} km/h` : noWeather
+    case 'wind': return w ? `Wind ${Math.round(w.wind)} km/h` : noWeather
     case 'pin': return pin ? cut(pin) : 'No pin'
   }
   return ''
