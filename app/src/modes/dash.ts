@@ -132,7 +132,7 @@ function make(ctx: ModeCtx): Mode {
       if (!picking) { if (i === 'tap') void load(); return }
       if (i === 'next') at = (at + 1) % PANELS.length
       if (i === 'prev') at = (at - 1 + PANELS.length) % PANELS.length
-      if (i === 'tap') { const id = PANELS[at][0]; chosen = chosen.includes(id) ? chosen.filter(p => p !== id) : [...chosen, id] }
+      if (i === 'tap') { const id = PANELS[at][0]; chosen = chosen.includes(id) ? chosen.filter(p => p !== id) : [...chosen, id]; ctx.store.set('dash.panels', JSON.stringify(chosen)) }   // kept at once, however the wearer leaves
       ctx.render()
     },
     // Everything but the weather loads at once; the weather follows when a position arrives.

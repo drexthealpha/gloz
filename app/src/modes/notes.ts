@@ -126,7 +126,7 @@ export const notesApp: AppEntry = {
           ? { kind: 'status', text: notes[at].title || 'Untitled', hint: `tap: read · down: next · up: earlier · ${hold}`, progress: [at + 1, notes.length] }
           : { kind: 'status', text: sample ? 'No notes (sample)' : 'No notes yet', hint: hold }
         case 'read': return { kind: 'message', text: text || '(empty note)', hint: 'tap: list · down: next note' }
-        case 'listening': return { kind: 'status', text: 'Listening', hint: 'release: stop' }
+        case 'listening': return { kind: 'status', text: 'Listening', hint: 'let go: done' }
         case 'thinking': return { kind: 'status', text: 'Writing down', hint: 'wait' }
         case 'heard': return draft
           ? { kind: 'message', text: draft, hint: `${line ? line + ' · ' : ''}tap: save · hold: add more · down: discard` }

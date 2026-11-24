@@ -84,7 +84,7 @@ export const tasksApp: AppEntry = {
           ? { kind: 'status', text: tasks[at].title || 'Untitled', hint: `${lead}tap: done · down: next · up: earlier · hold: add`, progress: [at + 1, tasks.length] }
           : { kind: 'status', text: 'No open tasks', hint: `${lead}hold: add a task` }
         case 'confirm': return { kind: 'status', text: tasks[at].title || 'Untitled', hint: 'tap again to mark done · down: not yet' }
-        case 'listening': return { kind: 'status', text: 'Listening', hint: 'release: stop' }
+        case 'listening': return { kind: 'status', text: 'Listening', hint: 'let go: done' }
         case 'thinking': return { kind: 'status', text: 'Writing down', hint: 'wait' }
         case 'heard': return draft
           ? { kind: 'status', text: draft, hint: `${line ? line + ' · ' : ''}tap: add · hold: say again · down: discard` }

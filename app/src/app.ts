@@ -1,4 +1,5 @@
 // Runs Gloz: wires the flow to the glasses, the backend and the outbox.
+import { doubleTap } from './core/back.ts'
 import type { EvenAppBridge } from '@evenrealities/even_hub_sdk'
 import { start, step, card, type State, type Event, type Effect } from './core/flow.ts'
 import { Outbox, type Store } from './core/outbox.ts'
@@ -167,7 +168,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   }
 
   g.onInput = i => {
-    if (i === 'exit') return active === list ? closeApp() : active ? openList() : g.exit()
+    if (i === 'exit') { const b = doubleTap(active, list); return b === 'close' ? g.exit() : b === 'messages' ? closeApp() : openList() }
     if (active) { openedAt = 0; active.input(i); return }
     if (r.on) {
       if (i === 'tap') roomDo({ t: 'tap' })
