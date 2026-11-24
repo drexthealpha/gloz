@@ -2,6 +2,7 @@
 // Mail, calendar and tasks use the Google refresh token in GLOZ_GOOGLE_*; a field is null when
 // that service is not set up or not allowed, so the glasses say so instead of showing a number.
 export const SAMPLE = {
+  sample: true,
   unread: 3,
   events: [{ at: '2026-11-24T09:30:00Z', title: 'Standup' }, { at: '2026-11-24T14:00:00Z', title: 'Board review' }],
   tasks: { due: 2, first: 'Send the budget' },

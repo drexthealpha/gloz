@@ -128,8 +128,9 @@ export function makeNav(ctx: ModeCtx): Mode & { moved: (p: [number, number]) => 
       if (state === 'busy') return { kind: 'status', text: 'Finding the route', hint: 'wait a moment' }
       if (state === 'route' && route) {
         const l = left(route, at)
-        const hint = `tap: ${info ? 'step' : 'time left'} · down: next step · up: ${at ? 'earlier step' : 'places'} · hold: new place`
-        if (info) return { kind: 'status', text: `${km(l.m)} · ${mins(l.s)} left`, hint: `map data: OpenStreetMap · ${hint}` }
+        const up = at ? ' · up: earlier step' : places.length ? ' · up: saved places' : ''
+        const hint = `tap: time left${at < route.steps.length - 1 ? ' · down: next step' : ''}${up} · hold: new place`
+        if (info) return { kind: 'status', text: `${route.to.name}: ${km(l.m)} · ${mins(l.s)} left`, hint: '© OpenStreetMap · tap: step · hold: new place' }
         return { kind: 'status', text: stepLine(route, at), hint: route.sample ? `sample · ${hint}` : hint, progress: [at + 1, route.steps.length] }
       }
       if (!places.length) return { kind: 'status', text: note || 'Hold and say where', hint: 'hold: speak · release: find the route' }
@@ -151,7 +152,7 @@ export function makeNav(ctx: ModeCtx): Mode & { moved: (p: [number, number]) => 
       if (state === 'route' && route) {
         if (i === 'tap') info = !info
         if (i === 'next') { at = Math.min(at + 1, route.steps.length - 1); info = false }
-        if (i === 'prev') { if (at) at--; else state = 'pick'; info = false }
+        if (i === 'prev') { if (at) at--; else if (places.length) state = 'pick'; info = false }
         return ctx.render()
       }
       if (!places.length) return ctx.render()

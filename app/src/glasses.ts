@@ -187,7 +187,7 @@ export class Glasses {
         for (let k = 0; k < 4; k++) { await this.bridge.updateImageRawData(new ImageRawDataUpdate({ containerID: 2 + k, containerName: `t${k}`, imageData: four[k] })); await new Promise(r => setTimeout(r, 150)) }
         return
       }
-      const [a, b] = await tiles(this.menuOpen ? blankStrip() : drawLine(c, l, i))
+      const [a, b] = await tiles(this.menuOpen ? blankStrip() : drawLine(c, l, i, { pages: c.parts !== false }))
       if (my !== this.gen) return
       // The glasses hold an image sent within 100 ms of the one before until the next send
       // (Even Hub docs, Display: "Image sends are paced at 100ms"), so the halves go 150 ms apart

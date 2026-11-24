@@ -1,6 +1,16 @@
 // Now playing on the wearer's Spotify account (Web API). Keys come from env:
 // GLOZ_SPOTIFY_CLIENT_ID, GLOZ_SPOTIFY_CLIENT_SECRET, GLOZ_SPOTIFY_REFRESH_TOKEN.
-export const SAMPLE = { track: 'Clair de lune', artist: 'Claude Debussy', playing: true }
+export const SAMPLE = { track: 'Clair de lune', artist: 'Claude Debussy', playing: true, sample: true }
+// Sample data that answers presses the way a music account would, for this run of the server.
+const TRACKS = [['Clair de lune', 'Claude Debussy'], ['Gymnopedie No. 1', 'Erik Satie'], ['The Swan', 'Camille Saint-Saens']]
+const played = { at: 0, playing: true }
+function sample(action) {
+  if (action === 'pause') played.playing = false
+  if (action === 'play') played.playing = true
+  if (action === 'next') { played.at = (played.at + 1) % TRACKS.length; played.playing = true }
+  const [track, artist] = TRACKS[played.at]
+  return { track, artist, playing: played.playing, sample: true }
+}
 export const NEED = 'Connect a music account on the Gloz server'
 const API = 'https://api.spotify.com/v1/me/player'
 
@@ -26,7 +36,7 @@ const CONTROL = { play: ['PUT', '/play'], pause: ['PUT', '/pause'], next: ['POST
 
 // body: { action: 'now' | 'play' | 'pause' | 'next' }
 export async function handle(body, { env }) {
-  if (env.GLOZ_SAMPLE === '1') return SAMPLE
+  if (env.GLOZ_SAMPLE === '1') return sample(body?.action)
   if (!env.GLOZ_SPOTIFY_CLIENT_ID || !env.GLOZ_SPOTIFY_CLIENT_SECRET || !env.GLOZ_SPOTIFY_REFRESH_TOKEN) return { need: NEED }
   try {
     const auth = { authorization: `Bearer ${await access(env)}` }

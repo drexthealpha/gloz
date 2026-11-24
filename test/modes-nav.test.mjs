@@ -84,7 +84,7 @@ test('handler: nothing found, and no speech engine', async t => {
   t.mock.method(globalThis, 'fetch', async () => new Response('[]'))
   const at = { lat: 1, lon: 2 }
   assert.match((await handle({ op: 'say', pcm: '', ...at }, { env: {}, stt: async () => ({ text: 'Nowhere Street 99' }) })).error, /Not found/)
-  assert.match((await handle({ op: 'say', pcm: '', ...at }, { env: {}, stt: async () => { throw new Error('no engine') } })).error, /Speech to text/)
+  assert.match((await handle({ op: 'say', pcm: '', ...at }, { env: {}, stt: async () => { throw new Error('no engine') } })).error, /No speech engine/)
 })
 
 test('mode: hold, speak, release finds the route; steps move; tap shows what is left', async () => {
@@ -97,11 +97,11 @@ test('mode: hold, speak, release finds the route; steps move; tap shows what is 
   assert.equal(calls[0].op, 'say')
   assert.equal(calls[0].pcm, btoa(String.fromCharCode(1, 2, 3, 4)))
   assert.equal(m.card().text, 'Head east on Geary St')
-  assert.match(m.card().hint, /^tap: time left · down: next step · up: places/)
+  assert.match(m.card().hint, /^tap: time left · down: next step( · up: saved places)? · hold: new place$/)
   m.input('next')
   assert.equal(m.card().text, 'In 100 m, turn left onto Kearny St')
   m.input('tap')
-  assert.equal(m.card().text, '1.5 km · 18 min left')
+  assert.equal(m.card().text, 'Ferry Building: 1.5 km · 18 min left')
   m.input('tap'); m.input('prev'); m.input('prev')
   // Back at the places: the destination was saved.
   assert.equal(m.card().text, 'Ferry Building')

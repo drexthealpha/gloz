@@ -15,6 +15,7 @@ const SERVER = ['unread', 'event', 'event2', 'tasks', 'task', 'temp', 'range', '
 // Server reply. A field is null when that service is not set up, missing when not asked for.
 export interface DashData {
   unread?: number | null
+  sample?: boolean
   events?: { at: string; allDay?: boolean; title: string }[] | null
   tasks?: { due: number; first?: string } | null
   weather?: { temp: number; hi: number; lo: number; rain: number; wind: number } | null
@@ -22,6 +23,7 @@ export interface DashData {
 
 export function sampleDash(_body: unknown): DashData {
   return {
+    sample: true,
     unread: 3,
     events: [{ at: '2026-11-24T09:30:00Z', title: 'Standup' }, { at: '2026-11-24T14:00:00Z', title: 'Board review' }],
     tasks: { due: 2, first: 'Send the budget' },
@@ -44,10 +46,10 @@ export function panelText(id: string, d: DashData, lang: string, now: Date, pin:
     case 'unread': return d.unread == null ? 'Mail off' : `${d.unread} unread`
     case 'event': return d.events === null ? 'Calendar off' : ev(d.events?.[0])
     case 'event2': return d.events === null ? 'Calendar off' : ev(d.events?.[1])
-    case 'tasks': return d.tasks == null ? 'Tasks off' : `${d.tasks.due} due`
+    case 'tasks': return d.tasks == null ? 'Tasks off' : `${d.tasks.due} tasks due`
     case 'task': return d.tasks == null ? 'Tasks off' : d.tasks.first ? cut(d.tasks.first) : 'No tasks due'
     case 'temp': return w ? `${Math.round(w.temp)}°C` : noWeather
-    case 'range': return w ? `${Math.round(w.hi)}° / ${Math.round(w.lo)}°` : noWeather
+    case 'range': return w ? `High ${Math.round(w.hi)}° · low ${Math.round(w.lo)}°` : noWeather
     case 'rain': return w ? `Rain ${Math.round(w.rain)}%` : noWeather
     case 'wind': return w ? `${Math.round(w.wind)} km/h` : noWeather
     case 'pin': return pin ? cut(pin) : 'No pin'
@@ -89,12 +91,13 @@ function make(ctx: ModeCtx): Mode {
   let at = 0
   let note = 'Loading'
   let where: { lat: number; lon: number } | null = null
+  let loadedAt = ''   // when the panels last loaded
   const saved = ctx.store.get('dash.where')
   if (saved) { const [lat, lon] = saved.split(',').map(Number); if (isFinite(lat) && isFinite(lon)) where = { lat, lon } }
 
   async function load() {
     if (!chosen.some(p => SERVER.includes(p))) { note = ''; return ctx.render() }
-    try { data = (await ctx.call({ panels: chosen, lat: where?.lat, lon: where?.lon })) || {}; note = '' } catch { note = 'No signal' }
+    try { data = (await ctx.call({ panels: chosen, lat: where?.lat, lon: where?.lon })) || {}; note = ''; loadedAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) } catch { note = 'No signal' }
     ctx.render()
   }
   async function locate(): Promise<void> {
@@ -116,7 +119,7 @@ function make(ctx: ModeCtx): Mode {
       if (!chosen.length) return { kind: 'status', text: 'No panels', hint: 'hold: choose panels' }
       const pin = ctx.store.get('dash.pin') || ''
       const items = chosen.map(id => panelText(id, data, ctx.lang(), new Date(), pin, Boolean(where)))
-      return { kind: 'status', text: note && note !== 'Loading' ? `${note} · ${items.join(' · ')}` : items.join(' · '), grid: note && note !== 'Loading' ? [note, ...items].slice(0, 12) : items, hint: 'tap: refresh · hold: choose panels' }
+      return { kind: 'status', text: note && note !== 'Loading' ? `${note} · ${items.join(' · ')}` : items.join(' · '), grid: note && note !== 'Loading' ? [note, ...items].slice(0, 12) : items, hint: `${data.sample ? 'sample · ' : ''}${loadedAt ? `updated ${loadedAt} · ` : ''}tap: refresh · hold: choose panels` }
     },
     input(i) {
       if (i === 'release') return

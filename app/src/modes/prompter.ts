@@ -108,9 +108,9 @@ export const prompterApp: AppEntry = {
       switch (view) {
         case 'loading': return { kind: 'status', text: 'Loading', hint: 'wait' }
         case 'error': return { kind: 'status', text: line, hint: 'tap: try again' }
-        case 'pick': return { kind: 'status', text: docs[pick].title || 'Untitled', hint: 'tap: use this script · down: next · up: back', progress: [pick + 1, docs.length] }
+        case 'pick': return { kind: 'status', text: docs[pick].title || 'Untitled', hint: 'tap: use this script · down: next · up: earlier', progress: [pick + 1, docs.length] }
         case 'script': {
-          const lead = note ? `${note} · ` : following ? '' : 'Paused · '
+          const lead = note ? `${note} · ` : following ? 'Following your voice · ' : 'Paused · '
           const other = docs.length > 1 ? ' · hold: other scripts' : ''
           if (at >= words.length) return { kind: 'status', text: 'End of script', hint: `${lead}up: line back${other}` }
           const l = lineOf(at)

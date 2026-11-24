@@ -89,7 +89,7 @@ async function route(from, to, env) {
 
 // stt: speech to text (the server engine; tests pass a stand-in).
 export async function handle(body, { env, stt = transcribe }) {
-  if (env.GLOZ_SAMPLE === '1') return SAMPLE
+  if (env.GLOZ_SAMPLE === '1') { if (body?.pcm) { let t = ''; try { t = (await stt(Buffer.from(String(body.pcm), 'base64'), String(body.lang || 'en'))).text } catch { return { error: 'No speech engine on the server' } } if (!String(t || '').trim()) return { error: 'Nothing heard' } } return SAMPLE }
   if (typeof body?.lat !== 'number' || typeof body?.lon !== 'number') return { error: 'No position: allow location on the phone' }
   const from = [Number(body.lat), Number(body.lon)]
   try {
@@ -100,7 +100,7 @@ export async function handle(body, { env, stt = transcribe }) {
     }
     if (body?.op === 'say') {
       let text
-      try { text = (await stt(Buffer.from(String(body.pcm || ''), 'base64'), String(body.lang || 'en'))).text } catch { return { error: 'Speech to text is not set up on the Gloz server' } }
+      try { text = (await stt(Buffer.from(String(body.pcm || ''), 'base64'), String(body.lang || 'en'))).text } catch { return { error: 'No speech engine on the server' } }
       const { profile, q } = parse(text || '')
       if (!q) return { error: 'Nothing heard' }
       const p = await search(q, from[0], from[1])

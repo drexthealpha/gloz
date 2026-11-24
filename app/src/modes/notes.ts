@@ -123,14 +123,14 @@ export const notesApp: AppEntry = {
         case 'loading': return { kind: 'status', text: 'Loading notes', hint: hold }
         case 'error': return { kind: 'status', text: line, hint: `tap: try again · ${hold}` }
         case 'list': return notes.length
-          ? { kind: 'status', text: notes[at].title || 'Untitled', hint: `tap: read · down: next · up: back · ${hold}`, progress: [at + 1, notes.length] }
+          ? { kind: 'status', text: notes[at].title || 'Untitled', hint: `tap: read · down: next · up: earlier · ${hold}`, progress: [at + 1, notes.length] }
           : { kind: 'status', text: sample ? 'No notes (sample)' : 'No notes yet', hint: hold }
-        case 'read': return { kind: 'message', text: text || '(empty note)', hint: 'tap: list · down: next note · up: back' }
+        case 'read': return { kind: 'message', text: text || '(empty note)', hint: 'down: next note · up: list' }
         case 'listening': return { kind: 'status', text: 'Listening', hint: 'release: stop' }
         case 'thinking': return { kind: 'status', text: 'Writing down', hint: 'wait' }
         case 'heard': return draft
           ? { kind: 'message', text: draft, hint: `${line ? line + ' · ' : ''}tap: save · hold: add more · down: discard` }
-          : { kind: 'status', text: line || 'Nothing heard', hint: 'hold: speak again · down: back' }
+          : { kind: 'status', text: line || 'Nothing heard', hint: /speech/i.test(line) ? 'down: back' : 'hold: speak again · down: back' }
         case 'saving': return { kind: 'status', text: 'Saving', hint: 'wait' }
         case 'note': return { kind: 'status', text: line, hint: hold }
       }

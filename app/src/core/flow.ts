@@ -144,7 +144,7 @@ export function step(s: State, ev: Event): { s: State; fx: Effect[] } {
       // Back from words being written goes where the hold began: the reply, if there was one.
       if (s.view === 'thinking' && s.heldFrom === 'draft' && typeof s.drafts[msg.id] === 'object') return { s: { ...s, view: 'draft', heldFrom: undefined }, fx }
       if (s.view === 'draft' || s.view === 'thinking') return { s: { ...s, view: 'message', heldFrom: undefined }, fx }
-      if (s.view === 'message') { fx.push({ e: 'later', ms: 2500, ev: { t: 'note', text: '' } }); return { s: { ...s, note: '\u0000firstPart' }, fx } }
+      if (s.view === 'message') { fx.push({ e: 'later', ms: 3500, ev: { t: 'note', text: '' } }); return { s: { ...s, note: '\u0000firstPart' }, fx } }
       return { s, fx }
     case 'hold':
       if (!msg || s.view === 'empty') { fx.push({ e: 'later', ms: 2500, ev: { t: 'note', text: '' } }); return { s: { ...s, note: '\u0000nothingToReply' }, fx } }

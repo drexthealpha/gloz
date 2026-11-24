@@ -34,7 +34,7 @@ test('ask: hold listens, release sends the audio, the answer shows paged with a 
   const c = m.card()
   assert.equal(c.kind, 'message')
   assert.match(c.text, /8849 Meter/)
-  assert.match(c.hint, /^tap: .* · down: .* · up: /)
+  assert.match(c.hint, /^(down: next answer · )?(up: earlier answer · )?hold: ask again$/)
   // A follow-up carries the earlier question and answer.
   m.input('hold'); m.audio(new Uint8Array([5, 6])); m.input('release'); await tick()
   assert.equal(ctx.calls[1].history.length, 1)

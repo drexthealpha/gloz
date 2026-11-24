@@ -11,7 +11,7 @@ const LIMIT_MS = 10000
 const MAX_CHARS = 20000
 
 export const SAMPLE_LIST = { on: true, allow: ['uptime', 'df', 'git'], sample: true }
-export const SAMPLE_RUN = { lines: [' 10:42:07 up 3 days,  2:11,  1 user,  load average: 0.08, 0.12, 0.10', 'exit 0'], code: 0, cut: false, timedOut: false, ms: 9, startMs: 3, sample: true }
+export const SAMPLE_RUN = { lines: [' 10:42:07 up 3 days,  2:11,  1 user,  load average: 0.08, 0.12, 0.10', 'done'], code: 0, cut: false, timedOut: false, ms: 9, startMs: 3, sample: true }
 
 const allowed = env => String(env.GLOZ_TERMINAL_ALLOW || '').split(',').map(s => s.trim()).filter(Boolean)
 
@@ -25,13 +25,14 @@ export function spoken(text) {
 // stt and run are the server's speech to text and execFile; tests pass stand-ins.
 export async function handle(body, { env, stt = transcribe, run = execFile }) {
   const op = body?.op
-  if (env.GLOZ_SAMPLE === '1') return op === 'run' ? SAMPLE_RUN : op === 'say' ? { cmd: 'uptime', sample: true } : SAMPLE_LIST
+  if (env.GLOZ_SAMPLE === '1' && op === 'say') { if (body?.pcm) { let t = ''; try { t = (await stt(Buffer.from(String(body.pcm), 'base64'), String(body.lang || 'en'))).text } catch { return { error: 'No speech engine on the server' } } if (!String(t || '').trim()) return { error: 'Nothing heard' } } }
+  if (env.GLOZ_SAMPLE === '1') return op === 'run' ? { ...SAMPLE_RUN, lines: [SAMPLE_RUN.lines[0].replace('10:42:07', new Date().toTimeString().slice(0, 8)), 'done'] } : op === 'say' ? { cmd: 'uptime', sample: true } : SAMPLE_LIST
   if (env.GLOZ_TERMINAL !== '1') return { on: false }
   const allow = allowed(env)
   if (op === 'list') return { on: true, allow }
   if (op === 'say') {
     let text
-    try { text = (await stt(Buffer.from(String(body.pcm || ''), 'base64'), String(body.lang || 'en'))).text } catch { return { error: 'Speech to text is not set up on the Gloz server' } }
+    try { text = (await stt(Buffer.from(String(body.pcm || ''), 'base64'), String(body.lang || 'en'))).text } catch { return { error: 'No speech engine on the server' } }
     const cmd = spoken(text || '')
     if (!cmd) return { error: 'Nothing heard' }
     const name = cmd.split(' ')[0]
@@ -50,7 +51,7 @@ export async function handle(body, { env, stt = transcribe, run = execFile }) {
         const timedOut = Boolean(err?.killed) && err.code !== 'ERR_CHILD_PROCESS_STDIO_MAXBUFFER'
         const code = typeof err?.code === 'number' ? err.code : err ? null : 0
         const lines = all.slice(0, MAX_CHARS).split(/\r?\n/).filter(l => l.trim())
-        lines.push(timedOut ? 'stopped after 10 s' : cut ? `exit ${code ?? '?'} · output cut at 20,000 characters` : `exit ${code ?? '?'}`)
+        lines.push(timedOut ? 'stopped after 10 s' : cut ? `${code === 0 ? 'done' : `failed (exit ${code ?? '?'})`} · output cut at 20,000 characters` : code === 0 ? 'done' : `failed (exit ${code ?? '?'})`)
         done({ lines, code, cut, timedOut, ms: Math.round(performance.now() - t0), startMs })
       })
       child?.once?.('spawn', () => { startMs = Number((performance.now() - t0).toFixed(2)) })

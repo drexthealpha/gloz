@@ -22,8 +22,8 @@ test('dash: default panels show as short items; battery is not a panel', async (
   await m.start()
   assert.deepEqual(ctx.calls[0].panels, DEFAULT_PANELS)
   const c = m.card()
-  assert.match(c.text, /3 unread · .*Standup · 2 due · 12°C$/)
-  assert.match(c.hint, /^tap: refresh · hold: choose panels/)
+  assert.match(c.text, /3 unread · .*Standup · 2 tasks due · 12°C$/)
+  assert.match(c.hint, /(^|· )tap: refresh · hold: choose panels$/)
   assert.ok(!PANELS.some(([id]) => /batt/.test(id)))
 })
 

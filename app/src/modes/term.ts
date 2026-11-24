@@ -9,7 +9,7 @@ const KEY = 'term.saved'
 const MAX_BYTES = 10 * 32000   // 10 s of 16 kHz 16-bit audio
 
 export function sampleTerm(body: any): any {
-  if (body?.op === 'run') return { lines: [' 10:42:07 up 3 days,  2:11,  1 user,  load average: 0.08, 0.12, 0.10', 'exit 0'], code: 0, cut: false, timedOut: false, ms: 9, startMs: 3, sample: true }
+  if (body?.op === 'run') return { lines: [` ${new Date().toTimeString().slice(0, 8)} up 3 days,  2:11,  1 user,  load average: 0.08, 0.12, 0.10`, 'done'], code: 0, cut: false, timedOut: false, ms: 9, startMs: 3, sample: true }
   if (body?.op === 'say') return { cmd: 'uptime', sample: true }
   return { on: true, allow: ['uptime', 'df', 'git'], sample: true }
 }
@@ -32,8 +32,11 @@ function make(ctx: ModeCtx): Mode {
   let note = ''
   let out: string[] = []
   let line = 0
+  let ran = ''   // the command whose output is shown
   let pcm: Uint8Array[] = []
   let bytes = 0
+  let heardIt = false   // the command on screen is the one just heard
+  let sample = false
 
   const merge = (allow: string[]) => { cmds = [...new Set([...saved, ...allow])]; at = Math.min(at, Math.max(0, cmds.length - 1)) }
 
@@ -41,7 +44,7 @@ function make(ctx: ModeCtx): Mode {
     try {
       const r = await ctx.call({ op: 'list' })
       if (!r?.on) { state = 'off'; return ctx.render() }
-      merge(r.allow || []); state = 'pick'
+      merge(r.allow || []); sample = Boolean(r.sample); state = 'pick'
     } catch { state = 'pick'; note = 'No signal' }
     ctx.render()
   }
@@ -50,7 +53,7 @@ function make(ctx: ModeCtx): Mode {
     state = 'busy'; ctx.render()
     try {
       const r = await ctx.call({ op: 'say', pcm: b64(parts), lang: ctx.lang() })
-      if (r?.cmd) { cmds = [r.cmd, ...cmds.filter(c => c !== r.cmd)]; at = 0 } else note = r?.error || 'Nothing heard'
+      if (r?.cmd) { cmds = [r.cmd, ...cmds.filter(c => c !== r.cmd)]; at = 0; heardIt = true } else note = r?.error || 'Nothing heard'
     } catch { note = 'No signal' }
     state = 'pick'; ctx.render()
   }
@@ -61,7 +64,7 @@ function make(ctx: ModeCtx): Mode {
       const r: Run = await ctx.call({ op: 'run', cmd })
       if (!r || r.error || !r.lines) { note = r?.error || 'No output'; state = 'pick'; return ctx.render() }
       if (!r.sample) { saved = [cmd, ...saved.filter(c => c !== cmd)].slice(0, 10); ctx.store.set(KEY, JSON.stringify(saved)) }
-      out = r.lines; line = 0; state = 'out'
+      out = r.lines; line = 0; ran = cmd; state = 'out'
     } catch { note = 'No signal'; state = 'pick' }
     ctx.render()
   }
@@ -73,10 +76,10 @@ function make(ctx: ModeCtx): Mode {
       if (state === 'off') return { kind: 'status', text: 'Terminal is off', hint: 'server: set GLOZ_TERMINAL=1 and GLOZ_TERMINAL_ALLOW' }
       if (state === 'listening') return { kind: 'status', text: 'Listening', hint: 'release: write the command' }
       if (state === 'busy') return { kind: 'status', text: 'Working', hint: 'wait a moment' }
-      if (state === 'out') return { kind: 'message', text: out[line], hint: 'tap: commands · down: next line · up: earlier line · hold: speak', progress: [line + 1, out.length] }
+      if (state === 'out') return { kind: 'message', head: `${ran}:`, text: out[line], hint: 'tap: commands · down: next line · up: earlier line · hold: speak', progress: [line + 1, out.length] }
       if (note) return { kind: 'status', text: note, hint: 'tap: back · hold: speak' }
       if (!cmds.length) return { kind: 'status', text: 'No commands allowed', hint: 'server: set GLOZ_TERMINAL_ALLOW · hold: speak' }
-      return { kind: 'status', text: cmds[at], hint: 'tap: run · down: next · up: earlier · hold: speak', progress: [at + 1, cmds.length] }
+      return { kind: 'status', text: cmds[at], hint: `${heardIt ? 'you said this · ' : sample ? 'sample · ' : ''}tap: run · down: next · up: earlier · hold: speak`, progress: [at + 1, cmds.length] }
     },
     input(i) {
       if (state === 'loading' || state === 'off' || state === 'busy') return
@@ -90,6 +93,7 @@ function make(ctx: ModeCtx): Mode {
         return void heard(parts)
       }
       if (state === 'listening') return
+      heardIt = false
       if (state === 'out') {
         if (i === 'tap') state = 'pick'
         if (i === 'next') line = Math.min(line + 1, out.length - 1)

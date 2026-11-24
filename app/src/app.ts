@@ -55,11 +55,12 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   let roomNote = ''
   let quiet = false   // listening, and nothing heard yet
   let active: Mode | null = null   // an app from the Apps list, when one is open
+  let openedAt = 0                 // when it opened: the way back is shown for the first 3 s
 
   const outbox = new Outbox(store, p => api ? api.send(p.key, p.msgId, p.text) : Promise.resolve('retry'))
 
   function render() {
-    if (active) { g.show(active.card()); onState?.(s, settings); return }
+    if (active) { const c = active.card(); g.show(Date.now() - openedAt < 3000 ? { ...c, hint: 'double tap: back to messages' } : c); onState?.(s, settings); return }
     g.show(r.on ? { ...roomCard(r, settings.myLang), ...(roomNote ? { text: roomNote } : quiet && !r.paused && !r.lines.length ? { text: words(settings.myLang).nothingHeardYet } : {}) } : card(s, settings.myLang))
     onState?.(s, settings)
   }
@@ -166,7 +167,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   }
 
   g.onInput = i => {
-    if (i === 'exit') return g.exit()
+    if (i === 'exit') return active ? closeApp() : g.exit()
     if (active) { active.input(i); return }
     if (r.on) {
       if (i === 'tap') roomDo({ t: 'tap' })
@@ -197,14 +198,14 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
     if (id === 1 || id === 2) { settings.size = Math.min(6, Math.max(1, settings.size + (id === 1 ? 1 : -1))); note = w.sizeNote(settings.size) }
     if (id === 3) { settings.low = !settings.low; note = settings.low ? w.movedDown : w.movedUp }
     // Without AI on the server, translation cannot run: it stays off and says why.
-    if (id === 4) { if (!settings.translate && !aiOn) note = w.needsAi; else { settings.translate = !settings.translate; after = 0; note = settings.translate ? w.translateOn : w.translateOff } }
+    if (id === 4) { if (!settings.translate && !aiOn) note = w.needsAi; else { settings.translate = !settings.translate; after = 0; note = settings.translate ? w.translateOn : w.translateOff; g.setMenu(menuItems(settings.myLang, r.on, w.stopListening, false, settings.translate)) } }
     if (id === 5) { const m = s.queue[s.at]; if (r.on) { roomNote = w.nothingToMute; setTimeout(() => { roomNote = ''; render() }, 2500) } else if (m && s.view !== 'empty') { muted.add(`${m.source}:${m.chat}`); store.set('gloz.muted', JSON.stringify([...muted])); dispatch({ t: 'mute', key: `${m.source}:${m.chat}` }); note = w.mutedWho(m.from) } else note = w.nothingToMute }
     if (id === 6) { const n = await poll(); note = n < 0 ? w.noSignal : n ? w.someNew(n) : w.nothingNew }
     if (id === 8 && !muted.size) note = w.nothingMuted
     else if (id === 8) { const who = [...new Set((s.mutedMsgs ?? []).map(x => x.from))].join(', '); note = who ? w.unmutedWho(who) : w.unmuted; muted.clear(); store.set('gloz.muted', '[]'); after = 0; dispatch({ t: 'unmute' }); poll() }
     if (id === 9) { if (r.on) roomDo({ t: 'stop' }); openApp(appsList(modeCtx(''), APPS, a => openApp(a.make(modeCtx(a.id))))); return }
     if (id === 10) { closeApp(); return }
-    if (id === 7) { if (r.on) note = r.lines.length ? w.roomStop : w.roomStopEmpty; roomNote = ''; quiet = false; silentPieces = 0; roomDo({ t: r.on ? 'stop' : 'start' }); g.setMenu(menuItems(settings.myLang, r.on, w.stopListening)) }
+    if (id === 7) { if (r.on) note = r.lines.length ? w.roomStop : w.roomStopEmpty; roomNote = ''; quiet = false; silentPieces = 0; roomDo({ t: r.on ? 'stop' : 'start' }); g.setMenu(menuItems(settings.myLang, r.on, w.stopListening, false, settings.translate)) }
     if (note) dispatch({ t: 'note', text: note, ms: 3500 })   // a menu choice is confirmed long enough to look back
     saveSettings(settings)
     g.setLook(settings.size, settings.low, settings.autoPace)
@@ -225,6 +226,8 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   function openApp(m: Mode) {
     active?.stop?.()
     active = m
+    openedAt = Date.now()
+    setTimeout(() => { if (active === m) render() }, 3100)
     g.setMenu(menuItems(settings.myLang, false, words(settings.myLang).stopListening, true))
     void m.start?.()
     render()
@@ -232,12 +235,12 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   function closeApp() {
     active?.stop?.()
     active = null
-    g.setMenu(menuItems(settings.myLang, r.on, words(settings.myLang).stopListening))
+    g.setMenu(menuItems(settings.myLang, r.on, words(settings.myLang).stopListening, false, settings.translate))
     render()
   }
 
   g.setLook(settings.size, settings.low, settings.autoPace)
-  await g.open(menuItems(settings.myLang))
+  await g.open(menuItems(settings.myLang, false, undefined, false, settings.translate))
   render()
   console.log('[gloz] ready')
   poll()

@@ -32,13 +32,14 @@ function make(ctx: ModeCtx): Mode {
   let at = 0
   let busy = false
   let note = ''
+  let got = ''   // when the last refresh arrived
 
   async function load() {
     busy = true; ctx.render()
     try {
       const j: Quotes = await ctx.call({ op: 'quotes' })
       if (!j || j.error || !j.quotes?.length) note = j?.error || 'No quotes'
-      else { r = j; note = ''; at = Math.min(at, j.quotes.length - 1) }
+      else { r = j; note = ''; at = Math.min(at, j.quotes.length - 1); got = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }) }
     } catch { note = 'No signal' }
     busy = false; ctx.render()
   }
@@ -49,7 +50,7 @@ function make(ctx: ModeCtx): Mode {
       if (busy && !r) return { kind: 'status', text: 'Loading quotes', hint: 'wait a moment' }
       if (!r) return { kind: 'status', text: note || 'No quotes', hint: 'tap: try again' }
       const q = r.quotes[at]
-      const time = r.sample ? 'sample' : busy ? 'updating' : note ? `${note} · ${when(q.t)}` : when(q.t)
+      const time = r.sample ? `sample ${got}` : busy ? 'updating' : note ? `${note} · ${when(q.t)}` : when(q.t)
       return { kind: 'status', text: line(q), hint: `${time} · tap: refresh · down: next · up: earlier`, progress: [at + 1, r.quotes.length] }
     },
     input(i) {

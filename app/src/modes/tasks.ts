@@ -81,14 +81,14 @@ export const tasksApp: AppEntry = {
         case 'loading': return { kind: 'status', text: 'Loading tasks', hint: 'hold: add a task' }
         case 'error': return { kind: 'status', text: line, hint: 'tap: try again' }
         case 'list': return tasks.length
-          ? { kind: 'status', text: tasks[at].title || 'Untitled', hint: `${lead}tap: done · down: next · up: back · hold: add`, progress: [at + 1, tasks.length] }
+          ? { kind: 'status', text: tasks[at].title || 'Untitled', hint: `${lead}tap: done · down: next · up: earlier · hold: add`, progress: [at + 1, tasks.length] }
           : { kind: 'status', text: 'No open tasks', hint: `${lead}hold: add a task` }
-        case 'confirm': return { kind: 'status', text: tasks[at].title || 'Untitled', hint: 'tap again to mark done · down: keep' }
+        case 'confirm': return { kind: 'status', text: tasks[at].title || 'Untitled', hint: 'tap again to mark done · down: not yet' }
         case 'listening': return { kind: 'status', text: 'Listening', hint: 'release: stop' }
         case 'thinking': return { kind: 'status', text: 'Writing down', hint: 'wait' }
         case 'heard': return draft
           ? { kind: 'status', text: draft, hint: `${line ? line + ' · ' : ''}tap: add · hold: say again · down: discard` }
-          : { kind: 'status', text: line || 'Nothing heard', hint: 'hold: speak again · down: back' }
+          : { kind: 'status', text: line || 'Nothing heard', hint: /speech/i.test(line) ? 'down: back' : 'hold: speak again · down: back' }
         case 'saving': return { kind: 'status', text: 'Saving', hint: 'wait' }
       }
     }

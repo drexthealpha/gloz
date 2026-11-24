@@ -91,7 +91,9 @@ export function drawLine(c: Card, l: Lines, i: number, opts: { pages?: boolean }
   g.fillText(line, dir === 'rtl' ? W - PAD : PAD, lineY)
   g.textBaseline = 'middle'
   // Which line of how many, as numbers, at the right end of the hint row.
-  const pages = opts.pages !== false && l.lines.length > 1 ? `part ${i + 1}/${l.lines.length}${i === l.lines.length - 1 ? ' · end' : ''}` : ''
+  // A one-line item in a list shows where it sits in the list instead.
+  const pages = opts.pages !== false && l.lines.length > 1 ? `part ${i + 1}/${l.lines.length}${i === l.lines.length - 1 ? ' · end' : ''}`
+    : c.kind === 'status' && c.progress && c.progress[1] > 1 ? `${c.progress[0]}/${c.progress[1]}` : ''
   if (hint || pages) {
     const y = STRIP - HINT_PX / 2 - 6
     g.font = `${HINT_PX}px ${FONT}`

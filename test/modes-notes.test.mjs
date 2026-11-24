@@ -167,7 +167,7 @@ test('the app: list, read, voice note, save', async () => {
   const m = notesApp.make(ctx)
   await m.start()
   assert.equal(m.card().text, 'Sample: call with the printer')
-  assert.match(m.card().hint, /^tap: read · down: next · up: back · hold: speak a note$/)
+  assert.match(m.card().hint, /^tap: read · down: next · up: earlier · hold: speak a note$/)
   m.input('next'); assert.equal(m.card().text, 'Sample: ideas for the garden')
   m.input('prev'); m.input('prev'); assert.equal(m.card().text, 'Sample: books to read')
   m.input('tap'); await tick()

@@ -15,14 +15,15 @@ function fakeCtx(reply) {
 }
 const tick = () => new Promise(r => setTimeout(r, 0))
 
-test('music: shows the track, tap pauses and plays, down skips, up refreshes', async () => {
+test('music: shows the track, tap pauses and plays, down skips', async (t) => {
   let playing = true
   const ctx = fakeCtx(b => { if (b.action === 'pause') playing = false; if (b.action === 'play') playing = true; return { track: b.action === 'next' ? 'Gymnopedie No. 1' : 'Clair de lune', artist: 'Debussy', playing } })
   const m = musicApp.make(ctx)
+  t.after(() => m.stop())   // the refresh timer never outlives the test, even when a check fails
   assert.equal(m.card().text, 'Loading')
   await m.start(); await tick()
   assert.equal(m.card().text, 'Playing: Clair de lune · Debussy')
-  assert.match(m.card().hint, /^tap: pause · down: next track · up: refresh/)
+  assert.match(m.card().hint, /^tap: pause · down: next track$/)
   m.input('tap'); await tick()
   assert.equal(ctx.calls.at(-1).action, 'pause')
   assert.match(m.card().text, /^Paused/)
@@ -30,9 +31,9 @@ test('music: shows the track, tap pauses and plays, down skips, up refreshes', a
   assert.equal(ctx.calls.at(-1).action, 'play')
   m.input('next'); await tick()
   assert.match(m.card().text, /Gymnopedie/)
+  const n = ctx.calls.length
   m.input('prev'); await tick()
-  assert.equal(ctx.calls.at(-1).action, 'now')
-  m.stop()
+  assert.equal(ctx.calls.length, n)   // up does nothing here, and the hint does not offer it
 })
 
 test('music: no keys, no signal and nothing playing each give one clear line', async () => {
@@ -47,9 +48,11 @@ test('music: no keys, no signal and nothing playing each give one clear line', a
   assert.equal(m.card().text, 'Nothing playing')
 })
 
-test('music server: no keys says what to connect; sample mode gives the fixed track', async () => {
+test('music server: no keys says what to connect; sample mode answers presses and is marked', async () => {
   assert.deepEqual(await handle({ action: 'now' }, { env: {} }), { need: NEED })
   assert.deepEqual(await handle({ action: 'now' }, { env: { GLOZ_SAMPLE: '1' } }), SAMPLE)
+  assert.equal((await handle({ action: 'pause' }, { env: { GLOZ_SAMPLE: '1' } })).playing, false)
+  assert.notEqual((await handle({ action: 'next' }, { env: { GLOZ_SAMPLE: '1' } })).track, SAMPLE.track)
   assert.deepEqual(sampleMusic({}), SAMPLE)
 })
 

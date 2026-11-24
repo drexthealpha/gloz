@@ -6,10 +6,9 @@ import type { Card } from '../core/types.ts'
 export interface QA { q: string; a: string }
 const KEY = 'ask.log'
 const MAX_BYTES = 30 * 32000   // 30 s of 16 kHz 16-bit audio
-const HINT = 'tap: ask again · down: next page · up: earlier page · hold: speak'
 
 export function sampleAsk(_body: unknown): QA {
-  return { q: 'How tall is Mount Everest?', a: 'Mount Everest is 8,849 metres tall, measured by China and Nepal in 2020.' }
+  return { q: 'Sample: How tall is Mount Everest?', a: 'Mount Everest is 8,849 metres tall, measured by China and Nepal in 2020.' }
 }
 
 function b64(parts: Uint8Array[]): string {
@@ -52,7 +51,7 @@ function make(ctx: ModeCtx): Mode {
       if (state === 'thinking') return { kind: 'status', text: 'Thinking', hint: 'wait a moment' }
       const qa = state === 'answer' ? log[at] : undefined
       if (!qa) return { kind: 'status', text: note || 'Hold and ask', hint: 'hold: speak · release: ask' }
-      return { kind: 'message', head: qa.q ? `${qa.q} ·` : undefined, text: qa.a, hint: HINT, progress: [at + 1, log.length] }
+      return { kind: 'message', head: qa.q ? `${qa.q} ·` : undefined, text: qa.a, hint: [at < log.length - 1 && 'down: next answer', at > 0 && 'up: earlier answer', 'hold: ask again'].filter(Boolean).join(' · '), progress: [at + 1, log.length] }
     },
     input(i) {
       if (i === 'hold') { pcm = []; bytes = 0; note = ''; state = 'listening'; ctx.mic(true).catch(() => {}); return ctx.render() }

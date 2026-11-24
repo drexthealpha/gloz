@@ -3,7 +3,7 @@
 import { transcribe } from '../stt.mjs'
 import { NAMES } from '../lang.mjs'
 
-export const SAMPLE = { q: 'How tall is Mount Everest?', a: 'Mount Everest is 8,849 metres tall, measured by China and Nepal in 2020.' }
+export const SAMPLE = { q: 'Sample: How tall is Mount Everest?', a: 'Mount Everest is 8,849 metres tall, measured by China and Nepal in 2020.' }
 export const NO_KEY = 'An AI key is needed on the Gloz server.'
 
 function providers(env) {
@@ -28,13 +28,13 @@ async function call(p, system, messages) {
 
 // body: { pcm: base64, lang, history: [{q, a}] } or { q } for a typed question.
 export async function handle(body, { env }) {
-  if (env.GLOZ_SAMPLE === '1') return SAMPLE
+  if (env.GLOZ_SAMPLE === '1') { if (body?.pcm) { let t = ''; try { t = (await transcribe(Buffer.from(String(body.pcm), 'base64'), String(body.lang || 'en'))).text } catch { return { error: 'No speech engine on the server' } } if (!String(t || '').trim()) return { error: 'Nothing heard' } } return SAMPLE }
   const list = providers(env)
   if (!list.length) return { q: '', a: NO_KEY }
   const lang = String(body?.lang || 'en')
   let q = String(body?.q || '').trim()
   if (!q && body?.pcm) {
-    try { q = (await transcribe(Buffer.from(String(body.pcm), 'base64'), lang)).text } catch { return { error: 'Speech to text is not set up on the Gloz server' } }
+    try { q = (await transcribe(Buffer.from(String(body.pcm), 'base64'), lang)).text } catch { return { error: 'No speech engine on the server' } }
   }
   if (!q) return { error: 'Nothing heard' }
   const history = (Array.isArray(body?.history) ? body.history : []).filter(h => h?.q && h?.a).slice(-10)
