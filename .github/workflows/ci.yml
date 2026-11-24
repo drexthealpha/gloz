@@ -1,0 +1,50 @@
+name: CI
+on:
+  push:
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm ci
+      - run: npm ci
+        working-directory: app
+      - name: Tests (no keys)
+        run: npm test
+      - name: Public text (no em dashes, no banned words)
+        run: npm run check:text
+      - name: Type check, app build, demo build, .ehpk
+        working-directory: app
+        run: |
+          npx tsc --noEmit
+          npx vite build
+          npx vite build --mode demo
+          npx -y @evenrealities/evenhub-cli@0.2.0 pack app.json dist -o gloz.ehpk --sdk-ver 0.0.16
+      - name: Results and README numbers match the committed run
+        run: node eval/score.mjs --check && node scripts/readme.mjs --check
+  evaluation:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Fonts and the simulator's web view
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb fonts-noto-core fonts-noto-cjk libwebkit2gtk-4.1-0 libgtk-3-0
+      - run: npm ci
+      - run: npm ci
+        working-directory: app
+      - run: npm install -g @evenrealities/evenhub-simulator@0.9.5
+      - name: Evaluation in the simulator, one held-out message per script
+        run: xvfb-run -a node eval/run.mjs heldout --per-script=1 --out=ci
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: evaluation-ci
+          path: eval/results/ci.*

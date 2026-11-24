@@ -1,0 +1,89 @@
+{
+ "protocol": "eval/PROTOCOL.md",
+ "size": 3,
+ "ladder": [
+  0,
+  1,
+  1.5,
+  2,
+  3,
+  4,
+  5,
+  6,
+  8
+ ],
+ "pass": 0.1,
+ "wins": 1,
+ "by": {
+  "Arabic": {
+   "n": 3,
+   "plain": [
+    -1,
+    -1,
+    -1
+   ],
+   "gloz": [
+    5,
+    5,
+    4
+   ],
+   "plainA": 0,
+   "glozA": 3,
+   "plainMedian": -1,
+   "glozMedian": 5
+  }
+ },
+ "results": [
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "id": 11750304,
+   "expected": "كان يعلم منذ البداية.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 5,
+    "A": "كان يعلم منذ البداية.",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "id": 13911416,
+   "expected": "الكتب لا تعترف بالحدود.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 5,
+    "A": "الكتب لا تعترف بالحدود.",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "id": 11644749,
+   "expected": "كان دانيال يراجع دروسه في المكتبة.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "كان دانيال يراجع دروسه في المكتبة.",
+    "cerA": 0,
+    "screens": 2
+   }
+  }
+ ]
+}

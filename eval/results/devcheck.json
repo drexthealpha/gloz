@@ -1,0 +1,321 @@
+{
+ "protocol": "eval/PROTOCOL.md",
+ "size": 3,
+ "ladder": [
+  0,
+  1,
+  1.5,
+  2,
+  3,
+  4,
+  5,
+  6,
+  8
+ ],
+ "pass": 0.1,
+ "wins": 8,
+ "by": {
+  "Arabic": {
+   "n": 1,
+   "plain": [
+    -1
+   ],
+   "gloz": [
+    5
+   ],
+   "plainA": 0,
+   "glozA": 1,
+   "plainMedian": -1,
+   "glozMedian": 5
+  },
+  "Persian": {
+   "n": 1,
+   "plain": [
+    -1
+   ],
+   "gloz": [
+    -1
+   ],
+   "plainA": 0,
+   "glozA": 0,
+   "plainMedian": -1,
+   "glozMedian": -1
+  },
+  "Hindi": {
+   "n": 1,
+   "plain": [
+    -1
+   ],
+   "gloz": [
+    3
+   ],
+   "plainA": 0,
+   "glozA": 1,
+   "plainMedian": -1,
+   "glozMedian": 3
+  },
+  "Thai": {
+   "n": 1,
+   "plain": [
+    -1
+   ],
+   "gloz": [
+    -1
+   ],
+   "plainA": 0,
+   "glozA": 0,
+   "plainMedian": -1,
+   "glozMedian": -1
+  },
+  "Hebrew": {
+   "n": 1,
+   "plain": [
+    -1
+   ],
+   "gloz": [
+    4
+   ],
+   "plainA": 0,
+   "glozA": 1,
+   "plainMedian": -1,
+   "glozMedian": 4
+  },
+  "Japanese": {
+   "n": 1,
+   "plain": [
+    2
+   ],
+   "gloz": [
+    4
+   ],
+   "plainA": 1,
+   "glozA": 1,
+   "plainMedian": 2,
+   "glozMedian": 4
+  },
+  "Korean": {
+   "n": 1,
+   "plain": [
+    1
+   ],
+   "gloz": [
+    3
+   ],
+   "plainA": 1,
+   "glozA": 1,
+   "plainMedian": 1,
+   "glozMedian": 3
+  },
+  "Chinese": {
+   "n": 1,
+   "plain": [
+    1.5
+   ],
+   "gloz": [
+    3
+   ],
+   "plainA": 1,
+   "glozA": 1,
+   "plainMedian": 1.5,
+   "glozMedian": 3
+  },
+  "Russian": {
+   "n": 1,
+   "plain": [
+    2
+   ],
+   "gloz": [
+    4
+   ],
+   "plainA": 1,
+   "glozA": 1,
+   "plainMedian": 2,
+   "glozMedian": 4
+  },
+  "English": {
+   "n": 1,
+   "plain": [
+    2
+   ],
+   "gloz": [
+    4
+   ],
+   "plainA": 1,
+   "glozA": 1,
+   "plainMedian": 2,
+   "glozMedian": 4
+  }
+ },
+ "results": [
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "id": 11750304,
+   "expected": "كان يعلم منذ البداية.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 5,
+    "A": "كان يعلم منذ البداية.",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "id": 10752973,
+   "expected": "فکرمیکنم میفهمم چی میگی.",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "id": 6829720,
+   "expected": "उनकी व्याख्या भ्रामक थी।",
+   "plain": {
+    "survive": -1,
+    "A": "",
+    "cerA": 1
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "उनकी व्याख्या भ्रामक थी।",
+    "cerA": 0,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "id": 12744641,
+   "expected": "ช่วงนั้นฉันมักจะตื่นตอนตี 5",
+   "plain": {
+    "survive": -1,
+    "A": "5",
+    "cerA": 0.9615
+   },
+   "gloz": {
+    "survive": -1,
+    "A": "ช่วงนันฉันมักจะตืนตอนดี 5",
+    "cerA": 0.1154,
+    "screens": 1
+   }
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "id": 2110231,
+   "expected": "תארו לעצמכם: הוא רופא, ובכל זאת - מעשן.",
+   "plain": {
+    "survive": -1,
+    "A": "0 8 .",
+    "cerA": 0.9688
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "תארו לעצמכם: הוא רופא, וככל זאת - מעשן.",
+    "cerA": 0.0313,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "id": 88909,
+   "expected": "彼女は実際にはディールに住んでいません。",
+   "plain": {
+    "survive": 2,
+    "A": "彼女 は 実際 に は ディ ー ル に 住ん で いま せん 。",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "彼女 は 実際 に は ディ ー ル に 住ん で いま せん 。",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "id": 13756505,
+   "expected": "우리는 벽을 칠하기 전에 가구를 덮어야 해.",
+   "plain": {
+    "survive": 1,
+    "A": "우리는 벽을 칠하기 전에 가구를 덮어야 해.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "우리는 벽을 칠하기 전에 가구를 뮤어야 해.",
+    "cerA": 0.0556,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "id": 421232,
+   "expected": "都市文化海纳百川，建筑、出版、娱乐、弄堂生活都有上海自己特色。",
+   "plain": {
+    "survive": 1.5,
+    "A": "都 市 文化 海纳百川 ， 建 筑 、 出 版 、 娱 乐 、 弄 堂 生活 都 有 上 海 自己\n特色 。",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 3,
+    "A": "都 市 文化 海纳百川 ， 建筑 、 出 版 、 娱 乐 、 弄 堂 生活 都 有 上 海 自 己 特色 。",
+    "cerA": 0,
+    "screens": 3
+   }
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "id": 9096187,
+   "expected": "Они сейчас то ли в Киото, то ли в Осаке.",
+   "plain": {
+    "survive": 2,
+    "A": "Они сейчас то ли в Киото, то ли в Осаке.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "Они сейчас то ли в Киото, то ли в Осаке.",
+    "cerA": 0,
+    "screens": 2
+   }
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "id": 8536538,
+   "expected": "She couldn't bring herself to pull the trigger.",
+   "plain": {
+    "survive": 2,
+    "A": "She couldn't bring herself to pull the trigger.",
+    "cerA": 0
+   },
+   "gloz": {
+    "survive": 4,
+    "A": "She couldn't bring herself to pull the trigger.",
+    "cerA": 0,
+    "screens": 2
+   }
+  }
+ ]
+}

@@ -1,0 +1,13 @@
+{
+ "plain": 16,
+ "gloz": {
+  "1": 20,
+  "2": 26,
+  "3": 34,
+  "4": 45,
+  "5": 59,
+  "6": 77
+ },
+ "ratio": 4.81,
+ "note": "lit pixel height of a capital H in the simulator framebuffer"
+}

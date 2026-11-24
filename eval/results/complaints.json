@@ -1,0 +1,49 @@
+{
+ "longText": {
+  "chars": 2000000,
+  "kept": 2000000
+ },
+ "silentReply": {
+  "wpmMedian": 96,
+  "note": "from eval/results/time.json"
+ },
+ "hints": {
+  "screens": 7,
+  "withoutHint": 0
+ },
+ "strayPress": {
+  "screens": 4,
+  "presses": 20,
+  "sendsWithoutReplyShown": 0,
+  "pressesToSend": 2
+ },
+ "pairing": {
+  "tokenExpiry": "none"
+ },
+ "outbox": {
+  "keptAfterRestart": 1
+ },
+ "privacy": {
+  "messages": 200,
+  "sent": 200,
+  "textLeftInInbox": 0,
+  "messageTextOnDisk": 0
+ },
+ "replyLanguage": {
+  "messages": 200,
+  "sameLanguage": 200,
+  "drafter": "holding reply"
+ },
+ "words": {
+  "send": 10,
+  "alwaysListening": false
+ },
+ "room": {
+  "hours": 11,
+  "pieces": 9900,
+  "kept": 9900,
+  "rewritten": 0,
+  "earliestReachable": true,
+  "tapsToPause": 1
+ }
+}

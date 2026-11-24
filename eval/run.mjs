@@ -1,0 +1,201 @@
+// Runs the locked evaluation in eval/PROTOCOL.md through the Even Hub simulator.
+//   node eval/run.mjs [heldout|dev] [--limit N]
+// Writes eval/results/<set>.json and eval/results/<set>.md
+import { createServer } from 'node:http'
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
+import { PNG } from 'pngjs'
+import { createWorker } from 'tesseract.js'
+import { startVite, startSim, waitUp, waitLog, frame, kill } from './sim.mjs'
+import * as OpenCC from 'opencc-js'
+
+const SET = process.argv[2] || 'heldout'
+const arg = k => (process.argv.find(a => a.startsWith(`--${k}=`)) || '').split('=')[1]
+const LIMIT = Number(arg('limit') || 0)
+const PER_SCRIPT = Number(arg('per-script') || 0)
+const OUT = arg('out') || SET
+const SAVE = process.argv.includes('--save')
+const SIZE = 3
+const LADDER = [0, 1, 1.5, 2, 3, 4, 5, 6, 8]
+const PASS = 0.10
+const OCR_LANG = { ara: 'ara', pes: 'fas', hin: 'hin', tha: 'tha', heb: 'heb', jpn: 'jpn', kor: 'kor', cmn: 'chi_sim+chi_tra', rus: 'rus', eng: 'eng' }
+
+let items = JSON.parse(readFileSync(new URL(`./set/${SET}.json`, import.meta.url), 'utf8')).items
+if (PER_SCRIPT) items = items.filter((it, i, a) => a.slice(0, i).filter(x => x.lang === it.lang).length < PER_SCRIPT)
+items = items.slice(0, LIMIT || undefined)
+
+// --- reading ---------------------------------------------------------------
+function blur(a, w, h, r) {
+  if (!r) return Float32Array.from(a)
+  const rad = Math.ceil(r * 3), k = []
+  for (let i = -rad; i <= rad; i++) k.push(Math.exp(-(i * i) / (2 * r * r)))
+  const s = k.reduce((x, y) => x + y)
+  const kk = k.map(v => v / s)
+  const tmp = new Float32Array(w * h), out = new Float32Array(w * h)
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    let v = 0
+    for (let i = -rad; i <= rad; i++) v += a[y * w + Math.min(w - 1, Math.max(0, x + i))] * kk[i + rad]
+    tmp[y * w + x] = v
+  }
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    let v = 0
+    for (let i = -rad; i <= rad; i++) v += tmp[Math.min(h - 1, Math.max(0, y + i)) * w + x] * kk[i + rad]
+    out[y * w + x] = v
+  }
+  return out
+}
+
+// Black ink on white, scaled up 3 times, as PNG for the OCR engine.
+function toPng(f, r, S = 3) {
+  const b = blur(f.alpha, f.width, f.height, r)
+  const W = f.width * S, H = f.height * S
+  const png = new PNG({ width: W, height: H })
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const v = 255 - Math.min(255, b[Math.floor(y / S) * f.width + Math.floor(x / S)])
+    const o = (y * W + x) * 4
+    png.data[o] = png.data[o + 1] = png.data[o + 2] = v
+    png.data[o + 3] = 255
+  }
+  return PNG.sync.write(png)
+}
+
+function lev(a, b) {
+  const m = a.length, n = b.length
+  let prev = Array.from({ length: n + 1 }, (_, j) => j)
+  for (let i = 1; i <= m; i++) {
+    const cur = [i]
+    for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1))
+    prev = cur
+  }
+  return prev[n]
+}
+// Tesseract writes simplified Chinese for traditional text, so both texts go through
+// the same traditional-to-simplified table before scoring (amendment 5).
+const toCn = OpenCC.Converter({ from: 'tw', to: 'cn' })
+const norm = s => [...toCn(s.normalize('NFC')).replace(/\s+/g, '')]
+export const cer = (expected, read) => { const e = norm(expected), r = norm(read); return e.length ? lev(e, r) / e.length : 0 }
+
+// --- driving ---------------------------------------------------------------
+let cmd = { n: -1 }
+const srv = createServer((q, s) => { s.setHeader('Access-Control-Allow-Origin', '*'); s.end(JSON.stringify(cmd)) }).listen(8799)
+let n = 0
+// The framebuffer is read only once it has changed from the screen before and then
+// stayed the same for 250 ms: a page switch can take longer than the call that asks
+// for it (amendment 4).
+let prevFrame = null
+const same = (a, b) => Boolean(a && b) && a.alpha.length === b.alpha.length && a.alpha.every((v, i) => v === b.alpha[i])
+async function settled() {
+  const end = Date.now() + 6000
+  let last = await frame()
+  while (Date.now() < end) {
+    await new Promise(r => setTimeout(r, 250))
+    const f = await frame()
+    if (same(f, last) && !same(f, prevFrame)) { prevFrame = f; return f }
+    last = f
+  }
+  prevFrame = last
+  return last
+}
+async function show(c) {
+  cmd = { ...c, n: ++n }
+  const msg = await waitLog(`[eval] ready ${n} `, 30000)
+  return { f: await settled(), lines: Number(msg.split('lines ')[1]) }
+}
+
+const vite = startVite(5174)
+await waitUp('http://localhost:5174/eval.html')
+const sim = startSim('http://localhost:5174/eval.html')
+const workers = {}
+// Model downloads can fail on a bad network; try again before giving up.
+async function worker(lang) {
+  for (let k = 1; ; k++) {
+    try {
+      const w = await createWorker(lang.split('+'), 1, { cachePath: new URL('./out/tessdata', import.meta.url).pathname.replace(/^\/(\w:)/, '$1') })
+      await w.setParameters({ tessedit_pageseg_mode: '6' })
+      return w
+    } catch (e) { if (k >= 6) throw e; console.log('model download failed, retry', k); await new Promise(r => setTimeout(r, 5000 * k)) }
+  }
+}
+// Rows are saved after each message, so a stopped run resumes where it stopped.
+const partial = new URL(`./out/${OUT}.partial.json`, import.meta.url)
+const results = (() => { try { return JSON.parse(readFileSync(partial, 'utf8')) } catch { return [] } })()
+const done = new Set(results.map(r => `${r.lang}:${r.id}`))
+try {
+  await waitUp('http://127.0.0.1:9898/api/ping')
+  await waitLog('[eval] up', 60000)
+  for (const it of items) {
+    const lang = OCR_LANG[it.lang]
+    if (done.has(`${it.lang}:${it.tatoeba_id}`)) continue
+    if (!workers[lang]) workers[lang] = await worker(lang)
+    // Each screen is read at 1, 2 and 3 times scale and the reading the OCR
+    // engine is most confident in is kept, for both arms alike. The expected
+    // text is never used to choose (PROTOCOL.md, amendment 1).
+    const ocr = async (f, r) => {
+      let best = null
+      for (const S of [1, 2, 3]) {
+        const d = (await workers[lang].recognize(toPng(f, r, S))).data
+        const t = d.text.trim()
+        const conf = t ? d.confidence : -1
+        if (!best || conf > best.conf) best = { t, conf }
+      }
+      return best.t
+    }
+    const row = { lang: it.lang, script: it.script, id: it.tatoeba_id, expected: it.expected }
+    // Largest blur on the ladder at which the message is still shown (amendment 2).
+    async function survive(frames) {
+      let best = -1, sharp = ''
+      for (const r of LADDER) {
+        const parts = []
+        for (const f of frames) parts.push(await ocr(f, r))
+        const text = parts.join(' ')
+        if (r === 0) sharp = text
+        if (cer(it.expected, text) > PASS) break
+        best = r
+      }
+      return { survive: best, A: sharp, cerA: Number(cer(it.expected, sharp).toFixed(4)) }
+    }
+    const p = await show({ arm: 'plain', text: it.expected })
+    row.plain = await survive([p.f])
+    const first = await show({ arm: 'gloz', text: it.expected, size: SIZE, line: 0 })
+    const frames = [first.f]
+    for (let k = 1; k < first.lines; k++) frames.push((await show({ arm: 'gloz', text: it.expected, size: SIZE, line: k })).f)
+    row.gloz = { ...(await survive(frames)), screens: frames.length }
+    if (SAVE) { mkdirSync(new URL('./out/frames/', import.meta.url), { recursive: true }); frames.forEach((f, k) => writeFileSync(new URL(`./out/frames/${it.lang}-${it.tatoeba_id}-gloz-${k}.png`, import.meta.url), toPng(f, 0))); writeFileSync(new URL(`./out/frames/${it.lang}-${it.tatoeba_id}-plain.png`, import.meta.url), toPng(p.f, 0)) }
+    results.push(row)
+    mkdirSync(new URL('./out/', import.meta.url), { recursive: true })
+    writeFileSync(partial, JSON.stringify(results))
+    console.log(it.lang, it.tatoeba_id, 'plain', row.plain.survive, 'gloz', row.gloz.survive)
+  }
+} finally {
+  for (const w of Object.values(workers)) await w.terminate()
+  kill(sim); kill(vite); srv.close()
+}
+
+// --- scoring ---------------------------------------------------------------
+const median = a => { const b = [...a].sort((x, y) => x - y); const m = b.length >> 1; return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2 }
+const by = {}
+for (const r of results) {
+  const s = (by[r.script] ??= { n: 0, plain: [], gloz: [], plainA: 0, glozA: 0 })
+  s.n++
+  s.plain.push(r.plain.survive); s.gloz.push(r.gloz.survive)
+  if (r.plain.cerA <= PASS) s.plainA++
+  if (r.gloz.cerA <= PASS) s.glozA++
+}
+mkdirSync(new URL('./results/', import.meta.url), { recursive: true })
+let md = `| Script | Plain: blur survived (median px) | Gloz: blur survived (median px) | Plain: shown, sharp | Gloz: shown, sharp | Gloz wins |
+|---|---|---|---|---|---|
+`
+let wins = 0
+const fmt = v => v < 0 ? 'not shown' : `${v}`
+for (const [k, s] of Object.entries(by)) {
+  s.plainMedian = median(s.plain); s.glozMedian = median(s.gloz)
+  const w = s.glozMedian > s.plainMedian
+  if (w) wins++
+  md += `| ${k} | ${fmt(s.plainMedian)} | ${fmt(s.glozMedian)} | ${s.plainA}/${s.n} | ${s.glozA}/${s.n} | ${w ? 'yes' : 'no'} |
+`
+}
+md += `
+Scripts won: ${wins} of ${Object.keys(by).length}. Shown means a character error rate of at most ${PASS}. Blur ladder: ${LADDER.join(', ')} px. Protocol: eval/PROTOCOL.md.
+`
+writeFileSync(new URL(`./results/${OUT}.json`, import.meta.url), JSON.stringify({ protocol: 'eval/PROTOCOL.md', size: SIZE, ladder: LADDER, pass: PASS, wins, by, results }, null, 1) + '\n')
+writeFileSync(new URL(`./results/${OUT}.md`, import.meta.url), md)
+console.log(md)

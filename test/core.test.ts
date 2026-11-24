@@ -1,0 +1,318 @@
+import { test } from 'node:test'
+import assert from 'node:assert/strict'
+import { start, step, card, word, type State, type Event } from '../app/src/core/flow.ts'
+import { Outbox } from '../app/src/core/outbox.ts'
+import { wrap, direction, dwell } from '../app/src/core/layout.ts'
+import type { Msg } from '../app/src/core/types.ts'
+
+const m = (id: string, text = 'Can we move the call to 3?', at = 1): Msg => ({ id, source: 'telegram', chat: 'Board', from: 'Ana', text, at })
+
+function run(s: State, ...evs: Event[]) {
+  const all: any[] = []
+  for (const ev of evs) { const r = step(s, ev); s = r.s; all.push(...r.fx) }
+  return { s, fx: all }
+}
+
+test('a new message shows at once and its draft is asked for before any press', () => {
+  const { s, fx } = run(start(true), { t: 'inbox', msgs: [m('a')] })
+  assert.equal(s.view, 'message')
+  assert.match(card(s).hint!, /^Ana · /)
+  assert.deepEqual(fx.map(f => f.e), ['draft'])
+})
+
+test('tap, tap sends the draft; nothing is sent before the second tap', () => {
+  let { s } = run(start(true), { t: 'inbox', msgs: [m('a')] }, { t: 'draft', id: 'a', draft: { text: 'Yes, 3 works.', by: 'ai' } })
+  let r = run(s, { t: 'tap' })
+  assert.equal(r.s.view, 'draft')
+  assert.equal(r.fx.length, 0)
+  assert.match(card(r.s).text, /Yes, 3 works/)
+  r = run(r.s, { t: 'tap' })
+  assert.deepEqual(r.fx.map(f => f.e), ['send'])
+  assert.equal(r.fx[0].text, 'Yes, 3 works.')
+})
+
+test('a tap before the draft arrives waits, then shows the draft', () => {
+  let r = run(start(true), { t: 'inbox', msgs: [m('a')] }, { t: 'tap' })
+  assert.equal(r.s.view, 'thinking')
+  r = run(r.s, { t: 'draft', id: 'a', draft: { text: 'OK', by: 'ai' } })
+  assert.equal(r.s.view, 'draft')
+})
+
+test('spoken words other than one command make a new draft, never a send', () => {
+  let r = run(start(true), { t: 'inbox', msgs: [m('a')] }, { t: 'draft', id: 'a', draft: { text: 'OK', by: 'ai' } }, { t: 'tap' }, { t: 'hold' })
+  assert.equal(r.s.view, 'listen')
+  r = run(r.s, { t: 'release' }, { t: 'heard', text: 'tell her 4 is better' })
+  assert.deepEqual(r.fx.map(f => f.e), ['mic', 'draft'])
+  assert.equal(r.fx[1].ask, 'tell her 4 is better')
+  assert.equal(r.fx.some(f => f.e === 'send'), false)
+})
+
+test('the one word "send" sends, in ten languages', () => {
+  for (const w of ['send', 'Send.', 'أرسل', 'بفرست', 'भेजो', 'ส่ง', 'שלח', '送信', '보내', '发送', 'Отправь']) assert.equal(word(w), 'send', w)
+  assert.equal(word('send it to Bob tomorrow'), null)
+})
+
+test('new messages never push the one on screen away', () => {
+  let r = run(start(true), { t: 'inbox', msgs: [m('a', 'x', 1)] }, { t: 'inbox', msgs: [m('b', 'y', 2)] })
+  assert.equal(r.s.queue[r.s.at].id, 'a')
+  assert.equal(r.s.queue.length, 2)
+})
+
+test('after "Sent" the next message comes up and the first is marked read', () => {
+  let r = run(start(true), { t: 'inbox', msgs: [m('a', 'x', 2), m('b', 'y', 1)] }, { t: 'draft', id: 'a', draft: { text: 'OK', by: 'ai' } }, { t: 'tap' }, { t: 'tap' }, { t: 'sent', queued: 0 }, { t: 'done' })
+  assert.equal(r.s.view, 'message')
+  assert.equal(r.s.queue[r.s.at].id, 'b')
+  assert.ok(r.fx.some(f => f.e === 'read' && f.msg.id === 'a'))
+})
+
+test('offline: the line says the reply is saved and waiting', () => {
+  let r = run(start(true), { t: 'online', online: false, queued: 1 })
+  assert.equal(card(r.s).text, 'No signal · 1 reply waiting')
+})
+
+test('unpaired glasses say what to do, never a blank screen', () => {
+  assert.match(card(start(false)).text, /phone to pair/)
+})
+
+const mem = () => { const d: Record<string, string> = {}; return { get: (k: string) => d[k] ?? null, set: (k: string, v: string) => { d[k] = v }, d } }
+
+test('outbox keeps a reply through a drop and sends it once the link is back', async () => {
+  let t = 0
+  let up = false
+  const sent: string[] = []
+  const store = mem()
+  const ob = new Outbox(store, async p => { if (!up) return 'retry'; sent.push(p.key); return 'ok' }, () => t)
+  ob.add('a', 'Yes')
+  assert.equal(await ob.flush(), 0)
+  assert.equal(ob.size, 1)
+  // The app is closed and opened again: the reply is still there.
+  const again = new Outbox(store, async p => { sent.push(p.key); return 'ok' }, () => t)
+  assert.equal(again.size, 1)
+  up = true
+  t = 1000
+  assert.equal(await again.flush(), 0, 'waits for its retry time')
+  t = 2001
+  assert.equal(await again.flush(), 1)
+  assert.equal(again.size, 0)
+  assert.equal(sent.length, 1)
+})
+
+test('wrap fits lines to the width and keeps every character', () => {
+  const measure = (s: string) => [...s].length * 10
+  const text = 'Can we move the board call to three, or is four better for you?'
+  const lines = wrap(text, 200, measure)
+  for (const l of lines) assert.ok(measure(l) <= 200, l)
+  assert.equal(lines.join(' '), text)
+  const th = 'สิ่งที่คุณสงสัยเป็นความจริง'
+  assert.equal(wrap(th, 80, measure).join(''), th)
+  const ja = '有能な大蔵大臣の創意になる処置は、行き詰まった国の財政から赤字をなくすのに役立った。'
+  assert.equal(wrap(ja, 120, measure).join(''), ja)
+})
+
+test('direction finds right-to-left scripts', () => {
+  assert.equal(direction('من أين أتيت؟'), 'rtl')
+  assert.equal(direction('שלום'), 'rtl')
+  assert.equal(direction('12 Hello'), 'ltr')
+})
+
+test('lines stay up long enough to read', () => {
+  assert.ok(dwell('Yes') >= 1.5)
+  assert.ok(dwell('有能な大蔵大臣の創意になる処置は') > dwell('Can we move the call?'))
+})
+
+test('a reply in another language shows its meaning in the wearer language, and sends the original', () => {
+  let r = run(start(true), { t: 'inbox', msgs: [m('a', 'هل يمكننا؟')] }, { t: 'draft', id: 'a', draft: { text: 'نعم', gloss: 'Yes', by: 'ai', langName: 'Arabic' } as any }, { t: 'tap' })
+  assert.equal(card(r.s).head, '↩ Ana gets this in Arabic, meaning:')
+  assert.equal(card(r.s).text, 'Yes')
+  r = run(r.s, { t: 'tap' })
+  assert.equal(r.fx[0].text, 'نعم')
+})
+
+test('a message answered or skipped never comes back, even if the backend sends it again', () => {
+  let r = run(start(true), { t: 'inbox', msgs: [m('a', 'x', 2), m('b', 'y', 1)] }, { t: 'next' })
+  assert.match(card(r.s).text, /^Skipped/)
+  r = run(r.s, { t: 'done' })
+  assert.equal(r.s.queue[r.s.at].id, 'b')
+  r = run(r.s, { t: 'inbox', msgs: [m('a', 'x', 2)] })
+  assert.equal(r.s.queue.filter(q => q.id === 'a').length, 0)
+})
+
+test('the glasses speak the wearer language: every word on every screen, in ten languages', async () => {
+  const { words } = await import('../app/src/core/words.ts')
+  const screens = [start(false), start(true), run(start(true), { t: 'online', online: false, queued: 2 }).s]
+  for (const l of ['en', 'ar', 'fa', 'he', 'hi', 'th', 'ja', 'ko', 'zh', 'ru']) {
+    for (const s of screens) { const c = card(s, l); assert.ok(c.text && c.hint, l) }
+    assert.equal(card(start(true), l).text, words(l).empty)
+  }
+  assert.equal(card(start(true), 'ar').text, 'لا رسائل جديدة')
+})
+
+test('a long message starts with one sentence saying what it wants', () => {
+  const long = { ...m('a', 'x'.repeat(400)), brief: 'Priya needs your sign-off on the contract by Friday.' } as any
+  const r = run(start(true), { t: 'inbox', msgs: [long] })
+  assert.match(card(r.s).text, /^In short: Priya needs your sign-off/)
+  assert.match(card(r.s, 'ja').text, /^要点:/)
+})
+
+import { room, roomStep, roomCard, transcript } from '../app/src/core/room.ts'
+
+test('listen: captions are added, never rewritten; one tap pauses; swipe reaches any earlier line', () => {
+  let r = roomStep(room(), { t: 'start' })
+  assert.match(roomCard(r).text, /Listening/)
+  r = roomStep(r, { t: 'heard', text: 'We can ship on Friday.', at: 1 })
+  r = roomStep(r, { t: 'heard', text: 'The price stays the same.', at: 2 })
+  r = roomStep(r, { t: 'heard', text: 'Legal needs one more day.', at: 3 })
+  assert.equal(roomCard(r).text, 'Legal needs one more day.')
+  r = roomStep(r, { t: 'tap' })
+  assert.equal(r.paused, true)
+  r = roomStep(r, { t: 'heard', text: 'not kept while paused', at: 4 })
+  assert.equal(r.lines.length, 3)
+  r = roomStep(roomStep(r, { t: 'up' }), { t: 'up' })
+  assert.equal(roomCard(r).text, 'We can ship on Friday.')
+  r = roomStep(roomStep(r, { t: 'down' }), { t: 'down' })
+  assert.equal(r.at, -1)
+  assert.deepEqual(r.lines.map(l => l.text), ['We can ship on Friday.', 'The price stays the same.', 'Legal needs one more day.'])
+  assert.equal(transcript(r).split('\n').length, 3)
+  assert.match(roomCard(r, 'ar').hint!, /انقر/)
+})
+
+test('a full stop or comma never starts a line', () => {
+  const measure = (s: string) => [...s].length * 10
+  for (const w of [60, 70, 80, 90, 100]) {
+    for (const line of wrap('Got it. I will reply properly soon.', w, measure)) assert.doesNotMatch(line, /^[.,!?]/, `width ${w}: ${line}`)
+  }
+})
+
+test('menu names fit the 32-byte limit in every language', async () => {
+  const { menuItems } = await import('../app/src/core/menu.ts')
+  for (const l of ['en', 'ar', 'fa', 'he', 'hi', 'th', 'ja', 'ko', 'zh', 'ru']) {
+    const items = menuItems(l)
+    assert.equal(items.length, 8)
+    for (const it of items) assert.ok(Buffer.byteLength(it.itemName) <= 32, `${l}: ${it.itemName} is ${Buffer.byteLength(it.itemName)} bytes`)
+  }
+})
+
+test('a skipped message stays unread at the service; an answered one is marked read', () => {
+  let r = run(start(true), { t: 'inbox', msgs: [m('a', 'x', 2), m('b', 'y', 1)] }, { t: 'next' }, { t: 'done' })
+  assert.ok(r.fx.some(f => f.e === 'seen' && f.msg.id === 'a'))
+  assert.ok(!r.fx.some(f => f.e === 'read'))
+  assert.match(card(r.s, 'en').text, /^b|y/)
+})
+
+test('saying "skip" is the same as a swipe: the message stays unread and can come back', () => {
+  const r = run(start(true), { t: 'inbox', msgs: [m('a', 'x', 2), m('b', 'y', 1)] }, { t: 'hold' }, { t: 'release' }, { t: 'heard', text: 'skip' })
+  assert.ok(r.fx.some(f => f.e === 'seen' && f.msg.id === 'a'))
+  assert.ok(!r.fx.some(f => f.e === 'read'))
+  assert.deepEqual(r.s.skippedMsgs?.map(x => x.id), ['a'])
+})
+
+test('the glasses say how many messages are left, and when nothing was heard', () => {
+  let r = run(start(true), { t: 'inbox', msgs: [m('a', 'x', 3), m('b', 'y', 2), m('c', 'z', 1)] })
+  assert.match(card(r.s).hint!, /2 more$/)
+  r = run(r.s, { t: 'hold' }, { t: 'release' }, { t: 'heard', text: '' })
+  assert.match(card(r.s).hint!, /Didn’t catch that$/)
+  assert.ok(r.fx.some(f => f.e === 'later' && f.ev.t === 'note'))
+})
+
+test('skipped messages can be brought back from the empty screen', () => {
+  let r = run(start(true), { t: 'inbox', msgs: [m('a', 'x', 1)] }, { t: 'next' }, { t: 'done' })
+  assert.equal(r.s.view, 'empty')
+  assert.match(card(r.s).hint!, /up: skipped \(1\)/)
+  r = run(r.s, { t: 'prev' })
+  assert.equal(r.s.view, 'message')
+  assert.equal(r.s.queue[r.s.at].id, 'a')
+})
+
+test('listen hint offers "earlier" only when there is an earlier line', () => {
+  let r = roomStep(room(), { t: 'start' })
+  assert.equal(roomCard(r).hint, 'tap: pause · menu: Stop listening')
+  r = roomStep(roomStep(r, { t: 'heard', text: 'a', at: 1 }), { t: 'heard', text: 'b', at: 2 })
+  assert.match(roomCard(r).hint!, /up: earlier/)
+})
+
+test('the send screen says Sending until the outbox answers, then Sent or Saved', () => {
+  let r = run(start(true), { t: 'inbox', msgs: [m('a', 'x', 2), m('b', 'y', 1)] }, { t: 'draft', id: 'a', draft: { text: 'OK', by: 'ai' } }, { t: 'tap' }, { t: 'tap' })
+  assert.equal(card(r.s).text, 'Sending…')
+  assert.equal(card(run(r.s, { t: 'sent', queued: 0 }).s).text, 'Sent ✓')
+  assert.match(card(run(r.s, { t: 'sent', queued: 1 }).s).text, /^Saved/)
+})
+
+test('a reply that could not be written is written when the signal comes back', () => {
+  let r = run(start(true), { t: 'inbox', msgs: [m('a', 'x', 1)] }, { t: 'tap' }, { t: 'online', online: false, queued: 0 }, { t: 'draft', id: 'a', draft: null })
+  assert.equal(r.s.view, 'draft')
+  r = run(r.s, { t: 'online', online: true, queued: 0 })
+  assert.ok(r.fx.some(f => f.e === 'draft'))
+  assert.equal(r.s.view, 'thinking')
+})
+
+test('muting a chat removes all of its messages, skipped ones too', () => {
+  const other = { ...m('c', 'z', 0), chat: 'Other' }
+  let r = run(start(true), { t: 'inbox', msgs: [m('a', 'x', 3), m('b', 'y', 2), other] }, { t: 'next' }, { t: 'done' })
+  assert.equal(r.s.skippedMsgs?.length, 1)
+  r = run(r.s, { t: 'mute', key: 'telegram:Board' })
+  assert.deepEqual(r.s.queue.map(q => q.id), ['c'])
+  assert.equal(r.s.skippedMsgs?.length, 0)
+})
+
+test('unmuting puts a muted chat\'s messages next, after the one on screen', () => {
+  let r = run(start(true), { t: 'inbox', msgs: [m('a', 'x', 2), { ...m('c', 'z', 1), chat: 'Other' }] }, { t: 'mute', key: 'telegram:Board' })
+  assert.equal(r.s.queue.length, 1)
+  r = run(r.s, { t: 'unmute' })
+  assert.deepEqual(r.s.queue.map(x => x.id), ['c', 'a'])
+  assert.equal(r.s.at, 0)
+  assert.ok(!r.s.seen.includes('a'))
+  // From the empty screen they show at once.
+  r = run(start(true), { t: 'inbox', msgs: [m('a', 'x', 2)] }, { t: 'mute', key: 'telegram:Board' })
+  assert.equal(r.s.view, 'empty')
+  r = run(r.s, { t: 'unmute' })
+  assert.equal(r.s.view, 'message')
+  assert.match(card(r.s, 'en').text, /x/)
+})
+
+test('a late "done" from an earlier skip never moves a different message', () => {
+  let r = run(start(true), { t: 'inbox', msgs: [m('a', 'x', 3), m('b', 'y', 2), m('c', 'z', 1)] }, { t: 'next' })
+  const late = r.fx.find(f => f.e === 'later')!.ev
+  r = run(r.s, late, { t: 'next' })       // a skipped, b now on screen and skipped too
+  r = run(r.s, late)                      // the old "done" for a arrives again
+  assert.equal(r.s.view, 'skipped')
+  assert.equal(r.s.queue[r.s.at].id, 'b')
+})
+
+test('with no signal, the holding reply is written on the phone in the sender language', async () => {
+  const { holdingReply } = await import('../app/src/core/holding.ts')
+  const d = holdingReply('ลูกค้าขอเลื่อนการประชุม', 'en')
+  assert.equal(d.lang, 'th')
+  assert.match(d.text, /ได้รับข้อความ/)
+  assert.match(d.gloss!, /Got it/)
+})
+
+test('a second listen starts fresh on the glasses; the first stays in the transcript', () => {
+  let r = roomStep(room(), { t: 'start' })
+  r = roomStep(r, { t: 'heard', text: 'First talk.', at: 1 })
+  r = roomStep(roomStep(r, { t: 'stop' }), { t: 'start' })
+  assert.match(roomCard(r).text, /Listening/)
+  r = roomStep(r, { t: 'heard', text: 'Second talk.', at: 2 })
+  assert.equal(roomCard(r).text, 'Second talk.')
+  assert.equal(roomCard(r).head, undefined)
+  r = roomStep(r, { t: 'up' })
+  assert.equal(roomCard(r).text, 'Second talk.')
+  assert.match(transcript(r), /First talk\.[\s\S]*Second talk\./)
+})
+
+test('cancelling spoken words on a reply goes back to that reply', () => {
+  let r = run(start(true), { t: 'inbox', msgs: [m('a', 'x', 2)] }, { t: 'draft', id: 'a', draft: { text: 'ok', by: 'default' } }, { t: 'tap' })
+  assert.equal(r.s.view, 'draft')
+  r = run(r.s, { t: 'hold' }, { t: 'release' }, { t: 'prev' })
+  assert.equal(r.s.view, 'draft')
+  r = run(r.s, { t: 'prev' })
+  assert.equal(r.s.view, 'message')
+})
+
+test('a hold and release on a reply never sends it', () => {
+  let r = run(start(true), { t: 'inbox', msgs: [m('a', 'x', 2)] }, { t: 'draft', id: 'a', draft: { text: 'ok', by: 'default' } }, { t: 'tap' })
+  r = run(r.s, { t: 'hold' }, { t: 'release' })
+  assert.ok(!r.fx.some(f => f.e === 'send'))
+  r = run(r.s, { t: 'heard', text: '' })
+  assert.ok(!r.fx.some(f => f.e === 'send'))
+  assert.equal(r.s.view, 'draft')
+})

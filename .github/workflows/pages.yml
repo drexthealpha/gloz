@@ -1,0 +1,40 @@
+name: Live demo
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm ci
+        working-directory: app
+      - run: npx vite build --mode demo && cp dist-demo/demo.html dist-demo/index.html
+        working-directory: app
+      # The phone screens with sample data, at /phone/ (pairing: ?screen=pair; settings: ?screen=settings).
+      - run: npx vite build --mode check --outDir dist-demo/phone --emptyOutDir && cp dist-demo/phone/phone-check.html dist-demo/phone/index.html
+        working-directory: app
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: app/dist-demo
+  # Deploy in its own job, after the upload is complete (GitHub's Pages starter layout).
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

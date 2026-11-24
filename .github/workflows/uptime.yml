@@ -1,0 +1,26 @@
+name: Demo up check
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check the live demo and write the badge
+        run: |
+          code=$(curl -s -o page.html -w '%{http_code}' https://drexthealpha.github.io/gloz/ || echo 000)
+          if [ "$code" = "200" ] && grep -q 'id="g2"' page.html; then msg=up; color=brightgreen; else msg=down; color=red; fi
+          echo "{\"schemaVersion\":1,\"label\":\"live demo\",\"message\":\"$msg\",\"color\":\"$color\"}" > status.json
+          echo "$(date -u +%FT%TZ) $code $msg" > last.txt
+          cat status.json last.txt
+      - name: Publish to the status branch
+        run: |
+          git init -q pub && cd pub
+          git config user.name "drexthealpha"
+          git config user.email "142920951+drexthealpha@users.noreply.github.com"
+          cp ../status.json ../last.txt .
+          git add . && git commit -qm "Demo status $(cat last.txt)"
+          git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:status

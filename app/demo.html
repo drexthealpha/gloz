@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gloz: messages on Even G2</title>
+    <meta name="description" content="Read and answer every message on Even G2 without the phone, in your language, at your size." />
+    <style>
+      :root { --bg: #111; --fg: #eee; --dim: #a6a6a6; --acc: #3dff7a; --line: #2c2c2c; }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--bg); color: var(--fg); font: 18px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+      main { max-width: 640px; margin: 0 auto; padding: 16px; }
+      h1 { font-size: 24px; margin: 4px 0 0; }
+      .sub { color: var(--dim); margin: 2px 0 12px; }
+      .glass { position: relative; }
+      canvas { width: 100%; aspect-ratio: 2 / 1; display: block; background: #000; border-radius: 14px; border: 1px solid var(--line); cursor: pointer; touch-action: none; }
+      .keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 0; font-size: 16px; color: var(--dim); text-align: center; }
+      .keys b { display: block; color: var(--fg); font-size: 17px; }
+      .row { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+      button { min-height: 48px; min-width: 48px; padding: 0 14px; font-size: 17px; border-radius: 10px; border: 1px solid var(--line); background: #1d1d1d; color: var(--fg); cursor: pointer; }
+      button:disabled { opacity: 0.4; cursor: default; }
+      button[aria-pressed="true"] { background: #4a1d1d; border-color: #a33; }
+      form { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+      form input { flex: 1; min-height: 48px; font-size: 18px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--acc); background: #000; color: var(--fg); }
+      h2 { font-size: 18px; margin: 20px 0 6px; color: var(--dim); font-weight: 500; }
+      ol { padding-left: 22px; margin: 0; }
+      li { margin: 6px 0; }
+      #bye { text-align: center; padding: 12px; border: 1px solid var(--line); border-radius: 10px; }
+      a { color: var(--acc); }
+      [hidden] { display: none !important; }
+      .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0 18px; }
+      .pair figure { margin: 0; }
+      .pair img { width: 100%; display: block; border-radius: 8px; border: 1px solid var(--line); image-rendering: pixelated; }
+      .pair figcaption { font-size: 16px; color: var(--dim); margin-top: 4px; }
+      .said { font-size: 18px; margin: 4px 0; }
+      #meaning { color: var(--dim); margin: 8px 0 0; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Gloz</h1>
+      <p class="sub">Every message on your glasses, in its own script, at your size; with AI on the Gloz server, in your language too. Sample messages; no sign-in.</p>
+      <div class="glass"><canvas id="g2" width="576" height="288" aria-label="Even G2 display, 576 by 288. Click to tap, scroll to swipe, hold to speak, double click to close." tabindex="0"></canvas></div>
+      <form id="say" hidden><label for="sayin" style="flex-basis:100%;color:var(--dim);font-size:16px">No microphone in this demo: type what you would say.</label><input id="sayin" placeholder="Type your words" aria-label="What you would say"><button>Done</button><button type="button" id="saycancel">Cancel</button></form>
+      <p class="said" id="meaning" style="visibility:hidden;min-height:2.9em">&nbsp;</p>
+      <p id="again" hidden><button>Start the demo again</button></p>
+      <div class="keys" aria-hidden="true">
+        <div><b>Click</b>tap</div>
+        <div><b>Scroll</b>up: back · down: skip</div>
+        <div><b>Hold</b>speak</div>
+        <div><b>Double click</b>close</div>
+      </div>
+      <div class="row">
+        <button id="smaller" aria-label="Smaller text">A−</button>
+        <button id="bigger" aria-label="Bigger text">A+</button>
+        <button id="lower">Move text lower</button>
+        <button id="net" aria-pressed="false">Cut the phone's signal</button>
+        <button id="mute">Mute this chat</button>
+        <button id="unmute" hidden>Unmute all chats</button>
+      </div>
+
+      <section id="proof" hidden>
+        <h2>Plain G2 text against Gloz, in Even Realities' own G2 simulator</h2>
+        <div id="pairs"></div>
+      </section>
+      <h2 id="senthead" hidden>Sent from the glasses</h2>
+      <p class="sub" id="nokey" hidden>Without AI on this page, a reply is the same short holding reply, or the words you type. With an AI key on the Gloz server, Gloz writes a reply for each message.</p>
+      <ol id="sent"></ol>
+      <p class="sub" style="margin-top:24px">Code, tests and results: <a href="https://github.com/drexthealpha/gloz">github.com/drexthealpha/gloz</a></p>
+    </main>
+    <script type="module" src="/src/demo.ts"></script>
+  </body>
+</html>

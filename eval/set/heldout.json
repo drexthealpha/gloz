@@ -1,0 +1,1210 @@
+{
+ "meta": {
+  "source": "Tatoeba sentence exports, read 2026-11-23",
+  "licence": "CC BY 2.0 FR",
+  "seed": 20261123,
+  "rule": "20 to 120 characters"
+ },
+ "items": [
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "tatoeba_id": 1655849,
+   "expected": "من أين أتيت بهذه الأطباق؟"
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "tatoeba_id": 8833216,
+   "expected": "سامي يمكنه مشاهدة فيلم."
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "tatoeba_id": 2000913,
+   "expected": "هل لديك أي فكرة عن من يستطيع فعل مِثل هذا الشيء؟"
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "tatoeba_id": 7986133,
+   "expected": "أنا وتوم كلانا مشغولان"
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "tatoeba_id": 422722,
+   "expected": "أسرعنا إلى محطة القطار."
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "tatoeba_id": 11684449,
+   "expected": "سيلتقي زيري بريمة غدا."
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "tatoeba_id": 4531891,
+   "expected": "لم أكن أتوقّع أن يحدث هذا."
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "tatoeba_id": 10242913,
+   "expected": "كان زيري غريب الأطوار."
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "tatoeba_id": 4480105,
+   "expected": "علينا الخلود إلى النوم."
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "tatoeba_id": 11985934,
+   "expected": "هل سبق لك و أن رأيت الثلج؟"
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "tatoeba_id": 6542008,
+   "expected": "أنت من اقترح هذا الفيلم."
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "tatoeba_id": 7744449,
+   "expected": "كان توم في بيت ماري."
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "tatoeba_id": 10739747,
+   "expected": "إن الجزائر بحاجة لمراكز إعادة تصنيع حديثة."
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "tatoeba_id": 7238070,
+   "expected": "كان على سامي أن يغادر."
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "tatoeba_id": 5824225,
+   "expected": "الجميع يشاهد جمال و هو يرقص."
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "tatoeba_id": 10914950,
+   "expected": "الجزائر بحاجة لفنادق جديدة."
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "tatoeba_id": 7004853,
+   "expected": "لم يكن سامي يعلم بعلاقة ليلى مع فريد."
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "tatoeba_id": 1581558,
+   "expected": "هما تستمعان للمذياع."
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "tatoeba_id": 1932974,
+   "expected": "لا أستطيع تحدث الإنجليزية بشكل جيد مِثلِهِ."
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "tatoeba_id": 1871533,
+   "expected": "انها لا جيدة ولا سيئة."
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "tatoeba_id": 912542,
+   "expected": "کمابیش می‌دانم کجا است."
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "tatoeba_id": 712532,
+   "expected": "رویای او فضانورد شدن است."
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "tatoeba_id": 822378,
+   "expected": "به هنگام پاییز طوفان بسیار می آید."
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "tatoeba_id": 2065011,
+   "expected": "کلمه فرانسوی \"شا\" به معنای گربه است."
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "tatoeba_id": 1555419,
+   "expected": "گاهی به او سر می زنم."
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "tatoeba_id": 3667602,
+   "expected": "امیلی مادره. (بچه داره)"
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "tatoeba_id": 12165183,
+   "expected": "جایی که همه نظر یکسانی دارند، هیچکس زیاد فکر نمی‌کند."
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "tatoeba_id": 798570,
+   "expected": "شما بهتر از او شنا می‌کنید."
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "tatoeba_id": 730719,
+   "expected": "جمع کردن 5 با 10 آسان است."
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "tatoeba_id": 7497198,
+   "expected": "نگران شدن مانند پرداختن یک بدهی است که مدیون نیستید."
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "tatoeba_id": 1044848,
+   "expected": "دل‌شاد بودن، عمر انسان را طولانی می‌کند."
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "tatoeba_id": 9867174,
+   "expected": "از همه خواستم که به من حسادت کنند."
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "tatoeba_id": 9358642,
+   "expected": "جعبه پر از توت فرنگی بود."
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "tatoeba_id": 12138339,
+   "expected": "کمونیسم یعنی فقر عمومی."
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "tatoeba_id": 7252998,
+   "expected": "با کلمات روشن توضیح بده."
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "tatoeba_id": 787187,
+   "expected": "من ساعت 11 منتظرتان بودم."
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "tatoeba_id": 13501337,
+   "expected": "ببند این طناب را یه یک درخت."
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "tatoeba_id": 1485418,
+   "expected": "زبانت رو به من نشان بده."
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "tatoeba_id": 11113842,
+   "expected": "آن در کل واقعاً آن جوری نیست."
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "tatoeba_id": 8358740,
+   "expected": "برادرم چندین سال در تهران کار کرد"
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "tatoeba_id": 12408713,
+   "expected": "उस तालाब पर एक सुंदर पुल है।"
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "tatoeba_id": 2173890,
+   "expected": "मैं सोचता था कि तुम दोनो में बहुत सी बातें एक दुसरे से मिलती जुलती होगी।"
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "tatoeba_id": 487595,
+   "expected": "मुम्बई भारत की पहली और दुनिया की दूसरी सर्वाधिक आबादी वाली नगरी है।"
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "tatoeba_id": 10047976,
+   "expected": "क्या उन्होंने आप पर बलात्कार किया?"
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "tatoeba_id": 484007,
+   "expected": "कि वह अम्रीका जाएगा, यह तो पक्का है।"
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "tatoeba_id": 9013220,
+   "expected": "मुझे लगता है कि हमने उसे खो दिया।"
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "tatoeba_id": 4638819,
+   "expected": "यह तसवीर मेरे चाचा की है।"
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "tatoeba_id": 10270807,
+   "expected": "क्या तू कभी किसी परीक्षा में असफल हुआ है?"
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "tatoeba_id": 8686472,
+   "expected": "क्या वह इस शहर में काम करती है?"
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "tatoeba_id": 10977284,
+   "expected": "आपका चिकन सूप बढ़िया है।"
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "tatoeba_id": 2075276,
+   "expected": "मैं चीनी नहीं समझता, मगर सीखना चाहता हूं।"
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "tatoeba_id": 486262,
+   "expected": "वह पिछले साल क्योटो गया था।"
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "tatoeba_id": 451301,
+   "expected": "मेरे पिता नें अपनी वसीयत में मुझे बहुत सारे पैसे छोड़े थे।"
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "tatoeba_id": 487482,
+   "expected": "बहतर होगा कि तुम उससे सलाह न माँगो।"
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "tatoeba_id": 2072507,
+   "expected": "उसकी शादी के बारे में उससे कोई सवाल मत पूछना।"
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "tatoeba_id": 509985,
+   "expected": "माफ़ कीजिएगा, यहाँ कोई बैठा हुआ है क्या?"
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "tatoeba_id": 3534966,
+   "expected": "नर्क एक ऐसी जगह जो बदबूदार है और किसी को कोई पसंद नहीं हैं ।"
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "tatoeba_id": 10047713,
+   "expected": "मुझे पीला अच्छा लगता है।"
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "tatoeba_id": 3881660,
+   "expected": "आपको समझ क्यों नहीं आता?"
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "tatoeba_id": 588591,
+   "expected": "मैंने बीयर पीना छोड़ दिया है।"
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "tatoeba_id": 10554178,
+   "expected": "สิ่งที่คุณสงสัยเป็นความจริง"
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "tatoeba_id": 7789825,
+   "expected": "ฉันมีงานที่ต้องทำมากมาย"
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "tatoeba_id": 10334045,
+   "expected": "ถ้าคุณจะทำต้องทำวันนี้"
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "tatoeba_id": 12728399,
+   "expected": "ฉันไปที่ร้านหนังสือมา แล้วก็ซื้อหนังสือที่ดูน่าสนใจมา"
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "tatoeba_id": 11127299,
+   "expected": "ทอมบอกว่าเขาว่ายน้ำเก่ง"
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "tatoeba_id": 11491717,
+   "expected": "เธอตัดสินใจย้ายไปเบลเยียม"
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "tatoeba_id": 12579220,
+   "expected": "หล่อนเปลี่ยนไปมากจากตอนนั้น"
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "tatoeba_id": 10692486,
+   "expected": "เราจะแก้ปัญหานี้อย่างไร"
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "tatoeba_id": 8673146,
+   "expected": "คุณซื้อดอกไม้กี่ดอก?"
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "tatoeba_id": 12729878,
+   "expected": "ฉันกำลังหาของขวัญให้กับเพื่อนของฉัน"
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "tatoeba_id": 12728354,
+   "expected": "หล่อนเป็นพนักงานไปรษณีย์"
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "tatoeba_id": 12579343,
+   "expected": "ฉันขอถามแบบโง่ ๆ เลยได้ไหม"
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "tatoeba_id": 12715655,
+   "expected": "หล่อนบอกลูกชายของหล่อนให้ทำตัวดี ๆ เวลาอยู่บ้าน"
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "tatoeba_id": 10220293,
+   "expected": "ผมจะเล่นเทนนิสวันจันทร์หน้า"
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "tatoeba_id": 8717401,
+   "expected": "ฉันเจอสิ่งที่ฉันกำลังมองหา"
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "tatoeba_id": 8675863,
+   "expected": "คุณจะเห็นความแตกต่าง"
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "tatoeba_id": 8675894,
+   "expected": "ฉันไม่มีอะไรจะพูดอีกแล้ว"
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "tatoeba_id": 8669070,
+   "expected": "คุณคือทุกสิ่งทุกอย่างของฉัน"
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "tatoeba_id": 8670334,
+   "expected": "ทอมพูดสองภาษาต่างประเทศ"
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "tatoeba_id": 12581741,
+   "expected": "ฉันได้รับสืบทอดสินทรัพย์จากพ่อ"
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "tatoeba_id": 1414277,
+   "expected": "צלצל אלי מחר בתשע בבוקר."
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "tatoeba_id": 5762083,
+   "expected": "רוב האנשים מצחצחים את שיניהם לפחות פעמים ביום."
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "tatoeba_id": 3027973,
+   "expected": "האם הוא הבעלים של המכונית הזאת?"
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "tatoeba_id": 1499965,
+   "expected": "אינני מוסר את שמי האמתי לאף אתר אינטרנט."
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "tatoeba_id": 1486544,
+   "expected": "מרי משתמשת בְּאָבְנַיִם."
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "tatoeba_id": 1851311,
+   "expected": "בוא נעשן את הזבל הזה."
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "tatoeba_id": 2010598,
+   "expected": "אני לא יכולה להפסיק את זה."
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "tatoeba_id": 2146246,
+   "expected": "פניו של פטר האדימו ממאמץ."
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "tatoeba_id": 5712384,
+   "expected": "אמי סוף סוף הסכימה לתכנית שלנו."
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "tatoeba_id": 6004832,
+   "expected": "בכנות, הרומן החדש שלו לא מעניין במיוחד."
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "tatoeba_id": 4672145,
+   "expected": "אני בטוחה שתום היה רדום."
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "tatoeba_id": 2125467,
+   "expected": "תום מנגן בגיטרה טוב מכל אחד שאני מכירה."
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "tatoeba_id": 538009,
+   "expected": "הם לא הסכימו להוריד את המחיר."
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "tatoeba_id": 1857256,
+   "expected": "ביקשתי את מספר הטלפון שלו."
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "tatoeba_id": 2105247,
+   "expected": "איך הייתה הנסיעה שלך?"
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "tatoeba_id": 5959663,
+   "expected": "תום צילם המון תמונות בחופש שלו."
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "tatoeba_id": 6052325,
+   "expected": "התדרדרנו למצב כמעט נואש."
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "tatoeba_id": 2659053,
+   "expected": "תפסתי מראה של מצעד בדרכי הביתה."
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "tatoeba_id": 12828054,
+   "expected": "השופט הראה את הכרטיס הצהוב על התנהגות לא ספורטיבית."
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "tatoeba_id": 8152464,
+   "expected": "ילדי יכולים כולם לדבר צרפתית."
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "tatoeba_id": 79260,
+   "expected": "有能な大蔵大臣の創意になる処置は、行き詰まった国の財政から赤字をなくすのに役立った。"
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "tatoeba_id": 168014,
+   "expected": "私がジョンと電話で話している最中に、交換手が割り込んできた。"
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "tatoeba_id": 890119,
+   "expected": "新しい職場で上手くやっていけるか不安だなあ。"
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "tatoeba_id": 203861,
+   "expected": "ダウンタウンという言葉はすべての町の繁華街をさす。"
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "tatoeba_id": 203088,
+   "expected": "ダンサーたちはラテン音楽の曲目の間、実に活気づいた。"
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "tatoeba_id": 199214,
+   "expected": "なぜまだ彼がきていないのか私にはわからない。"
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "tatoeba_id": 5845200,
+   "expected": "私には新しい彼氏がいる。だけど、元カレはまだそのことを知らない。"
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "tatoeba_id": 121226,
+   "expected": "犯罪が増加していることは紛れもない事実だ。"
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "tatoeba_id": 2185602,
+   "expected": "誰の鳥かごにもハゲタカがいないのは何故かな。"
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "tatoeba_id": 229869,
+   "expected": "ある種の動物は嵐の訪れを感じ取る事ができる。"
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "tatoeba_id": 75676,
+   "expected": "容姿端麗、頭脳明晰、運動神経抜群、家は金持ちで、ついでに学生会の副会長をしてたりもする、いわゆるパーフェクトな奴だ。"
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "tatoeba_id": 1054571,
+   "expected": "昨日、卵をいくつ手に入れることができましたか。"
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "tatoeba_id": 11009577,
+   "expected": "こんなとこに置いて、しおれちゃってるじゃん。"
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "tatoeba_id": 1112566,
+   "expected": "彼女はこの作家の熱心なファンのようだ。短編を寄せているだけのアンソロジーもきちんと揃えている。"
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "tatoeba_id": 147655,
+   "expected": "春が来ると人々はのぐさを摘みに出かけます。"
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "tatoeba_id": 195887,
+   "expected": "ほんの、とるに足らないものが、しばしば人中で、大きなことをいう。"
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "tatoeba_id": 172003,
+   "expected": "今日では車の値段は広い範囲に渡っている。"
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "tatoeba_id": 8963924,
+   "expected": "もっと早く私に言ってくれたらよかったのに。"
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "tatoeba_id": 159337,
+   "expected": "私はどうにか笑いを抑えるのに大変苦労した。"
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "tatoeba_id": 78065,
+   "expected": "両親が二人とも私の計画に反対しているわけではない。"
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "tatoeba_id": 2870614,
+   "expected": "겨울에 이 모자를 쓰고 다녀야 될 것 같아."
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "tatoeba_id": 10576575,
+   "expected": "톰은 시간이 좀 더 필요하다고 말했다."
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "tatoeba_id": 3680974,
+   "expected": "날 도와주겠다는 그의 제안은 거절할 생각이다."
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "tatoeba_id": 2088355,
+   "expected": "이 인류학자에 따르면 이 지역에서는 옛날 관습이 아직도 행해지고 있다."
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "tatoeba_id": 1008003,
+   "expected": "슬론 스퀘어로 가는 다음 기차가 언제 있습니까?"
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "tatoeba_id": 4963566,
+   "expected": "톰과 메리는 매우 작은 아파트에 살고 있어요."
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "tatoeba_id": 5989195,
+   "expected": "그는 이제 너를 귀찮게 하지 않을 거야."
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "tatoeba_id": 8362122,
+   "expected": "톰이 메리를 아주 잘 안다고 생각하진 않는데."
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "tatoeba_id": 13287979,
+   "expected": "하츠모우데는, 처음으로 참배 한다라는 의미입니다."
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "tatoeba_id": 952504,
+   "expected": "아비투어를 1.5의 성적으로 합격했다."
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "tatoeba_id": 11110650,
+   "expected": "우리 딸은 스페인 사람인 동시에 폴란드 사람이다."
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "tatoeba_id": 5385,
+   "expected": "나는 언젠가는 프랑스에 꼭 가야되는데, 그게 언제인지는 모르겠어."
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "tatoeba_id": 13118638,
+   "expected": "그녀는 우리가 막 떠났을 때 도착했다."
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "tatoeba_id": 1637178,
+   "expected": "난민들은 여러 교회 기구로부터 지원을 받는다."
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "tatoeba_id": 13755271,
+   "expected": "톰은 한 시간에 내가 일주일 동안 버는 것보다 더 많이 번다."
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "tatoeba_id": 13575940,
+   "expected": "어젯밤에 실험실 모기한테 거의 물려 죽을 뻔했어요."
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "tatoeba_id": 11106705,
+   "expected": "다음으로 뭘 해야 할지 당신의 조언이 필요하다."
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "tatoeba_id": 13058663,
+   "expected": "좋은 게임은 많지만 취향인 게임을 찾는 건 힘들어."
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "tatoeba_id": 13248367,
+   "expected": "사용자명에 하이픈을 사용할 수 있다면 좋을 텐데."
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "tatoeba_id": 3674964,
+   "expected": "난 야구 시합을 티비로 보는 것보다 좋아하는 것이 없다."
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "tatoeba_id": 13874958,
+   "expected": "她的生日是 3 月 8 日，正好是婦女節。"
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "tatoeba_id": 13509832,
+   "expected": "寶玉伸手要，襲人遞過，寶玉掖在被中，笑道：「這可去不成了。」"
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "tatoeba_id": 2095544,
+   "expected": "她过去参加派对，总是战战兢兢笨手笨脚的。"
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "tatoeba_id": 13826830,
+   "expected": "我在不真正了解「語音學」是什麼意思、甚至可能連字母都不熟悉的情況下，自己能夠想到「p」是「b」的較硬版本，「t」對「d」、「k」對「g」、「s」對「z」也是同樣的關係。"
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "tatoeba_id": 905861,
+   "expected": "例如，中國的大眾運輸毫無疑問地優於英國，但英國的公共福利可能比中國的好。"
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "tatoeba_id": 838492,
+   "expected": "記住該記住的，忘記該忘記的。改變能改變的，接受不能改變的。"
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "tatoeba_id": 420920,
+   "expected": "从小不锻炼，一天到晚做功课，这下子就搞成驮背近视眼。"
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "tatoeba_id": 892915,
+   "expected": "當講笑話的人自己先笑時，這個笑話就失去了一切意義。"
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "tatoeba_id": 380560,
+   "expected": "我打电话给你，一来是想请你吃饭，二来是想告诉你我儿子要结婚了。"
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "tatoeba_id": 9958567,
+   "expected": "他们说你不应该轻信谣言，但说起来容易做起来难。"
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "tatoeba_id": 845976,
+   "expected": "女病者抬头把身体靠在以金字塔的样子排成的绚丽绣花垫。"
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "tatoeba_id": 2731507,
+   "expected": "你們要是用刀劍刺向我們，我们难道不會流血嗎？"
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "tatoeba_id": 927783,
+   "expected": "如果建築物本身是一個實體又同時可以提供空間給他人居住，那麼地球上什麼不是建築物呢？"
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "tatoeba_id": 858908,
+   "expected": "當然，我在日本時透過課本了解中國，可是我自己在中國看到的跟那些課本描述的完全不一樣。"
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "tatoeba_id": 781676,
+   "expected": "他們說她和她的丈夫不可能對任何事達成協議。"
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "tatoeba_id": 7773132,
+   "expected": "汤姆总是说话声音太小，我几乎听不懂他在说什么。"
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "tatoeba_id": 604462,
+   "expected": "你这样不分昼夜地工作，将会伤害自己的健康。"
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "tatoeba_id": 13917251,
+   "expected": "冷氣濾網好久沒清了，難怪吹出來的風有點怪味。"
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "tatoeba_id": 13537037,
+   "expected": "晚自習教室裡一片寂靜，只聽見筆在紙上摩擦的聲音。"
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "tatoeba_id": 2055645,
+   "expected": "时间对一个有智慧的人而言，就如钻石般珍贵；但对愚人来说，却像是一把泥土，一点价值也没有。"
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "tatoeba_id": 3028427,
+   "expected": "Я приехала в школу на машине."
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "tatoeba_id": 6174474,
+   "expected": "Теперь я пытаюсь компенсировать пять лет своего отсутствия на Татоэбе."
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "tatoeba_id": 3299376,
+   "expected": "Прекрати это ребячество."
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "tatoeba_id": 8595570,
+   "expected": "Что у тебя обычно на ужин?"
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "tatoeba_id": 10742456,
+   "expected": "Я ещё не ходил в душ."
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "tatoeba_id": 6977653,
+   "expected": "Том стоит на обочине шоссе и голосует всем проезжающим легковушкам, но никто не останавливается."
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "tatoeba_id": 2628846,
+   "expected": "Я говорил Тому, что это было странно."
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "tatoeba_id": 8308390,
+   "expected": "Звонок не работает. Стучите."
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "tatoeba_id": 7423469,
+   "expected": "Том не из Австралии?"
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "tatoeba_id": 8288548,
+   "expected": "Том никогда не забывал сделать домашнее задание."
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "tatoeba_id": 5969628,
+   "expected": "Удивительно, что ты не в тюрьме."
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "tatoeba_id": 4493238,
+   "expected": "Могу поспорить на сто долларов, что Том голубой."
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "tatoeba_id": 5542305,
+   "expected": "Это стоит баснословных денег."
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "tatoeba_id": 13574297,
+   "expected": "Я уже никогда не смогу ему доверять."
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "tatoeba_id": 3777822,
+   "expected": "Том хочет открыть собственный ресторан."
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "tatoeba_id": 13950593,
+   "expected": "Том отрастил бороду и усы."
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "tatoeba_id": 3011994,
+   "expected": "За весной идёт лето."
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "tatoeba_id": 13783713,
+   "expected": "Какой она высоты? Метра два есть?"
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "tatoeba_id": 4753480,
+   "expected": "Стакан упал на пол и разбился вдребезги."
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "tatoeba_id": 8821028,
+   "expected": "Том уже точно знает, когда поедет."
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "tatoeba_id": 11369996,
+   "expected": "Ziri said he was in the house."
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "tatoeba_id": 7152645,
+   "expected": "Something happened in Australia."
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "tatoeba_id": 11169634,
+   "expected": "Ziri got some corn for the ewe."
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "tatoeba_id": 2609438,
+   "expected": "In molecular gastronomy, no boundaries are set on the creativity of the cooks."
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "tatoeba_id": 12272685,
+   "expected": "Didn't Tom tell you I was in Boston?"
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "tatoeba_id": 11731828,
+   "expected": "The spa offers facials and skin treatments."
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "tatoeba_id": 9015835,
+   "expected": "\"What nationality are his neighbors?\" \"Irish.\""
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "tatoeba_id": 12273079,
+   "expected": "I just finished my homework."
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "tatoeba_id": 12916600,
+   "expected": "I had no reason to lie."
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "tatoeba_id": 9194493,
+   "expected": "What use could this be to Tom?"
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "tatoeba_id": 10596886,
+   "expected": "Do we have any cake left?"
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "tatoeba_id": 3057417,
+   "expected": "Tom forgot that he once told Mary that only she gave his life any meaning."
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "tatoeba_id": 5745168,
+   "expected": "Tom pushed Mary backwards."
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "tatoeba_id": 11944104,
+   "expected": "Yuri actually turned out to be a pretty interesting guy."
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "tatoeba_id": 3729003,
+   "expected": "I have so much to teach you."
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "tatoeba_id": 44292,
+   "expected": "The poor old man was reduced to just a skeleton."
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "tatoeba_id": 11587391,
+   "expected": "Matthew doesn't have a carpet."
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "tatoeba_id": 2327213,
+   "expected": "I found an apartment."
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "tatoeba_id": 8537283,
+   "expected": "I'm just concentrating on playing golf."
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "tatoeba_id": 3395515,
+   "expected": "I can't do this now."
+  }
+ ]
+}

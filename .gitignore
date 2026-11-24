@@ -1,0 +1,14 @@
+node_modules/
+dist/
+*.ehpk
+.env
+.env.*
+!.env.example
+eval/out/
+app/public/probe-chars.json
+*.log
+.claude/
+dist-demo/
+*.ehpk
+out/
+dist-check/

@@ -1,0 +1,38 @@
+name: Daily release
+on:
+  schedule:
+    - cron: '30 19 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Anything new since the last release?
+        id: new
+        run: |
+          last=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ -n "$last" ] && [ -z "$(git log "$last"..HEAD --oneline)" ]; then echo "skip=1" >> "$GITHUB_OUTPUT"; fi
+          echo "last=$last" >> "$GITHUB_OUTPUT"
+      - name: Tests, build and .ehpk
+        if: steps.new.outputs.skip != '1'
+        run: |
+          npm ci && npm test
+          cd app && npm ci && npx tsc --noEmit && npx vite build
+          npx -y @evenrealities/evenhub-cli@0.2.0 pack app.json dist -o gloz.ehpk --sdk-ver 0.0.16
+      - name: Publish the release
+        if: steps.new.outputs.skip != '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="day-$(date -u +%Y-%m-%d)"
+          range="${{ steps.new.outputs.last }}"; [ -n "$range" ] && range="$range..HEAD" || range="HEAD"
+          git log $range --pretty='- %s' > notes.md
+          gh release create "$tag" app/gloz.ehpk --title "Gloz $(date -u +%d\ %b\ %Y)" --notes-file notes.md --target "$GITHUB_SHA"

@@ -1,0 +1,310 @@
+{
+ "meta": {
+  "source": "Tatoeba sentence exports, read 2026-11-23",
+  "licence": "CC BY 2.0 FR",
+  "seed": 20261123,
+  "rule": "20 to 120 characters"
+ },
+ "items": [
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "tatoeba_id": 11750304,
+   "expected": "كان يعلم منذ البداية."
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "tatoeba_id": 13911416,
+   "expected": "الكتب لا تعترف بالحدود."
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "tatoeba_id": 11644749,
+   "expected": "كان دانيال يراجع دروسه في المكتبة."
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "tatoeba_id": 11975222,
+   "expected": "طلب مني ياني أن أخبر سكورة."
+  },
+  {
+   "lang": "ara",
+   "script": "Arabic",
+   "tatoeba_id": 6989765,
+   "expected": "كان سامي يريد أن يمضي وقتا أكثر مع ليلى."
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "tatoeba_id": 10752973,
+   "expected": "فکرمیکنم میفهمم چی میگی."
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "tatoeba_id": 12208605,
+   "expected": "پائیز در سپتامبر آغاز می‌شود."
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "tatoeba_id": 12455190,
+   "expected": "او بیش از یک لات معمولی نیست."
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "tatoeba_id": 12502327,
+   "expected": ".گر صبر كنی زغوره حلوا سازی ، ره صد ساله را یك شبه نتوان پیمود"
+  },
+  {
+   "lang": "pes",
+   "script": "Persian",
+   "tatoeba_id": 12959113,
+   "expected": "نه برای خوابیدن بلکه برای عمل کردن می‌خوابیم."
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "tatoeba_id": 6829720,
+   "expected": "उनकी व्याख्या भ्रामक थी।"
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "tatoeba_id": 2081890,
+   "expected": "टॉम अगले शुक्रवार भारत के लिए रवाना हो रहा है।"
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "tatoeba_id": 4509614,
+   "expected": "तुम्हारी गाड़ी काली है क्या?"
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "tatoeba_id": 10068364,
+   "expected": "मुझे लगता है कि उसकी जान ख़तरे में है।"
+  },
+  {
+   "lang": "hin",
+   "script": "Hindi",
+   "tatoeba_id": 3662402,
+   "expected": "शीत युद्ध के काल में क्यूबा और वियतनाम में सोवियत नौसैनिक और वायु सेना अड्डे हुआ करते थे।"
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "tatoeba_id": 12744641,
+   "expected": "ช่วงนั้นฉันมักจะตื่นตอนตี 5"
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "tatoeba_id": 12569542,
+   "expected": "การตกปลาเป็นงานอดิเรกของฉันอย่างหนึ่ง"
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "tatoeba_id": 8692142,
+   "expected": "เขาภาษาอังกฤษให้พวกเรา"
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "tatoeba_id": 1328092,
+   "expected": "เพราะว่าผมพูดภาษาจีน"
+  },
+  {
+   "lang": "tha",
+   "script": "Thai",
+   "tatoeba_id": 12572495,
+   "expected": "เธอจะแต่งงานกับฉันไหม"
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "tatoeba_id": 2110231,
+   "expected": "תארו לעצמכם: הוא רופא, ובכל זאת - מעשן."
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "tatoeba_id": 1483899,
+   "expected": "למה לא הצלחת לישון בלילה?"
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "tatoeba_id": 2136965,
+   "expected": "הוא לא יכול לבלום אותי."
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "tatoeba_id": 2100621,
+   "expected": "חברים יקרים, אמרו רק מה אתם צריכים!"
+  },
+  {
+   "lang": "heb",
+   "script": "Hebrew",
+   "tatoeba_id": 1738087,
+   "expected": "עשיתי את זה מתוך סקרנות."
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "tatoeba_id": 88909,
+   "expected": "彼女は実際にはディールに住んでいません。"
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "tatoeba_id": 1471059,
+   "expected": "ほとんどのアメリカ人がその決定に賛成した。"
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "tatoeba_id": 142329,
+   "expected": "石油がなくなってきたわ。もっと持ってくるよう店に頼まなくちゃ。"
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "tatoeba_id": 174864,
+   "expected": "現実の問題よりも、巧みな言葉での発言の方に関心がおかれていました。"
+  },
+  {
+   "lang": "jpn",
+   "script": "Japanese",
+   "tatoeba_id": 97165,
+   "expected": "彼らは洪水の被害者を助けるために大いに働いた。"
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "tatoeba_id": 13756505,
+   "expected": "우리는 벽을 칠하기 전에 가구를 덮어야 해."
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "tatoeba_id": 10603080,
+   "expected": "그는 10시에 자신의 집으로 돌아왔다."
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "tatoeba_id": 3718342,
+   "expected": "숙제도 했고 일도 했고 집에 돌아가서 그 다음에 또 도서관에 숙제하러 갔다."
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "tatoeba_id": 13559019,
+   "expected": "새로 산 이불을 덮으면 아주 따뜻하다."
+  },
+  {
+   "lang": "kor",
+   "script": "Korean",
+   "tatoeba_id": 13755105,
+   "expected": "난 얼굴을 찌푸린 채로 고개를 돌렸어."
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "tatoeba_id": 421232,
+   "expected": "都市文化海纳百川，建筑、出版、娱乐、弄堂生活都有上海自己特色。"
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "tatoeba_id": 13850751,
+   "expected": "嫌疑人對謀殺案細節顯然知情一事，在本案中不得作為不利於他的證據，因為這是調查人員以誘導性提問所套出的。"
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "tatoeba_id": 827638,
+   "expected": "當女性跟一個男人吃飯時，女性會吃得比較少。"
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "tatoeba_id": 435385,
+   "expected": "在日本没有像尾崎將司那么有名的高尔夫球手了。"
+  },
+  {
+   "lang": "cmn",
+   "script": "Chinese",
+   "tatoeba_id": 8800293,
+   "expected": "我不是这个意思。性别歧视，女性歧视，不管怎样，男人和女人都是不同的。"
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "tatoeba_id": 9096187,
+   "expected": "Они сейчас то ли в Киото, то ли в Осаке."
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "tatoeba_id": 2030848,
+   "expected": "Я в этом ничуть не сомневаюсь."
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "tatoeba_id": 14126824,
+   "expected": "К вам вчера никто не заходил?"
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "tatoeba_id": 7211169,
+   "expected": "Он умер через месяц после того, как заболел."
+  },
+  {
+   "lang": "rus",
+   "script": "Russian",
+   "tatoeba_id": 12288489,
+   "expected": "Не произноси при нём её имени."
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "tatoeba_id": 8536538,
+   "expected": "She couldn't bring herself to pull the trigger."
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "tatoeba_id": 252703,
+   "expected": "I know that you are a teacher."
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "tatoeba_id": 6649467,
+   "expected": "Tom said that he knew that Mary would do that."
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "tatoeba_id": 11531259,
+   "expected": "John was obsessed with money."
+  },
+  {
+   "lang": "eng",
+   "script": "English",
+   "tatoeba_id": 10576753,
+   "expected": "Did they ask for some coffee?"
+  }
+ ]
+}

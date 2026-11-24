@@ -1,0 +1,102 @@
+[
+ {
+  "id": "s1",
+  "source": "telegram",
+  "chat": "Board",
+  "from": "Layla",
+  "lang": "ar",
+  "text": "هل يمكننا نقل اجتماع مجلس الإدارة إلى الساعة الثالثة غدا؟",
+  "holding": "وصلتني رسالتك. سأرد عليك قريبا.",
+  "en": "Can we move the board meeting to three o'clock tomorrow?"
+ },
+ {
+  "id": "s2",
+  "source": "slack",
+  "chat": "#finance",
+  "from": "Dariush",
+  "lang": "fa",
+  "text": "گزارش سه‌ماهه آماده است. امروز وقت دارید نگاهی بیندازید؟",
+  "holding": "پیامت رسید. به زودی جواب می‌دهم.",
+  "en": "The quarterly report is ready. Do you have time to look at it today?"
+ },
+ {
+  "id": "s3",
+  "source": "gmail",
+  "chat": "Contract draft",
+  "from": "Priya",
+  "lang": "hi",
+  "text": "अनुबंध का नया मसौदा भेज दिया है। क्या शुक्रवार तक मंज़ूरी मिल सकती है?",
+  "holding": "संदेश मिल गया। जल्द ही जवाब दूँगा।",
+  "en": "I have sent the new draft of the contract. Can it be approved by Friday?"
+ },
+ {
+  "id": "s4",
+  "source": "telegram",
+  "chat": "Bangkok office",
+  "from": "Somchai",
+  "lang": "th",
+  "text": "ลูกค้าขอเลื่อนการประชุมเป็นวันพฤหัสบดี สะดวกไหมครับ",
+  "holding": "ได้รับข้อความแล้ว จะตอบกลับเร็ว ๆ นี้",
+  "en": "The client asked to move the meeting to Thursday. Does that work for you?"
+ },
+ {
+  "id": "s5",
+  "source": "discord",
+  "chat": "product",
+  "from": "Noa",
+  "lang": "he",
+  "text": "הגרסה החדשה מוכנה לבדיקה. אפשר לשחרר היום?",
+  "holding": "קיבלתי. אענה בקרוב.",
+  "en": "The new version is ready for testing. Can we release it today?"
+ },
+ {
+  "id": "s6",
+  "source": "slack",
+  "chat": "#tokyo",
+  "from": "Kenji",
+  "lang": "ja",
+  "text": "明日の会議の資料を共有しました。ご確認をお願いします。",
+  "holding": "受け取りました。すぐに返信します。",
+  "en": "I have shared the papers for tomorrow's meeting. Please take a look."
+ },
+ {
+  "id": "s7",
+  "source": "telegram",
+  "chat": "Seoul team",
+  "from": "Minji",
+  "lang": "ko",
+  "text": "투자자 미팅이 다음 주 화요일로 확정되었습니다. 괜찮으신가요?",
+  "holding": "메시지 받았어요. 곧 답장할게요.",
+  "en": "The investor meeting is set for next Tuesday. Is that all right with you?"
+ },
+ {
+  "id": "s8",
+  "source": "gmail",
+  "chat": "Shanghai visit",
+  "from": "Wei",
+  "lang": "zh",
+  "text": "下周三的工厂参观已经安排好了，您几点到？",
+  "holding": "收到了，我稍后回复你。",
+  "en": "Next Wednesday's factory visit is arranged. What time will you arrive?"
+ },
+ {
+  "id": "s9",
+  "source": "telegram",
+  "chat": "Partners",
+  "from": "Irina",
+  "lang": "ru",
+  "text": "Договор подписан. Отправить вам копию сегодня?",
+  "holding": "Получил. Скоро отвечу.",
+  "en": "The contract is signed. Shall I send you a copy today?"
+ },
+ {
+  "id": "s10",
+  "source": "slack",
+  "chat": "#leadership",
+  "from": "Sam",
+  "lang": "en",
+  "text": "Can you join the 4pm call with the auditors? It should take 20 minutes.",
+  "holding": "Got it. I will reply properly soon.",
+  "en": "Can you join the 4pm call with the auditors? It should take 20 minutes."
+ }
+]
