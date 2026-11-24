@@ -48,11 +48,14 @@ test('script lines hold about one display line each', () => {
   assert.deepEqual(s, [0, 2, 4])
 })
 
-test('the app: follows the voice, tap pauses, down and up move a line', async () => {
+test('the app: opens paused, tap follows the voice, tap pauses, down and up move a line', async () => {
   let place = 6
   const { ctx, calls, mics } = fakeCtx(b => b.action === 'follow' ? { at: place } : samplePrompter(b))
   const m = prompterApp.make(ctx)
   await m.start(); await tick()
+  assert.deepEqual(mics, [])
+  assert.equal(m.card().hint, 'Paused · tap: follow voice · down: next line · up: line back')
+  m.input('tap')
   assert.deepEqual(mics, [true])
   const first = m.card()
   assert.equal(first.kind, 'status')
@@ -85,6 +88,7 @@ test('the app: no speech engine stops following with a clear line', async () => 
   const { ctx } = fakeCtx(b => b.action === 'follow' ? { error: 'No speech engine on the server' } : samplePrompter(b))
   const m = prompterApp.make(ctx)
   await m.start(); await tick()
+  m.input('tap')
   m.audio(loud()); await tick()
   assert.match(m.card().hint, /^No speech engine on the server · tap: follow voice/)
 })

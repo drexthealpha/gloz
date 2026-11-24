@@ -86,7 +86,6 @@ export const prompterApp: AppEntry = {
         at = 0
         note = ''
         show('script')
-        follow(true)
       } catch { line = 'No signal'; show('error') }
     }
 

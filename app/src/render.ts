@@ -153,7 +153,9 @@ export function drawGrid(texts: string[], hint: string): HTMLCanvasElement {
     g.textBaseline = 'middle'
     g.direction = 'ltr'
     g.textAlign = 'left'
-    g.fillText(hint, PAD, FULL_H - HINT_PX / 2 - 4)
+    let hp = HINT_PX
+    while (hp > HINT_PX * 0.7 && g.measureText(hint).width > W - PAD * 2) { hp -= 1; g.font = `${hp}px ${FONT}` }
+    g.fillText(hint, PAD, FULL_H - HINT_PX / 2 - 9)
   }
   return cv
 }

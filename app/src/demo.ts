@@ -142,11 +142,11 @@ try { if (sessionStorage.getItem('gloz.demo.offline')) api.online = false } catc
 const gloz = await runGloz(bridge as any, api, s => {
   // The sample's meaning in English, under the glasses: part of the sample, not Gloz's output.
   const m = s.queue[s.at] as any
-  const on = Boolean(m) && ['message', 'draft', 'thinking', 'sent', 'skipped'].includes(s.view) && m.lang !== 'en' && bridge.mode === 'app'
+  const on = Boolean(m) && ['message', 'draft', 'thinking', 'sent', 'skipped'].includes(s.view) && m.lang !== 'en' && bridge.mode === 'app' && !bridge.inApp
   meaning.style.visibility = on ? 'visible' : 'hidden'
   // When hidden it is also emptied, so nothing out of date stays in the page.
   meaning.textContent = on ? `What ${m.from} wrote, in English: ${(samples as any[]).find(x => x.id === m.id)?.en ?? ''}` : ' '
-  again.hidden = !(s.view === 'empty' && s.seen.length > 0)
+  again.hidden = s.view !== 'empty'
   // The typing box belongs to a reply being spoken; it closes if the wearer moves away.
   const box = document.getElementById('say') as HTMLFormElement
   // Moving away cancels the typed reply: the box closes and nothing is sent or announced.

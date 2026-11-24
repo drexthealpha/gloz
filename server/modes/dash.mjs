@@ -3,9 +3,9 @@
 // that service is not set up or not allowed, so the glasses say so instead of showing a number.
 export const SAMPLE = {
   sample: true,
-  unread: 3,
+  unread: 10,
   events: [{ at: '2026-11-24T09:30:00Z', title: 'Standup' }, { at: '2026-11-24T14:00:00Z', title: 'Board review' }],
-  tasks: { due: 2, first: 'Send the budget' },
+  tasks: { due: 4, first: 'Sample: book the dentist' },
   weather: { temp: 12, hi: 15, lo: 7, rain: 40, wind: 18 },
 }
 const UA = { 'user-agent': 'Gloz/0.1' }

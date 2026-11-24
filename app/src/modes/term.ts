@@ -79,7 +79,7 @@ function make(ctx: ModeCtx): Mode {
       if (state === 'out') return { kind: 'message', head: `${ran}:`, text: out[line], hint: 'tap: commands · down: next line · up: earlier line · hold: speak', progress: [line + 1, out.length] }
       if (note) return { kind: 'status', text: note, hint: 'tap: back · hold: speak' }
       if (!cmds.length) return { kind: 'status', text: 'No commands allowed', hint: 'server: set GLOZ_TERMINAL_ALLOW · hold: speak' }
-      return { kind: 'status', text: cmds[at], hint: `${heardIt ? 'you said this · ' : sample ? 'sample · ' : ''}tap: run · down: next · up: earlier · hold: speak`, progress: [at + 1, cmds.length] }
+      return { kind: 'status', text: cmds[at], hint: `${heardIt ? 'you said this · ' : sample ? 'sample · ' : ''}tap: run this command · down: next · up: earlier · hold: speak`, progress: [at + 1, cmds.length] }
     },
     input(i) {
       if (state === 'loading' || state === 'off' || state === 'busy') return
@@ -117,4 +117,4 @@ function make(ctx: ModeCtx): Mode {
   }
 }
 
-export const termApp: AppEntry = { id: 'term', title: () => 'Terminal', make }
+export const termApp: AppEntry = { id: 'term', title: () => 'Server commands', make }

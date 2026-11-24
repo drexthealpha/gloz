@@ -24,9 +24,9 @@ export interface DashData {
 export function sampleDash(_body: unknown): DashData {
   return {
     sample: true,
-    unread: 3,
+    unread: 10,
     events: [{ at: '2026-11-24T09:30:00Z', title: 'Standup' }, { at: '2026-11-24T14:00:00Z', title: 'Board review' }],
-    tasks: { due: 2, first: 'Send the budget' },
+    tasks: { due: 4, first: 'Sample: book the dentist' },
     weather: { temp: 12, hi: 15, lo: 7, rain: 40, wind: 18 },
   }
 }
@@ -119,7 +119,7 @@ function make(ctx: ModeCtx): Mode {
       if (!chosen.length) return { kind: 'status', text: 'No panels', hint: 'hold: choose panels' }
       const pin = ctx.store.get('dash.pin') || ''
       const items = chosen.map(id => panelText(id, data, ctx.lang(), new Date(), pin, Boolean(where)))
-      return { kind: 'status', text: note && note !== 'Loading' ? `${note} · ${items.join(' · ')}` : items.join(' · '), grid: note && note !== 'Loading' ? [note, ...items].slice(0, 12) : items, hint: `${data.sample ? 'sample · ' : ''}${loadedAt ? `updated ${loadedAt} · ` : ''}tap: refresh · hold: choose panels · double tap: back` }
+      return { kind: 'status', text: note && note !== 'Loading' ? `${note} · ${items.join(' · ')}` : items.join(' · '), grid: note && note !== 'Loading' ? [note, ...items].slice(0, 12) : items, hint: `${data.sample ? 'sample · ' : ''}${loadedAt ? `${loadedAt} · ` : ''}tap: refresh · hold: panels · double tap: back` }
     },
     input(i) {
       if (i === 'release') return

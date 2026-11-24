@@ -60,6 +60,14 @@ try {
   await scene('No signal: the reply is saved on the phone.', 5000, async () => { kill(be); await sleep(500); await input('click'); await sleep(1500); await input('click') })
   await scene('The link is back: the saved reply goes out by itself, and the next message is up.', 7000, async () => { be = backend() })
   await scene('Hebrew, Japanese, Korean, Chinese, Russian, English: every script the phone can draw.', 8000)
+  // Apps, from the last item of the glasses menu: the dashboard, then back to messages.
+  await scene('Apps, from the glasses menu: a dashboard, tasks, notes, a reader, a teleprompter and more.', 5000, async () => {
+    await input('context_menu'); await sleep(900)
+    for (let k = 0; k < 8; k++) { await input('down'); await sleep(250) }
+    await input('click')
+  })
+  await scene('The dashboard: up to twelve panels, each at the largest size that fits.', 6000, () => input('click'))
+  await scene('Double tap: back to messages.', 3500, () => input('double_click'))
   await scene('Double tap: Gloz closes.', 3500, () => input('double_click'))
 } finally { kill(sim); kill(vite); kill(be) }
 

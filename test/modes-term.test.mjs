@@ -91,7 +91,7 @@ test('mode: list, move, nothing runs before the tap, then output line by line', 
   const m = termApp.make(ctx)
   await m.start()
   assert.equal(m.card().text, 'uptime')
-  assert.equal(m.card().hint, 'tap: run · down: next · up: earlier · hold: speak')
+  assert.equal(m.card().hint, 'tap: run this command · down: next · up: earlier · hold: speak')
   m.input('next')
   assert.equal(m.card().text, 'git status')
   assert.equal(calls.filter(c => c.op === 'run').length, 0)
