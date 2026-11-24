@@ -22,8 +22,8 @@ export default function MoreSettings({ s, set, l, setL, live, unmute, pick, them
       <div className="flex flex-col gap-2">
         <Label id="linel" className="text-base">{t('line')}</Label>
         <ToggleGroup type="single" variant="outline" spacing={2} aria-labelledby="linel" value={s.low ? 'low' : 'middle'} onValueChange={v => v && set({ low: v === 'low' })} className="w-full flex-wrap gap-2">
-          <ToggleGroupItem value="middle" className={`${big} flex-1`}>{t('middle')}</ToggleGroupItem>
-          <ToggleGroupItem value="low" className={`${big} flex-1`}>{t('low')}</ToggleGroupItem>
+          <ToggleGroupItem value="middle" className={`${big} flex-1 data-[state=on]:font-semibold data-[state=on]:ring-2 data-[state=on]:ring-primary`}>{t('middle')}</ToggleGroupItem>
+          <ToggleGroupItem value="low" className={`${big} flex-1 data-[state=on]:font-semibold data-[state=on]:ring-2 data-[state=on]:ring-primary`}>{t('low')}</ToggleGroupItem>
         </ToggleGroup>
       </div>
       <div className="flex min-h-12 flex-wrap items-center justify-between gap-3">
@@ -40,9 +40,9 @@ export default function MoreSettings({ s, set, l, setL, live, unmute, pick, them
       <div className="flex flex-col gap-2">
         <Label id="themel" className="text-base">{t('theme')}</Label>
         <ToggleGroup type="single" variant="outline" spacing={2} aria-labelledby="themel" data-theme-switch value={theme} onValueChange={v => v && onTheme(v as Theme)} className="w-full flex-wrap gap-2">
-          <ToggleGroupItem value="device" className={`${big} flex-1`}>{t('device')}</ToggleGroupItem>
-          <ToggleGroupItem value="light" className={`${big} flex-1`}>{t('light')}</ToggleGroupItem>
-          <ToggleGroupItem value="dark" className={`${big} flex-1`}>{t('dark')}</ToggleGroupItem>
+          <ToggleGroupItem value="device" className={`${big} flex-1 data-[state=on]:font-semibold data-[state=on]:ring-2 data-[state=on]:ring-primary`}>{t('device')}</ToggleGroupItem>
+          <ToggleGroupItem value="light" className={`${big} flex-1 data-[state=on]:font-semibold data-[state=on]:ring-2 data-[state=on]:ring-primary`}>{t('light')}</ToggleGroupItem>
+          <ToggleGroupItem value="dark" className={`${big} flex-1 data-[state=on]:font-semibold data-[state=on]:ring-2 data-[state=on]:ring-primary`}>{t('dark')}</ToggleGroupItem>
         </ToggleGroup>
       </div>
       {unmutedNote && <p role="status" className="m-0 font-semibold">{t('unmuted')}</p>}

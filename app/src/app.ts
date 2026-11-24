@@ -272,14 +272,15 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   function homeCard(): Card {
     const w = words(settings.myLang)
     if (saying === 'listening') return { kind: 'status', text: `Listening · say ${SAY_WHAT[sayTo?.id ?? ''] ?? 'what you want'}`, hint: 'let go: done · double tap: cancel' }
-    if (saying === 'working') return { kind: 'status', text: 'Working on it', hint: 'wait a moment' }
+    if (saying === 'working') return { kind: 'status', text: 'Getting your words…', hint: 'wait a moment' }
     const base = card(s, settings.myLang)
     if (s.note && !homeNote) return base
     const n = day.length + 1
     const skipped = s.skippedMsgs?.length ?? 0
     if (dayAt === 0) return { kind: 'status', text: homeNote || base.text, hint: ['tap: check now', day.length && 'down: your day', skipped && w.showSkipped(skipped), 'hold: say anything'].filter(Boolean).join(' · '), progress: day.length ? [1, n] : undefined }
     const it = day[dayAt - 1]
-    return { kind: 'status', text: homeNote || it.text, hint: [it.sample && 'sample', it.tool === 'nav' ? 'tap: say where' : it.tool === 'dash' ? 'tap: whole day' : 'tap: open', 'down: next', 'up: earlier', 'hold: say anything'].filter(Boolean).join(' · '), progress: [dayAt + 1, n] }
+    if (homeNote) return { kind: 'status', text: homeNote, hint: 'down: next · hold: say anything', progress: [dayAt + 1, n] }
+    return { kind: 'status', text: it.text, hint: [it.sample && 'sample', it.tool === 'dash' ? 'tap: whole day' : 'tap: open', 'down: next', 'up: earlier', 'hold: say anything'].filter(Boolean).join(' · '), progress: [dayAt + 1, n] }
   }
   function flash(text: string) {
     homeNote = text

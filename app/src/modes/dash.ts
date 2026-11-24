@@ -3,6 +3,7 @@ import type { AppEntry, Mode, ModeCtx } from './types.ts'
 import type { Card } from '../core/types.ts'
 import { SIZES, DEFAULT_SETTINGS } from '../core/types.ts'
 import { wrap } from '../core/layout.ts'
+import { sampleTasks } from './tasks.ts'
 
 export const PANELS: [id: string, name: string][] = [
   ['time', 'Time'], ['date', 'Date'], ['unread', 'Unread mail'], ['event', 'Next event'], ['event2', 'Event after'],
@@ -28,7 +29,7 @@ export function sampleDash(_body: unknown): DashData {
     sample: true,
     unread: 10,
     events: [{ at: ahead(120), title: 'Standup' }, { at: ahead(240), title: 'Board review' }],
-    tasks: { due: 4, first: 'Sample: book the dentist' },
+    tasks: (() => { const t = sampleTasks({ action: 'list' }).tasks; return { due: t.length, first: t[0]?.title } })(),
     weather: { temp: 12, hi: 15, lo: 7, rain: 40, wind: 18 },
   }
 }

@@ -25,7 +25,7 @@ export function dayItems(d: DayData, lang = 'en', now = new Date()): DayItem[] {
   const fromSample = (x: Docs) => x?.source === 'sample' || /^Sample: /.test(x?.notes?.[0]?.title ?? '')
   if (d.dash) {
     const s = d.dash.sample
-    if (d.dash.events !== undefined) out.push({ tool: 'dash', text: `Next: ${panelText('event', d.dash, lang, now, '', true)}`, sample: s })
+    if (d.dash.events !== undefined) { const e = panelText('event', d.dash, lang, now, '', true); out.push({ tool: 'dash', text: /^\d/.test(e) ? `Next: ${e}` : e, sample: s }) }
     if (d.tasks?.tasks) out.push({ tool: 'tasks', text: `${d.tasks.tasks.length} tasks due`, sample: d.tasks.source === 'sample' })
     else if (d.dash.tasks) out.push({ tool: 'tasks', text: panelText('tasks', d.dash, lang, now, '', true), sample: s })
     if (d.dash.weather) out.push({ tool: 'dash', text: `${panelText('temp', d.dash, lang, now, '', true)} · ${panelText('range', d.dash, lang, now, '', true)}`, sample: s })

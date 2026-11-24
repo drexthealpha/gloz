@@ -131,8 +131,8 @@ export const readerApp: AppEntry = {
       switch (view) {
         case 'loading': return { kind: 'status', text: 'Loading', hint: 'wait' }
         case 'error': return { kind: 'status', text: line, hint: 'tap: try again' }
-        case 'pick': return { kind: 'status', text: docs[pick].title || 'Untitled', hint: 'tap: read · down: next · up: earlier', progress: [pick + 1, docs.length] }
-        case 'page': return { kind: 'message', text: slice(page).trim() || ' ', hint: `${sample ? 'sample · ' : ''}${resumed ? 'where you left off · ' : ''}line ${page + 1}/${starts.length} · down: next line · up: line back${other}`, parts: false, progress: [page + 1, starts.length] }
+        case 'pick': return { kind: 'status', text: docs[pick].title || 'Untitled', hint: `${line ? line + ' · ' : ''}tap: read · down: next · up: earlier`, progress: [pick + 1, docs.length] }
+        case 'page': return { kind: 'message', text: slice(page).trim() || ' ', hint: resumed ? `where you left off · line ${page + 1}/${starts.length} · down: next line` : `${sample ? 'sample · ' : ''}line ${page + 1}/${starts.length} · down: next line · up: line back${other}`, parts: false, progress: [page + 1, starts.length] }
         case 'where': return { kind: 'status', text: `Line ${page + 1} of ${starts.length}`, hint: `tap: back to the text${other}` }
         case 'end': return { kind: 'status', text: 'End of text', hint: `up: last page${other}` }
       }
@@ -142,11 +142,12 @@ export const readerApp: AppEntry = {
       id: 'reader',
       card,
       start: load,
-      say(text) { const d = docs.find(x => (x.title || '').toLowerCase().includes(text.toLowerCase())); if (d) void open(d); else { pick = 0; show('pick') } },
+      say(text) { const d = docs.find(x => (x.title || '').toLowerCase().includes(text.toLowerCase())); if (d) void open(d); else { pick = 0; line = `No text called ${text}`.slice(0, 40); show('pick') } },
       input(i) {
         if (view === 'error' && i === 'tap') return void load()
         if (i === 'hold' && doc && docs.length > 1) { pick = Math.max(0, docs.indexOf(doc)); return show('pick') }
         if (view === 'pick') {
+          line = ''
           if (i === 'next') pick = (pick + 1) % docs.length
           if (i === 'prev') pick = (pick - 1 + docs.length) % docs.length
           if (i === 'tap') return void open(docs[pick])

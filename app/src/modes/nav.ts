@@ -122,7 +122,7 @@ export function makeNav(ctx: ModeCtx): Mode & { moved: (p: [number, number]) => 
         const l = left(route, at)
         const up = at ? ' · up: earlier step' : places.length ? ' · up: saved places' : ''
         const hint = `tap: time left${at < route.steps.length - 1 ? ' · down: next step' : ''}${up}`
-        if (info) return { kind: 'status', text: `${route.to.name}: ${km(l.m)} · ${mins(l.s)} left`, hint: '© OpenStreetMap · tap: step · hold: new place' }
+        if (info) return { kind: 'status', text: `${route.to.name}: ${km(l.m)} · ${mins(l.s)} left`, hint: `${route.sample ? 'sample · ' : ''}© OpenStreetMap · tap: step` }
         return { kind: 'status', text: stepLine(route, at), hint: route.sample ? `sample · ${hint}` : hint, progress: [at + 1, route.steps.length] }
       }
       if (!places.length) return { kind: 'status', text: note || 'Hold and say where', hint: 'hold: speak · release: find the route' }

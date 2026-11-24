@@ -1,6 +1,7 @@
 // Dashboard data for the panels the wearer chose. Weather comes from Open-Meteo (free, no key).
 // Mail, calendar and tasks use the Google refresh token in GLOZ_GOOGLE_*; a field is null when
 // that service is not set up or not allowed, so the glasses say so instead of showing a number.
+import { handle as tasksHandle } from './tasks.mjs'
 export const SAMPLE = {
   sample: true,
   unread: 10,
@@ -50,7 +51,7 @@ async function weather(lat, lon) {
 // body: { panels: string[], lat?, lon? }
 export async function handle(body, { env }) {
   // Sample meetings sit ahead of now, so "Next" is always true.
-  if (env.GLOZ_SAMPLE === '1') { const ahead = m => { const t = new Date(Date.now() + m * 60000); t.setMinutes(0, 0, 0); if (t.getHours() >= 22 || t.getHours() < 7) { if (t.getHours() >= 22) t.setDate(t.getDate() + 1); t.setHours(9 + Math.floor(m / 120)) } return t.toISOString() }; return { ...SAMPLE, events: [{ at: ahead(120), title: 'Standup' }, { at: ahead(240), title: 'Board review' }] } }
+  if (env.GLOZ_SAMPLE === '1') { const ahead = m => { const t = new Date(Date.now() + m * 60000); t.setMinutes(0, 0, 0); if (t.getHours() >= 22 || t.getHours() < 7) { if (t.getHours() >= 22) t.setDate(t.getDate() + 1); t.setHours(9 + Math.floor(m / 120)) } return t.toISOString() }; const t = (await tasksHandle({ action: 'list' }, { env })).tasks || []; return { ...SAMPLE, tasks: { due: t.length, first: t[0]?.title }, events: [{ at: ahead(120), title: 'Standup' }, { at: ahead(240), title: 'Board review' }] } }
   const want = new Set(Array.isArray(body?.panels) ? body.panels : [])
   const has = (...ids) => ids.some(id => want.has(id))
   const out = {}
