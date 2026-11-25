@@ -20,15 +20,19 @@ export function sampleTerm(body: any): any {
   return { on: true, allow: ['uptime', 'df', 'git'], sample: true }
 }
 
-// One output line in pieces of at most 48 characters (two lines on the glasses), cut between words where it can.
+// One output line in pieces of at most 36 characters (one line on the glasses at its smallest size),
+// cut after a comma where it can, else between words.
 export function pieces(line: string): string[] {
   const words = line.trim().split(/\s+/).filter(Boolean)
   const out: string[] = []
   let cur = ''
   for (const w of words) {
-    if (cur && (cur + ' ' + w).length > 48) { out.push(cur); cur = '' }
+    // A comma ends a part; a part that would not fit with the next one goes on its own screen.
+    const rest = words.slice(words.indexOf(w)).join(' ')
+    const part = rest.slice(0, (rest.indexOf(', ') + 1) || rest.length)
+    if (cur && ((cur + ' ' + w).length > 36 || (/,$/.test(cur) && (cur + ' ' + part).length > 36))) { out.push(cur); cur = '' }
     cur = cur ? `${cur} ${w}` : w
-    while (cur.length > 48) { out.push(cur.slice(0, 48)); cur = cur.slice(48) }
+    while (cur.length > 36) { out.push(cur.slice(0, 36)); cur = cur.slice(36) }
   }
   if (cur) out.push(cur)
   return out.length ? out : ['']
@@ -93,7 +97,7 @@ function make(ctx: ModeCtx): Mode {
       if (state === 'off') return { kind: 'status', text: 'Terminal is off', hint: 'server: set GLOZ_TERMINAL=1 and GLOZ_TERMINAL_ALLOW' }
       if (state === 'busy') return { kind: 'status', text: 'Working', hint: 'wait a moment' }
       // One output line per screen, fitted to it; the hint offers only presses that move.
-      if (state === 'out') return { kind: 'status', text: line === 0 ? `${ran}: ${out[0]}` : `${ran}, continued: ${out[line]}`, hint: [sample && 'sample', finished && line === out.length - 1 && 'finished', 'tap: all commands', line < out.length - 1 && 'down: next line', line > 0 && 'up: earlier'].filter(Boolean).join(' · '), progress: [line + 1, out.length] }
+      if (state === 'out') return { kind: 'status', text: out[line], hint: [sample && 'sample', ran, finished && line === out.length - 1 && 'finished', line < out.length - 1 && 'down: next line', line > 0 && 'up: earlier', 'tap: all commands'].filter(Boolean).join(' · '), progress: [line + 1, out.length] }
       if (note) return { kind: 'status', text: note, hint: 'tap: ok · hold: say a command' }
       if (!cmds.length) return { kind: 'status', text: 'No commands allowed', hint: 'server: set GLOZ_TERMINAL_ALLOW · hold: speak' }
       return { kind: 'status', text: WHAT[cmds[at].split(' ')[0]] ? `${cmds[at]} (${WHAT[cmds[at].split(' ')[0]]})` : cmds[at], hint: `${heardIt ? (sample ? 'heard (sample) · ' : 'you said this · ') : sample ? 'sample · ' : ''}tap: run · down: next · hold: say a command`, progress: [at + 1, cmds.length] }

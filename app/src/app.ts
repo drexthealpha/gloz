@@ -221,6 +221,9 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
       if (roomBytes >= PIECE) roomPiece()
     }
   }
+  // The platform closes its menu in its own time: the note shown under it starts again when it has gone.
+  let menuNote = ''
+  g.onMenuClosed = () => { const n = menuNote; menuNote = ''; if (n && home()) flash(n); else if (n) dispatch({ t: 'note', text: n, ms: 3500 }) }
   g.onMenu = async id => {
     const w = words(settings.myLang)
     let note = ''
@@ -234,6 +237,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
     else if (id === 8) { const who = [...new Set((s.mutedMsgs ?? []).map(x => x.from))].join(', '); note = who ? w.unmutedWho(who) : w.unmuted; muted.clear(); store.set('gloz.muted', '[]'); after = 0; dispatch({ t: 'unmute' }); poll() }
     if (id === 10) { closeApp(); return }
     if (id === 7) { if (r.on) note = r.lines.length ? w.roomStop : w.roomStopEmpty; roomNote = ''; quiet = false; silentPieces = 0; roomDo({ t: r.on ? 'stop' : 'start' }); g.setMenu(menuItems(settings.myLang, r.on, w.stopListening, false, aiOn ? settings.translate : null)) }
+    menuNote = note
     if (note && home()) flash(note)
     else if (note) dispatch({ t: 'note', text: note, ms: 3500 })   // a menu choice is confirmed long enough to look back
     saveSettings(settings)

@@ -54,11 +54,11 @@ test('the app: down next page, up back, tap shows the page number, the place is 
   const first = m.card()
   assert.equal(first.kind, 'message')
   assert.match(first.text, /^Sample text: On/)
-  assert.match(first.hint, /^sample · line 1\/\d+ · tap: pause · down: next line$/)
+  assert.match(first.hint, /^sample · tap: pause · up: line back · down: next line$/)
   const total = first.progress[1]
   m.input('next'); m.input('next')
   const third = m.card().text
-  assert.match(m.card().hint, new RegExp(`^sample · line 3/${total} `))
+  assert.deepEqual(m.card().progress, [3, total])
   m.input('tap')
   assert.equal(m.card().text, third)
   m.input('prev'); m.input('next')

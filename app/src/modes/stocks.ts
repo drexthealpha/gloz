@@ -18,7 +18,7 @@ export function sampleStocks(_body: unknown): Quotes {
   }
 }
 
-export const line = (q: Quote) => `${q.sym} ${q.price.toFixed(2)} ${q.pct >= 0 ? '+' : ''}${q.pct.toFixed(1)}%`
+export const line = (q: Quote) => `${q.sym} ${q.price.toFixed(2)} ${q.pct >= 0 ? '+' : ''}${q.pct.toFixed(1)}% today`   // change since the last close
 
 // "16:00" for today, "Nov 20 16:00" for an earlier day, in the phone's time zone.
 export function when(t: number, now = Date.now()): string {

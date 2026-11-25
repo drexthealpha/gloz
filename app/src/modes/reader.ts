@@ -129,7 +129,7 @@ export const readerApp: AppEntry = {
       clearTimeout(pace)
       if (view !== 'page' || paused) return
       const words = slice(page).trim().split(/\s+/).length
-      pace = setTimeout(() => { if (view === 'page' && !paused) go(page + 1) }, Math.max(2000, 800 + words * 300))
+      pace = setTimeout(() => { if (view === 'page' && !paused) go(page + 1) }, Math.max(4000, 1500 + words * 400))
       // In tests (Node) the timer never keeps the process alive; a browser has no such call.
       ;(pace as unknown as { unref?: () => void }).unref?.()
     }
@@ -148,7 +148,7 @@ export const readerApp: AppEntry = {
         case 'loading': return { kind: 'status', text: 'Loading', hint: 'wait' }
         case 'error': return { kind: 'status', text: line, hint: 'tap: try again' }
         case 'pick': return { kind: 'status', text: docs[pick].title || 'Untitled', hint: `${line ? line + ' · ' : ''}tap: read · down: next · up: earlier`, progress: [pick + 1, docs.length] }
-        case 'page': return { kind: 'message', text: slice(page).trim() || ' ', hint: resumed ? `where you left off · line ${page + 1}/${starts.length} · down: next line` : `${sample ? 'sample · ' : ''}line ${page + 1}/${starts.length} · ${paused ? 'paused · tap: go on' : 'tap: pause'} · down: next line${other}`, parts: false, progress: [page + 1, starts.length] }
+        case 'page': return { kind: 'message', text: slice(page).trim() || ' ', hint: `${resumed ? 'where you left off · ' : sample ? 'sample · ' : ''}${paused ? 'paused · tap: go on' : 'tap: pause'} · up: line back · down: next line${other}`, parts: false, progress: [page + 1, starts.length] }
         case 'where': return { kind: 'status', text: `Line ${page + 1} of ${starts.length}`, hint: `tap: back to the text${other}` }
         case 'end': return { kind: 'status', text: 'End of text', hint: `up: last page${other}` }
       }

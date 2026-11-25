@@ -59,7 +59,7 @@ export default function MoreSettings({ s, set, l, setL, live, unmute, pick, them
           {l.chats.map((c, k) => (
             <div key={c.key} className="flex min-h-12 flex-wrap items-center justify-between gap-3">
               <Label htmlFor={`chat${k}`} className="min-w-0 flex-1 basis-40 text-base"><bdi>{c.label}</bdi>{c.muted && ` · ${t('isMuted')}`}</Label>
-              <Switch id={`chat${k}`} aria-label={c.label} checked={c.on} onCheckedChange={v => { pick(c.key, v); setL(live()) }} />
+              <Switch id={`chat${k}`} aria-label={c.label} disabled={c.muted} checked={c.on && !c.muted} onCheckedChange={v => { pick(c.key, v); setL(live()) }} />
             </div>
           ))}
         </fieldset>

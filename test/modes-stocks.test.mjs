@@ -19,8 +19,8 @@ test('the sample on the glasses matches the server sample', () => {
 })
 
 test('a quote reads as one short line, with its time', () => {
-  assert.equal(line({ sym: 'AAPL', price: 231.4, pct: 1.2, t: 0 }), 'AAPL 231.40 +1.2%')
-  assert.equal(line({ sym: 'MSFT', price: 498.12, pct: -0.44, t: 0 }), 'MSFT 498.12 -0.4%')
+  assert.equal(line({ sym: 'AAPL', price: 231.4, pct: 1.2, t: 0 }), 'AAPL 231.40 +1.2% today')
+  assert.equal(line({ sym: 'MSFT', price: 498.12, pct: -0.44, t: 0 }), 'MSFT 498.12 -0.4% today')
   const t = new Date(2026, 10, 20, 16, 0).getTime()
   assert.equal(when(t, t + 3600e3), '16:00')
   assert.equal(when(t, t + 3 * 864e5), 'Nov 20 16:00')
@@ -57,13 +57,13 @@ test('mode: loads on open, down and up move, tap refreshes, sample is labelled',
   const { ctx, calls } = fakeCtx(b => sampleStocks(b))
   const m = stocksApp.make(ctx)
   await m.start()
-  assert.equal(m.card().text, 'AAPL 231.40 +1.2%')
+  assert.equal(m.card().text, 'AAPL 231.40 +1.2% today')
   // Just after a refresh the hint says when, with the way back; then it offers the presses again.
   assert.match(m.card().hint, /^sample · updated .+ · double tap: back$/)
   m.input('next')
-  assert.equal(m.card().text, 'MSFT 498.12 -0.4%')
+  assert.equal(m.card().text, 'MSFT 498.12 -0.4% today')
   m.input('prev'); m.input('prev')
-  assert.equal(m.card().text, 'NVDA 187.05 +2.3%')
+  assert.equal(m.card().text, 'NVDA 187.05 +2.3% today')
   m.input('tap')
   await tick()
   assert.equal(calls.length, 2)
@@ -79,7 +79,7 @@ test('mode: a live quote shows its time; no signal keeps the last quotes and say
   assert.equal(m.card().hint, `${when(t)} · double tap: back`)
   fail = true
   m.input('tap'); await tick()
-  assert.equal(m.card().text, 'IBM 1.00 +0.0%')
+  assert.equal(m.card().text, 'IBM 1.00 +0.0% today')
   assert.match(m.card().hint, /^No signal · /)
   const b = fakeCtx(() => { throw new Error('down') })
   const n = stocksApp.make(b.ctx)

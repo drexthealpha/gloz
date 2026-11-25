@@ -86,7 +86,7 @@ test('handler: one real harmless command (node --version) runs and reports its s
   assert.ok(r.startMs > 0 && r.startMs < r.ms + 1)
 })
 
-test('mode: list, move, nothing runs before the tap, then output line by line, later lines say they continue', async () => {
+test('mode: list, move, nothing runs before the tap, then output line by line, the command named in the hint', async () => {
   const { ctx, calls, kv } = fakeCtx(b => b.op === 'list' ? { on: true, allow: ['uptime', 'git status'] } : { lines: ['up 3 days', 'exit 0'], code: 0 })
   const m = termApp.make(ctx)
   await m.start()
@@ -97,12 +97,12 @@ test('mode: list, move, nothing runs before the tap, then output line by line, l
   assert.equal(calls.filter(c => c.op === 'run').length, 0)
   m.input('tap'); await tick()
   assert.deepEqual(calls.at(-1), { op: 'run', cmd: 'git status' })
-  assert.equal(m.card().text, 'git status: up 3 days')
-  assert.equal(m.card().hint, 'tap: all commands · down: next line')
+  assert.equal(m.card().text, 'up 3 days')
+  assert.equal(m.card().hint, 'git status · down: next line · tap: all commands')
   assert.deepEqual(m.card().progress, [1, 2])
   m.input('next')
-  assert.equal(m.card().text, 'git status, continued: exit 0')
-  assert.equal(m.card().hint, 'tap: all commands · up: earlier')   // the last line offers no down
+  assert.equal(m.card().text, 'exit 0')
+  assert.equal(m.card().hint, 'git status · up: earlier · tap: all commands')   // the last line offers no down
   m.input('tap')
   assert.equal(m.card().text, 'git status (code changes)')
   assert.deepEqual(JSON.parse(kv['term.saved']), ['git status'])

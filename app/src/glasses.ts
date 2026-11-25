@@ -19,7 +19,7 @@ export type Input = 'tap' | 'next' | 'prev' | 'hold' | 'release' | 'exit'
 // A send the glasses never answer must not hold every later screen back: after 3 s the next one goes.
 function within<T>(p: Promise<T>, ms = 3000): Promise<T | void> {
   let t: ReturnType<typeof setTimeout> | undefined
-  const late = new Promise<void>(ok => { t = setTimeout(() => { console.warn('[gloz] glasses did not answer a draw in 3 s'); ok() }, ms) })
+  const late = new Promise<void>(ok => { t = setTimeout(() => { console.warn('[gloz] draw timed out'); ok() }, ms) })
   return Promise.race([p, late]).finally(() => clearTimeout(t))
 }
 
@@ -43,6 +43,7 @@ export class Glasses {
   onAudio: (pcm: Uint8Array) => void = () => {}
   onTurn: () => void = () => {}   // the wearer moved to another part of the same card
   onMenu: (id: number) => void = () => {}
+  onMenuClosed = () => {}
 
   constructor(bridge: EvenAppBridge) { this.bridge = bridge; setInterval(() => this.tick(), 400) }
 
@@ -97,7 +98,7 @@ export class Glasses {
     const st = ev.sysEvent?.eventType
     // The platform menu covers part of the line: the line is blanked while it is open, so no cut-off words show.
     if (st === OsEventTypeList.FOREGROUND_ENTER_EVENT) { this.menuOpen = true; this.paint(); return }
-    if (st === OsEventTypeList.FOREGROUND_EXIT_EVENT) { this.menuOpen = false; this.lineAt = Date.now(); this.paint(); return }
+    if (st === OsEventTypeList.FOREGROUND_EXIT_EVENT) { this.menuOpen = false; this.lineAt = Date.now(); this.paint(); this.onMenuClosed(); return }
     if (this.menuOpen) return
     const sys = ev.sysEvent ? (ev.sysEvent.eventType ?? OsEventTypeList.CLICK_EVENT) : null
     const txt = ev.textEvent ? (ev.textEvent.eventType ?? OsEventTypeList.CLICK_EVENT) : null
