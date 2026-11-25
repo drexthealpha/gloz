@@ -1,0 +1,15 @@
+Read and answer every message on your glasses, with the phone in your pocket.
+
+Gloz brings your Telegram, Slack, Discord and Gmail messages to Even G2, one line at a time, in your language and at your size. Arabic, Persian, Hindi, Thai, Hebrew and other scripts the glasses cannot show on their own are drawn as images, so every message reads.
+
+Under each message a reply is ready, drafted by AI in the sender's language with its meaning shown to you. Tap to see it, tap again to send it. Hold to say your own words instead. Nothing is sent without your tap or your word, and replies wait through a lost signal.
+
+After your messages comes your day: your next meeting, your tasks, the weather, music, notes and more, each one swipe away. Hold anywhere and say what you need: add a task, take a note, get directions or ask a question.
+
+Seven text sizes; the largest fills the whole display. Every screen says what a tap, swipe or hold does there.
+
+Your keys and your message text stay on your own Gloz server. Message text is dropped once the reply is sent.
+
+If your glasses need a repair, "Fix my glasses" on the phone screen opens Even Realities' support form already filled in.
+
+Free and open source (MIT).
