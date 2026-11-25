@@ -220,14 +220,17 @@ These 69 complaints are about the hardware, the Even app, the store or the compa
 ## Business potential and safety
 
 - **Who pays.** Even's CEO says one third of users are company executives and that users wear G2 8 to 10 hours a day (interview, Silicon Valley Investclub, 31 Aug 2026). An executive's day is meetings; messages wait on the phone. Gloz answers them from the glasses.
-- **Demand.** Owners ask in public reviews to reply from the glasses, to read their own scripts, for bigger text and for a silent way to answer. Gloz does each.
+- **Demand.** 115 public complaints from G2 owners (App Store, Google Play, Trustpilot, X and the press, read 23 Nov 2026). 44 are ones a glasses app can act on; 69 are about the hardware, delivery or the company (Gloz also helps with one of them, 13, in the app); 2 are about the company's posts. The 45 Gloz acts on are in [Complaints Gloz fixes](#complaints-gloz-fixes) with Gloz's measured result; the 69 have the "Fix my glasses" request. Owners ask to reply from the glasses, for bigger text and for a silent way to answer.
 - **Launch in Even Hub.** The app is a standard Even Hub package ([app/app.json](app/app.json), `gloz.ehpk` built in CI): name without "Even", system exit dialog on double tap at the root, setup message on the glasses before pairing, setup remembered, only the permissions it uses (network to its own backend, glasses microphone, and location only while Navigation or the Dashboard is open).
+- **What it costs the wearer.** At 100 replies a working day, the AI drafts cost at most about $0.28 a day with gpt-4.1-mini (100 times the most one draft can cost, below). The server runs on any Node 24 host.
+- **Plan (not yet done).** Gloz stays free in Even Hub; the business is a hosted Gloz server for people who do not run their own, paid monthly, priced above the AI cost per draft.
 - **Cost.** Gloz is free and MIT licensed. The backend's cost is the AI provider's price per draft: <!-- gen:cost -->
 at most $0.00282 with gpt-4.1-mini (at least 354 drafts for $1) or $0.0235 with Claude Sonnet 4.5, at OpenRouter's list prices of 2026-11-25 (`node eval/cost.mjs`).
 <!-- /gen --> With no key, Gloz still works with fixed holding replies.
 - **Data.** Message text lives only in the backend's memory and is dropped once the reply is sent: 0 of 200 message texts were written to disk in `eval/complaints.mjs`. Keys stay on the backend. The glasses app stores only the pairing token, settings and the outbox.
 - **Money.** Gloz moves no money and gives no financial advice.
-- **The people whose messages are shown.** Only chats the wearer picks; "Mute this chat" removes one. Nothing is sent without the wearer's tap or word.
+- **The people whose messages are shown.** Only chats the wearer picks; "Mute this chat" removes one. Nothing is sent without the wearer's tap or word: a reply needs a tap to show it and a second tap to send it ([test/core.test.ts](test/core.test.ts)), and 0 of 20 single presses sent anything in `eval/complaints.mjs`.
+- **Keys.** No key is in the app or in the repository: CI fails on anything shaped like a key in a tracked file (`npm run check:secrets`).
 
 ### What leaves the phone and the server
 
