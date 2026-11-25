@@ -355,3 +355,11 @@ test('a time is never broken at its colon when a line wraps', () => {
   const measure = (s: string) => s.length * 10
   for (const w of [60, 70, 80, 90]) assert.ok(!wrap('Now 07:12 AM', w, measure).some(l => /:$/.test(l)), `width ${w}`)
 })
+
+test('Unmute all chats is in the glasses menu only while a chat is muted', async () => {
+  const { menuItems } = await import('../app/src/core/menu.ts')
+  assert.ok(menuItems('en', false, 'Stop listening', false, null, true).some(x => x.itemID === 8))
+  assert.ok(!menuItems('en', false, 'Stop listening', false, null, false).some(x => x.itemID === 8))
+  assert.ok(!menuItems('en', true, 'Stop listening', false, null, false).some(x => x.itemID === 8))
+  assert.ok(menuItems('en', false, 'Stop listening', false, null, false).some(x => x.itemName === 'Translate (needs AI key)'))
+})

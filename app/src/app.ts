@@ -224,19 +224,20 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   // The platform closes its menu in its own time: the note shown under it starts again when it has gone.
   let menuNote = ''
   g.onMenuClosed = () => { const n = menuNote; menuNote = ''; if (n && home()) flash(n); else if (n) dispatch({ t: 'note', text: n, ms: 3500 }) }
+  const rootMenu = () => g.setMenu(menuItems(settings.myLang, r.on, words(settings.myLang).stopListening, false, aiOn ? settings.translate : null, muted.size > 0))
   g.onMenu = async id => {
     const w = words(settings.myLang)
     let note = ''
     if (id === 1 || id === 2) { settings.size = Math.min(7, Math.max(1, settings.size + (id === 1 ? 1 : -1))); note = w.sizeNote(settings.size) }
     if (id === 3) { settings.low = !settings.low; note = settings.low ? w.movedDown : w.movedUp }
     // Without AI on the server, translation cannot run: it stays off and says why.
-    if (id === 4) { if (!settings.translate && !aiOn) note = w.needsAi; else { settings.translate = !settings.translate; after = 0; note = settings.translate ? w.translateOn : w.translateOff; g.setMenu(menuItems(settings.myLang, r.on, w.stopListening, false, aiOn ? settings.translate : null)) } }
-    if (id === 5) { const m = s.queue[s.at]; if (r.on) { roomNote = w.nothingToMute; setTimeout(() => { roomNote = ''; render() }, 2500) } else if (m && s.view !== 'empty') { muted.add(`${m.source}:${m.chat}`); store.set('gloz.muted', JSON.stringify([...muted])); dispatch({ t: 'mute', key: `${m.source}:${m.chat}` }); note = w.mutedWho(m.from) } else note = w.nothingToMute }
+    if (id === 4) { if (!settings.translate && !aiOn) note = w.needsAi; else { settings.translate = !settings.translate; after = 0; note = settings.translate ? w.translateOn : w.translateOff; rootMenu() } }
+    if (id === 5) { const m = s.queue[s.at]; if (r.on) { roomNote = w.nothingToMute; setTimeout(() => { roomNote = ''; render() }, 2500) } else if (m && s.view !== 'empty') { muted.add(`${m.source}:${m.chat}`); store.set('gloz.muted', JSON.stringify([...muted])); dispatch({ t: 'mute', key: `${m.source}:${m.chat}` }); note = w.mutedWho(m.from); rootMenu() } else note = w.nothingToMute }
     if (id === 6) { const n = await poll(); note = n < 0 ? w.noSignal : n ? w.someNew(n) : w.nothingNew }
     if (id === 8 && !muted.size) note = w.nothingMuted
-    else if (id === 8) { const who = [...new Set((s.mutedMsgs ?? []).map(x => x.from))].join(', '); note = who ? w.unmutedWho(who) : w.unmuted; muted.clear(); store.set('gloz.muted', '[]'); after = 0; dispatch({ t: 'unmute' }); poll() }
+    else if (id === 8) { const who = [...new Set((s.mutedMsgs ?? []).map(x => x.from))].join(', '); note = who ? w.unmutedWho(who) : w.unmuted; muted.clear(); store.set('gloz.muted', '[]'); after = 0; dispatch({ t: 'unmute' }); poll(); rootMenu() }
     if (id === 10) { closeApp(); return }
-    if (id === 7) { if (r.on) note = r.lines.length ? w.roomStop : w.roomStopEmpty; roomNote = ''; quiet = false; silentPieces = 0; roomDo({ t: r.on ? 'stop' : 'start' }); g.setMenu(menuItems(settings.myLang, r.on, w.stopListening, false, aiOn ? settings.translate : null)) }
+    if (id === 7) { if (r.on) note = r.lines.length ? w.roomStop : w.roomStopEmpty; roomNote = ''; quiet = false; silentPieces = 0; roomDo({ t: r.on ? 'stop' : 'start' }); rootMenu() }
     menuNote = note
     if (note && home()) flash(note)
     else if (note) dispatch({ t: 'note', text: note, ms: 3500 })   // a menu choice is confirmed long enough to look back
@@ -355,7 +356,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
     active?.stop?.()
     active = null
     void loadDay()   // what changed in the tool (a task done, the next track) shows at once
-    g.setMenu(menuItems(settings.myLang, r.on, words(settings.myLang).stopListening, false, aiOn ? settings.translate : null))
+    rootMenu()
     render()
   }
 
@@ -367,7 +368,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   setInterval(poll, 3000)
   void loadDay()
   setInterval(() => { if (home()) void loadDay() }, 60000)
-  api?.health?.().then(h => { aiOn = Boolean(h?.ai); if (!active) g.setMenu(menuItems(settings.myLang, r.on, words(settings.myLang).stopListening, false, aiOn ? settings.translate : null)) }).catch(() => {})
+  api?.health?.().then(h => { aiOn = Boolean(h?.ai); if (!active) rootMenu() }).catch(() => {})
   // Replies in the outbox go out as soon as the link is back.
   setInterval(async () => {
     if (!outbox.size) return
