@@ -132,7 +132,8 @@ export function step(s: State, ev: Event): { s: State; fx: Effect[] } {
       return { s, fx }
     case 'next':
       if (s.view === 'empty') { fx.push({ e: 'later', ms: 3500, ev: { t: 'note', text: '', was: (s.online ? '\u0000noMore' : '\u0000laterOnline') } }); return { s: { ...s, note: s.online ? '\u0000noMore' : '\u0000laterOnline' }, fx } }
-      if (!msg || s.view === 'listen' || s.view === 'sent' || s.view === 'skipped') return { s, fx }
+      if (s.view === 'skipped') return { s: advance(s, fx), fx }   // a second swipe moves on at once
+      if (!msg || s.view === 'listen' || s.view === 'sent') return { s, fx }
       fx.push({ e: 'later', ms: 2000, ev: { t: 'done', id: msg?.id } })
       return { s: { ...s, view: 'skipped' }, fx }  // swipe past a message or its reply: skipped, shown for a moment
     case 'prev':

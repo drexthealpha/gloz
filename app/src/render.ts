@@ -45,6 +45,12 @@ export function layoutCard(c: Card, size: number): Lines {
     return best!
   }
   const lines = wrap(text, room, measure)
+  // A short message or reply that fits one line one size smaller is drawn that way, read at a glance.
+  if (lines.length > 1 && size > 1) {
+    ctx.font = `${fontPx(size - 1)}px ${FONT}`
+    const one = wrap(text, room, measure)
+    if (one.length === 1) return { lines: one, px: fontPx(size - 1), head: c.head }
+  }
   return { lines, px, head: c.head }
 }
 

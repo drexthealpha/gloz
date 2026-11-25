@@ -25,7 +25,7 @@ One line on the glasses at a time. A new message appears with the sender's name;
 | hold on that screen and say anything | "add task ...", "note ...", "directions to ...", "read ...", "prompter", "run ...", "play", or any question; Gloz does it, or opens it with your words |
 | double tap in any of them | back home |
 
-Nothing is sent without your tap or your word. Text is drawn as an image with the phone's own fonts, so Arabic, Persian, Hindi, Thai and Hebrew show on the glasses, at the size you pick (6 sizes). A reply written in a language you do not read is shown to you by its meaning. Replies wait in a saved outbox through any drop and go out when the link is back.
+Nothing is sent without your tap or your word. Text is drawn as an image with the phone's own fonts, so Arabic, Persian, Hindi, Thai and Hebrew show on the glasses, at the size you pick (7 sizes; the largest fills the whole display). A reply written in a language you do not read is shown to you by its meaning. Replies wait in a saved outbox through any drop and go out when the link is back.
 
 Messages come from **Telegram (your account or a bot), Slack, Discord and Gmail**. Drafts come from **Claude, ChatGPT or any OpenRouter model**. Speech to text runs on Gloz's own backend. The backend holds every key; the glasses app holds only a pairing token. Each connector is tested against the service's documented replies with no keys ([test/connectors.test.mjs](test/connectors.test.mjs)); a run on live accounts needs your own keys in `.env`.
 
