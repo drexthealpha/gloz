@@ -14,9 +14,13 @@ const h = json('heldout.json')
 const t = json('time.json')
 const v = json('video.json')
 // A missing result file fails the check: a page must never keep an old number silently.
-const missing = ['heldout.json', 'heldout.md', 'time.json', 'time.md', 'video.json', 'complaints.json'].filter(n => !existsSync(R(n)))
+const missing = ['heldout.json', 'heldout.md', 'time.json', 'time.md', 'video.json', 'complaints.json', 'cost.json'].filter(n => !existsSync(R(n)))
 if (missing.length) { console.log('missing result files:', missing.join(', ')); process.exit(1) }
 blocks.video = `${v.seconds} s`
+// The most one AI draft can cost, from `node eval/cost.mjs` (largest prompt and reply, every byte counted as a token).
+const c = json('cost.json')
+const cm = c.models['openai/gpt-4.1-mini'], cs = c.models['anthropic/claude-sonnet-4.5']
+blocks.cost = `at most $${cm.usdPerDraftAtMost} with gpt-4.1-mini (at least ${cm.draftsPerDollarAtLeast} drafts for $1) or $${cs.usdPerDraftAtMost} with Claude Sonnet 4.5, at OpenRouter's list prices of ${c.read} (\`node eval/cost.mjs\`).`
 if (h) {
   const five = ['Arabic', 'Persian', 'Hindi', 'Thai', 'Hebrew']
   const g = five.reduce((n, k) => n + h.by[k].glozA, 0)
@@ -36,7 +40,7 @@ blocks.wins = [
 ].join('\n')
 
 // Each page and the blocks it must hold; a block written inline (gen-i) stays on its line.
-const PAGES = { 'README.md': ['first', 'heldout', 'time', 'wins', 'video'], 'SUBMISSION-CHECK.md': ['video'] }
+const PAGES = { 'README.md': ['first', 'heldout', 'time', 'wins', 'video', 'cost'], 'SUBMISSION-CHECK.md': ['video'] }
 let stale = false
 for (const [file, want] of Object.entries(PAGES)) {
   const path = new URL(`../${file}`, import.meta.url)

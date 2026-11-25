@@ -1,0 +1,16 @@
+{
+ "read": "2026-11-25",
+ "tokensInAtMost": 3962,
+ "tokensOutAtMost": 774,
+ "modelsListed": 472,
+ "models": {
+  "openai/gpt-4.1-mini": {
+   "usdPerDraftAtMost": 0.00282,
+   "draftsPerDollarAtLeast": 354
+  },
+  "anthropic/claude-sonnet-4.5": {
+   "usdPerDraftAtMost": 0.0235,
+   "draftsPerDollarAtLeast": 42
+  }
+ }
+}

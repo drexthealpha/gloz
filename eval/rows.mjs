@@ -13,6 +13,7 @@ export function complaintRows() {
   const sz = J('size.json')
   const stt = J('stt.json')
   const pr = J('prompter.json')
+  const cost = J('cost.json')
   const five = ['Arabic', 'Persian', 'Hindi', 'Thai', 'Hebrew']
   const shown = h ? five.reduce((n, k) => n + (h.by[k]?.glozA ?? 0), 0) : null
   const plainShown = h ? five.reduce((n, k) => n + (h.by[k]?.plainA ?? 0), 0) : null
@@ -28,7 +29,7 @@ export function complaintRows() {
     { n: 32, q: 'without it coming back <30s later', d: '26 Sep 2026, Google Play', fix: 'Messages come straight from Telegram, Slack, Discord and Gmail. One you answered or skipped does not come back.', gloz: '0 messages shown twice (tests)', best: 'no measured number found', v: 'no number to beat' },
     { n: 33, q: 'why can we not reply to a text message??', d: '21 May 2026, Google Play', fix: 'A drafted reply waits under each message. Tap to see it, tap to send it.', gloz: `${t.wpmMedian?.toFixed(0)} words a minute sent, silent${drafter}`, best: '20.9 words a minute, silent', v: 'different measure' },
     { n: 34, q: 'responds that it can’t help me', d: '1 Oct 2026, App Store', fix: 'Ask: hold on your day list and say a question; the answer shows a line at a time.', gloz: 'built; real answers need an AI key on the Gloz server', best: 'Arena text score 1507', v: 'needs a key' },
-    { n: 35, q: 'let Siri AI be accessed as an alternative', d: '9 Oct 2026, App Store', fix: 'The backend owner picks the model: any OpenRouter model, Claude or ChatGPT.', gloz: '600+ models through OpenRouter, plus Claude and ChatGPT', best: '600+ models behind one key', v: 'matched' },
+    { n: 35, q: 'let Siri AI be accessed as an alternative', d: '9 Oct 2026, App Store', fix: 'The backend owner picks the model: any OpenRouter model, Claude or ChatGPT.', gloz: `every OpenRouter model (${cost?.modelsListed ?? '?'} listed on ${cost?.read ?? '?'}), plus Claude and ChatGPT directly`, best: `${cost?.modelsListed ?? '?'} models behind one key (OpenRouter)`, v: 'matched' },
     { n: 36, q: 'sometimes fail with a "server error"', d: '6 Feb 2026, Google Play', fix: 'If one AI provider fails, the next is tried. If every one fails, a short reply in the sender\'s language is still ready to send.', gloz: `${c.outage?.gotReply} of ${c.outage?.messages} messages had a reply ready with every AI provider failing (${c.outage?.providerCallsFailed} failed calls)`, best: '99.995% uptime, the best AI API status page (Aug to Nov 2026)', v: 'different measure' },
     { n: 37, q: 'Captions sometimes appear with noticeable delays', d: '16 Nov 2026, App Store', fix: 'Listen to the room: captions of the conversation in your language, from 4-second pieces of sound.', gloz: stt ? `about ${stt.delayS} s from words spoken to caption (Whisper on the Gloz server)` : 'not measured yet', best: '130 ms to first caption', v: 'not beaten' },
     { n: 38, q: 'There is no voiceprint recognition/isolation', d: '24 Jul 2026, Trustpilot', fix: 'Telling speakers apart: not built.', gloz: 'none', best: '11.2% diarization error rate', v: 'not built' },
