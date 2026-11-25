@@ -27,15 +27,16 @@ class DemoBridge {
   constructor(canvas: HTMLCanvasElement) { this.canvas = canvas; this.g = canvas.getContext('2d')! }
   last = 3        // the tile sent last on this page; the screen is drawn when it arrives
   inApp = false   // the glasses menu starts with Back to messages while an app is open
-  private layout(p: any) {
+  // A page switch keeps the last picture until the new page's tiles have all arrived, so the page is never black meanwhile.
+  private layout(p: any, paint = true) {
     this.inApp = (p.menuObject?.menuItems ?? [])[0]?.itemID === 10
     this.tiles.clear()
     for (const o of p.imageObject || []) this.tiles.set(o.containerID, { x: o.xPosition, y: o.yPosition })
     this.last = Math.max(0, ...this.tiles.keys())
-    this.paint()
+    if (paint) this.paint()
   }
   async createStartUpPageContainer(p: any) { this.layout(p); return 0 }
-  async rebuildPageContainer(p: any) { this.layout(p); return true }
+  async rebuildPageContainer(p: any) { this.layout(p, false); return true }
   async textContainerUpgrade() { return true }
   async updateImageRawData(u: any) {
     const t = this.tiles.get(u.containerID)
