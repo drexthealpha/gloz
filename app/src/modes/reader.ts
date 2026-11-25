@@ -116,16 +116,30 @@ export const readerApp: AppEntry = {
         // Says where it picked up for a moment, then the usual hint returns.
         if (resumed) setTimeout(() => { if (resumed) { resumed = false; if (view === 'page') ctx.render() } }, 4000)
         ctx.store.set('reader.doc', d.id)
+        paused = false
         show('page')
+        schedule()
       } catch { line = 'No signal'; show('error') }
     }
 
+    let paused = false
+    let pace: ReturnType<typeof setTimeout> | undefined
+    // The next line comes after the time it takes to read this one (about 0.3 s a word, at least 2 s).
+    function schedule() {
+      clearTimeout(pace)
+      if (view !== 'page' || paused) return
+      const words = slice(page).trim().split(/\s+/).length
+      pace = setTimeout(() => { if (view === 'page' && !paused) go(page + 1) }, Math.max(2000, 800 + words * 300))
+      // In tests (Node) the timer never keeps the process alive; a browser has no such call.
+      ;(pace as unknown as { unref?: () => void }).unref?.()
+    }
     function go(p: number) {
       resumed = false
-      if (p >= starts.length) return show('end')
+      if (p >= starts.length) { clearTimeout(pace); return show('end') }
       page = Math.max(0, p)
       ctx.store.set(key(), String(starts[page]))
       show('page')
+      schedule()
     }
 
     function card(): Card {
@@ -134,7 +148,7 @@ export const readerApp: AppEntry = {
         case 'loading': return { kind: 'status', text: 'Loading', hint: 'wait' }
         case 'error': return { kind: 'status', text: line, hint: 'tap: try again' }
         case 'pick': return { kind: 'status', text: docs[pick].title || 'Untitled', hint: `${line ? line + ' · ' : ''}tap: read · down: next · up: earlier`, progress: [pick + 1, docs.length] }
-        case 'page': return { kind: 'message', text: slice(page).trim() || ' ', hint: resumed ? `where you left off · line ${page + 1}/${starts.length} · down: next line` : `${sample ? 'sample · ' : ''}line ${page + 1}/${starts.length} · down: next line · up: line back${other}`, parts: false, progress: [page + 1, starts.length] }
+        case 'page': return { kind: 'message', text: slice(page).trim() || ' ', hint: resumed ? `where you left off · line ${page + 1}/${starts.length} · down: next line` : `${sample ? 'sample · ' : ''}line ${page + 1}/${starts.length} · ${paused ? 'paused · tap: go on' : 'tap: pause'} · down: next line${other}`, parts: false, progress: [page + 1, starts.length] }
         case 'where': return { kind: 'status', text: `Line ${page + 1} of ${starts.length}`, hint: `tap: back to the text${other}` }
         case 'end': return { kind: 'status', text: 'End of text', hint: `up: last page${other}` }
       }
@@ -144,6 +158,7 @@ export const readerApp: AppEntry = {
       id: 'reader',
       card,
       start: load,
+      stop() { clearTimeout(pace) },
       say(text) { const d = docs.find(x => (x.title || '').toLowerCase().includes(text.toLowerCase())); if (d) void open(d); else { pick = 0; line = `No text called ${text}`.slice(0, 40); show('pick') } },
       input(i) {
         if (view === 'error' && i === 'tap') return void load()
@@ -158,6 +173,7 @@ export const readerApp: AppEntry = {
         if (view === 'page') {
           if (i === 'next') return go(page + 1)
           if (i === 'prev') return go(page - 1)
+          if (i === 'tap') { paused = !paused; schedule(); return ctx.render() }
         }
         if (view === 'where' && (i === 'tap' || i === 'next' || i === 'prev')) return show('page')
         if (view === 'end' && i === 'prev') return go(starts.length - 1)

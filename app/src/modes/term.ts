@@ -33,6 +33,7 @@ function make(ctx: ModeCtx): Mode {
   let out: string[] = []
   let line = 0
   let ran = ''   // the command whose output is shown
+  let finished = false   // it ran to the end without an error
   let heardIt = false   // the command on screen is the one just heard
   let sample = false
 
@@ -62,7 +63,7 @@ function make(ctx: ModeCtx): Mode {
       const r: Run = await ctx.call({ op: 'run', cmd })
       if (!r || r.error || !r.lines) { note = r?.error || 'No output'; state = 'pick'; return ctx.render() }
       if (!r.sample) { saved = [cmd, ...saved.filter(c => c !== cmd)].slice(0, 10); ctx.store.set(KEY, JSON.stringify(saved)) }
-      out = r.lines; line = 0; ran = cmd; state = 'out'
+      out = r.lines.at(-1) === 'finished' && r.lines.length > 1 ? r.lines.slice(0, -1) : r.lines; finished = out !== r.lines; line = 0; ran = cmd; state = 'out'
     } catch { note = 'No signal'; state = 'pick' }
     ctx.render()
   }
@@ -74,7 +75,7 @@ function make(ctx: ModeCtx): Mode {
       if (state === 'off') return { kind: 'status', text: 'Terminal is off', hint: 'server: set GLOZ_TERMINAL=1 and GLOZ_TERMINAL_ALLOW' }
       if (state === 'busy') return { kind: 'status', text: 'Working', hint: 'wait a moment' }
       // One output line per screen, fitted to it; the hint offers only presses that move.
-      if (state === 'out') return { kind: 'status', text: `${ran}: ${out[line]}`, hint: [sample && 'sample', 'tap: all commands', line < out.length - 1 && 'down: next line', line > 0 && 'up: earlier'].filter(Boolean).join(' · '), progress: [line + 1, out.length] }
+      if (state === 'out') return { kind: 'status', text: `${ran}: ${out[line]}`, hint: [sample && 'sample', finished && line === out.length - 1 && 'finished', 'tap: all commands', line < out.length - 1 && 'down: next line', line > 0 && 'up: earlier'].filter(Boolean).join(' · '), progress: [line + 1, out.length] }
       if (note) return { kind: 'status', text: note, hint: 'tap: ok · hold: say a command' }
       if (!cmds.length) return { kind: 'status', text: 'No commands allowed', hint: 'server: set GLOZ_TERMINAL_ALLOW · hold: speak' }
       return { kind: 'status', text: cmds[at], hint: `${heardIt ? (sample ? 'heard (sample) · ' : 'you said this · ') : sample ? 'sample · ' : ''}tap: run · down: next · hold: say a command`, progress: [at + 1, cmds.length] }

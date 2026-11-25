@@ -54,7 +54,7 @@ test('the app: down next page, up back, tap shows the page number, the place is 
   const first = m.card()
   assert.equal(first.kind, 'message')
   assert.match(first.text, /^Sample text: On/)
-  assert.match(first.hint, /^sample · line 1\/\d+ · down: next line · up: line back$/)
+  assert.match(first.hint, /^sample · line 1\/\d+ · tap: pause · down: next line$/)
   const total = first.progress[1]
   m.input('next'); m.input('next')
   const third = m.card().text

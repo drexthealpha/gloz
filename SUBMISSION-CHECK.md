@@ -67,4 +67,4 @@ https://drexthealpha.github.io/gloz/gloz-demo.mp4 (<!-- gen:video -->115 s<!-- /
 
 ## Checked
 
-Checked on 25 Nov 2026 at commit e43691b by an agent that did not build Gloz, on a fresh clone of the public repository: no rule on the page failed (tests, text check, setup check, no secrets in history, live demo with no sign-in, status badge, video under 3 minutes, package). It could not check team size, the services' terms in practice, or the submission itself, which only the DoraHacks form and the founder can show. Test counts and timings are in the CI run for each commit.
+Checked on 25 Nov 2026 at commit 09d0f7b by an agent that did not build Gloz, on a fresh clone of the public repository: no rule on the page failed (tests, text check, setup check, no secrets in history, live demo with no sign-in, status badge, video under 3 minutes, package). It could not check team size, the services' terms in practice, or the submission itself, which only the DoraHacks form and the founder can show. Test counts and timings are in the CI run for each commit.

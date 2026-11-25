@@ -59,7 +59,7 @@ export const tasksApp: AppEntry = {
         if (r?.error) { flash(r.error); return show('list') }
         tasks = tasks.filter(x => x !== t)
         at = Math.min(at, Math.max(0, tasks.length - 1))
-        flash(r?.sample ? '✓ Done (sample)' : '✓ Done')
+        flash(r?.sample ? '✓ Finished (sample)' : '✓ Finished')
       } catch { flash('No signal: not marked') }
       show('list')
     }
