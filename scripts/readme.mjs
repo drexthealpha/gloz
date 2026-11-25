@@ -26,12 +26,13 @@ if (h) {
 }
 if (t) blocks.time = read('time.md').trim()
 
-// Only measured wins: a row shows when Gloz's measured number beats the best found anywhere.
-const rows = complaintRows().filter(r => r.v === 'beaten').sort((a, b) => a.n - b.n)
+// Every complaint an app can act on, with its result: measured wins first, then the rest as they stand.
+const ORDER = ['beaten', 'matched', 'not beaten', 'different measure', 'not measured', 'needs a key', 'no number to beat', 'not built']
+const rows = complaintRows().sort((a, b) => ORDER.indexOf(a.v) - ORDER.indexOf(b.v) || a.n - b.n)
 blocks.wins = [
-  '| What G2 owners asked for | What Gloz does | Gloz | Best elsewhere |',
-  '|---|---|---|---|',
-  ...rows.map(r => `| "${r.q}" (${r.d}) | ${r.fix} | ${r.gloz} | ${r.best} |`),
+  '| What G2 owners asked for | What Gloz does | Gloz | Best elsewhere | Result |',
+  '|---|---|---|---|---|',
+  ...rows.map(r => `| "${r.q}" (${r.d}) | ${r.fix} | ${r.gloz} | ${r.best} | ${r.v === 'beaten' ? 'Gloz ahead' : r.v} |`),
 ].join('\n')
 
 // Each page and the blocks it must hold; a block written inline (gen-i) stays on its line.
