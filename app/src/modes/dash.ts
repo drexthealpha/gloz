@@ -6,7 +6,7 @@ import { wrap } from '../core/layout.ts'
 import { sampleTasks } from './tasks.ts'
 
 export const PANELS: [id: string, name: string][] = [
-  ['time', 'Time'], ['date', 'Date'], ['unread', 'Unread mail'], ['event', 'Next event'], ['event2', 'Second event'],
+  ['time', 'Time'], ['date', 'Date'], ['unread', 'Unread in Gmail'], ['event', 'Next event'], ['event2', 'Second event'],
   ['tasks', 'Tasks due'], ['task', 'First task due'], ['temp', 'Temperature'], ['range', 'High and low'],
   ['rain', 'Rain chance'], ['wind', 'Wind'], ['pin', 'Your note from the phone'],
 ]
@@ -48,7 +48,7 @@ export function panelText(id: string, d: DashData, lang: string, now: Date, pin:
   switch (id) {
     case 'time': return `Now ${hm(now)}`
     case 'date': return now.toLocaleDateString(lang, { weekday: 'short', day: 'numeric', month: 'short' })
-    case 'unread': return d.unread == null ? 'Mail off' : `${d.unread} unread mail`
+    case 'unread': return d.unread == null ? 'Gmail off' : `Gmail: ${d.unread} unread`
     case 'event': return d.events === null ? 'Calendar off' : ev(d.events?.[0])
     case 'event2': return d.events === null ? 'Calendar off' : ev(d.events?.[1])
     case 'tasks': return d.tasks == null ? 'Tasks off' : `${d.tasks.due} tasks due`

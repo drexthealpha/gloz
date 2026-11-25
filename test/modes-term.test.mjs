@@ -136,6 +136,7 @@ test('mode: a long output line is cut into pieces that each fit one screen', asy
   const { pieces } = await import('../app/src/modes/term.ts')
   const p = pieces(' 05:21:02 up 3 days,  2:11,  1 user,  load average: 0.08, 0.12, 0.10')
   assert.ok(p.length > 1)
-  assert.ok(p.every(x => x.length <= 24))
+  assert.ok(p.every(x => x.length <= 48))
+  assert.ok(p.some(x => x.includes('load average')), 'the words load average stay on one screen')
   assert.equal(p.join(' '), '05:21:02 up 3 days, 2:11, 1 user, load average: 0.08, 0.12, 0.10')
 })

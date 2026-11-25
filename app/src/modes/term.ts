@@ -20,15 +20,15 @@ export function sampleTerm(body: any): any {
   return { on: true, allow: ['uptime', 'df', 'git'], sample: true }
 }
 
-// One output line in pieces of at most 24 characters, cut between words where it can.
+// One output line in pieces of at most 48 characters (two lines on the glasses), cut between words where it can.
 export function pieces(line: string): string[] {
   const words = line.trim().split(/\s+/).filter(Boolean)
   const out: string[] = []
   let cur = ''
   for (const w of words) {
-    if (cur && (cur + ' ' + w).length > 24) { out.push(cur); cur = '' }
+    if (cur && (cur + ' ' + w).length > 48) { out.push(cur); cur = '' }
     cur = cur ? `${cur} ${w}` : w
-    while (cur.length > 24) { out.push(cur.slice(0, 24)); cur = cur.slice(24) }
+    while (cur.length > 48) { out.push(cur.slice(0, 48)); cur = cur.slice(48) }
   }
   if (cur) out.push(cur)
   return out.length ? out : ['']
