@@ -1,6 +1,7 @@
 // The live demo: the real Gloz app code, with a stand-in for the glasses (a
 // 576 x 288 green screen on the page) and a stand-in backend holding sample
 // messages. Nothing to install, no sign-in.
+import { DRAFT_SYSTEM } from './core/prompt.ts'
 import { runGloz } from './app.ts'
 import { sampleDash } from './modes/dash.ts'
 import { sampleTasks } from './modes/tasks.ts'
@@ -94,6 +95,26 @@ class DemoBridge {
 // No microphone here: what an app hears is sample words, and the teleprompter moves on a few words each time.
 const heardSample = (f: (b: any) => any, words: string) => (b: any) => b?.action === 'stt' ? { text: words } : f(b)
 const SAMPLES: Record<string, (body: any) => any> = { dash: sampleDash, tasks: heardSample(sampleTasks, 'Sample: call the bank'), notes: heardSample(sampleNotes, 'Sample: call the plumber on Friday'), ask: sampleAsk, reader: sampleReader, prompter: (b: any) => b?.action === 'follow' ? { at: (Number(b.from) || 0) + (Number(b.at) || 0) + 4, heard: '', sample: true } : samplePrompter(b), nav: sampleNav, stocks: sampleStocks, music: sampleMusic, term: sampleTerm }
+// The visitor's own OpenRouter key, for live drafts: kept in this tab only (sessionStorage), sent only to OpenRouter.
+let aiKey = ''
+try { aiKey = sessionStorage.getItem('gloz.demo.key') || '' } catch {}
+const keyNote = (t: string) => { const n = document.getElementById('keynote'); if (n) n.textContent = t }
+async function liveDraft(from: string, chat: string, text: string, ask = '') {
+  const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: { authorization: `Bearer ${aiKey}`, 'content-type': 'application/json', 'x-title': 'Gloz demo' },
+    body: JSON.stringify({ model: 'openrouter/auto', messages: [
+      { role: 'system', content: DRAFT_SYSTEM.replace('WEARER_LANG', 'English') },
+      { role: 'user', content: [`Chat: ${chat}`, `${from}: ${text}`, ask ? `Wearer's instruction: ${ask}` : 'Wearer gave no instruction.'].join('\n') },
+    ] }),
+  })
+  if (!r.ok) throw new Error(`HTTP ${r.status}`)
+  const out = (await r.json()).choices?.[0]?.message?.content || ''
+  const j = JSON.parse((out.match(/\{[\s\S]*\}/) || [out])[0])
+  keyNote('Replies are written now by OpenRouter with your key.')
+  return { text: String(j.reply).trim(), gloss: j.gloss ? String(j.gloss).trim() : undefined, lang: undefined, by: 'ai' as const }
+}
+
 class DemoApi implements Api {
   online = true
   sent: { to: string; text: string; meaning?: string }[] = (() => { try { return JSON.parse(sessionStorage.getItem('gloz.demo.sent') || '[]') } catch { return [] } })()
@@ -108,10 +129,13 @@ class DemoApi implements Api {
     return { msgs: after ? [] : (samples as unknown as Msg[]).map((m, i) => ({ ...m, at: Date.now() - i * 60000 })), after: 1 }
   }
   async draft(id: string, _lang: string, ask?: string) {
+    if (ask && aiKey) { const m = (samples as any[]).find(x => x.id === id); try { const d = await liveDraft(m.from, m.chat, m.text, ask); this.glosses[id] = d.gloss; return d } catch {} }
     if (ask) { this.glosses[id] = undefined; return { text: ask, lang: /[^\u0000-\u024F]/.test(ask) ? undefined : 'en', by: 'default' as const } }
     if (!this.online) throw new Error('offline')
     await new Promise(r => setTimeout(r, 350))
     const m = (samples as any[]).find(x => x.id === id)
+    // With the visitor's own key, the draft is written now by OpenRouter, under Gloz's own draft rules.
+    if (aiKey) { try { const d = await liveDraft(m.from, m.chat, m.text); this.glosses[id] = d.gloss; return d } catch (e) { keyNote(`OpenRouter refused or failed (${String((e as Error).message).slice(0, 60)}); showing the holding reply`) } }
     // Drafts written by the AI model ahead of time (scripts/demo-drafts.mjs), when present.
     const d = m.draft ? { text: m.draft, gloss: m.gloss, lang: m.draftLang, by: 'ai' as const } : { text: m.holding, gloss: m.lang === 'en' ? undefined : HOLDING_REPLIES.en, lang: m.lang, by: 'default' as const }
     this.glosses[id] = d.gloss
@@ -224,6 +248,17 @@ api.heard = () => new Promise(res => {
     res(words)
   }
 })
+
+// The key field: saved for this tab only; an empty field goes back to the holding reply.
+const keyForm = document.getElementById('key') as HTMLFormElement
+const keyIn = document.getElementById('keyin') as HTMLInputElement
+if (aiKey) keyNote('Replies are written now by OpenRouter with your key.')
+keyForm.onsubmit = e => {
+  e.preventDefault()
+  aiKey = keyIn.value.trim(); keyIn.value = ''
+  try { if (aiKey) sessionStorage.setItem('gloz.demo.key', aiKey); else sessionStorage.removeItem('gloz.demo.key') } catch {}
+  keyNote(aiKey ? 'Key kept in this tab. The next reply you open is written by OpenRouter.' : 'Without a key, replies are a fixed holding reply.')
+}
 
 // Signal on and off, to show replies waiting through a drop.
 const net = document.getElementById('net') as HTMLButtonElement

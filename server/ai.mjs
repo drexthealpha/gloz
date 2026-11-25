@@ -1,6 +1,7 @@
 // Drafts and translations. Keys live only here, on the backend.
 // Providers are tried in order; a failing one is skipped, so one outage
 // does not stop drafts (complaint: "AI stops responding", server errors).
+import { DRAFT_SYSTEM } from '../app/src/core/prompt.ts'
 import { guessLang, NAMES, HOLDING } from './lang.mjs'
 
 const env = process.env
@@ -43,11 +44,7 @@ function json(text) {
   return JSON.parse(m ? m[0] : text)
 }
 
-const DRAFT_SYSTEM = `You write the reply an executive will send from smart glasses with one tap.
-Rules: reply in the language of the last message. One or two short sentences, at most 25 words.
-Commit to nothing the wearer has not said; when a decision is needed and the wearer gave no instruction, reply that they will confirm.
-If the wearer gave an instruction, follow it exactly. If the instruction is itself a reply, use its words.
-Return only JSON: {"reply": "...", "gloss": "the reply in WEARER_LANG, or empty if the reply is already in WEARER_LANG"}`
+// The draft rules live in one place, shared with the live demo.
 
 // msg: { from, chat, text }; thread: earlier messages, oldest first; askText: what the wearer said.
 export async function draft(msg, thread = [], askText = '', myLang = 'en') {

@@ -62,6 +62,12 @@
         <button id="mute">Mute this chat</button>
         <button id="unmute" hidden>Unmute all chats</button>
       </div>
+      <form id="key" class="row">
+        <label for="keyin" style="flex-basis:100%;text-align:center">Real AI drafts: paste your own OpenRouter key. It stays in this tab and goes only to OpenRouter.</label>
+        <input id="keyin" type="password" autocomplete="off" dir="ltr" placeholder="sk-or-..." aria-describedby="keynote">
+        <button>Use my key</button>
+        <p id="keynote" class="said" style="flex-basis:100%;text-align:center;margin:0" aria-live="polite">Without a key, replies are a fixed holding reply.</p>
+      </form>
 
       <section id="proof" hidden>
         <h2>Plain G2 text against Gloz, in Even Realities' own G2 simulator</h2>

@@ -5,7 +5,7 @@
 //   node eval/cost.mjs   writes eval/results/cost.json
 import { readFileSync, writeFileSync } from 'node:fs'
 
-const src = readFileSync(new URL('../server/ai.mjs', import.meta.url), 'utf8')
+const src = readFileSync(new URL('../app/src/core/prompt.ts', import.meta.url), 'utf8')
 const system = src.match(/const DRAFT_SYSTEM = `([\s\S]*?)`/)[1].replace('WEARER_LANG', 'English')
 const widest = 'ह'.repeat(120)                     // Devanagari: 3 bytes a character, the most in the test set
 const user = ['Chat: a chat name of thirty characters', ...Array.from({ length: 9 }, () => `Sender Name: ${widest}`), 'Wearer gave no instruction.'].join('\n')

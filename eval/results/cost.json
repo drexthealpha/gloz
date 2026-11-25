@@ -2,7 +2,7 @@
  "read": "2026-11-25",
  "tokensInAtMost": 3962,
  "tokensOutAtMost": 774,
- "modelsListed": 472,
+ "modelsListed": 469,
  "models": {
   "openai/gpt-4.1-mini": {
    "usdPerDraftAtMost": 0.00282,
