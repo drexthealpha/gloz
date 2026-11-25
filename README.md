@@ -1,4 +1,4 @@
-<!-- gen:first -->**Gloz lets the executive who wears Even G2 all day read and answer every message without the phone, in their language, at their size.** In the Even Hub simulator, plain G2 text showed 0 of 100 held-out messages in Arabic, Persian, Hindi, Thai and Hebrew; Gloz showed 84. Gloz won 10 of 10 scripts, and cut the median time from message seen to reply sent from 3.0 s to 2.5 s.<!-- /gen -->
+<!-- gen:first -->**Gloz lets the executive who wears Even G2 all day read and answer every message without the phone, in their language, at their size.** In the Even Hub simulator, plain G2 text showed 0 of 100 held-out messages in Arabic, Persian, Hindi, Thai and Hebrew; Gloz showed 84. Gloz won 10 of 10 scripts, and cut the median time from message seen to reply sent from 2.6 s to 2.1 s.<!-- /gen -->
 
 [![CI](https://github.com/drexthealpha/gloz/actions/workflows/ci.yml/badge.svg)](https://github.com/drexthealpha/gloz/actions/workflows/ci.yml) [![live demo](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/drexthealpha/gloz/status/status.json)](https://drexthealpha.github.io/gloz/)
 
@@ -67,10 +67,10 @@ Time from message seen to reply sent, 200 held-out messages:
 <!-- gen:time -->
 | Arm | Median seconds, message seen to reply sent |
 |---|---|
-| Plain G2 text, reply spoken in full | 3.0 |
-| Gloz, draft read, one tap | 2.5 |
+| Plain G2 text, reply spoken in full | 2.6 |
+| Gloz, draft read, one tap | 2.1 |
 
-Gloz faster on 120 of 200 messages. Silent reply rate with Gloz: 96 words a minute (median). Drafts by: default. Protocol: eval/PROTOCOL.md (Time, amendment 3).
+Gloz faster on 160 of 200 messages. Silent reply rate with Gloz: 91 words a minute (median). Drafts by: default. Protocol: eval/PROTOCOL.md (Time, amendment 3).
 <!-- /gen -->
 
 Run it yourself: `npm run eval` (needs the simulator), `npm run eval:time`, `node eval/score.mjs`. Method and limits: [eval/PROTOCOL.md](eval/PROTOCOL.md).
@@ -101,7 +101,7 @@ Every complaint from public reviews that a glasses app can act on: what owners s
 | "low touch sensitivity, making scrolling difficult" (4 Mar 2026, Google Play) | A reply goes out only when it is on screen and you tap. A swipe back undoes a swipe. | 0 of 20 single presses sent a reply not on screen | over 90% gesture accuracy for new users | different measure |
 | "the option to change the display timeout is no longer there" (7 May 2026, Google Play) | Each press means the same on every Gloz screen. Six actions in the glasses menu. | no number | 0.88 gestures a second | different measure |
 | "it shows different images in the left and right eyes" (3 Apr 2026, Google Play) | Teleprompter (say "prompter"): your script one line at a time; a tap starts following your voice, another tap pauses. | 75.2% of updates on the exact word you are reading (481-word script, simulated recognizer text with 20% errors) | 57.7% on the exact word (voice-following reading tutor, recorded speech, 2026) | different measure |
-| "why can we not reply to a text message??" (21 May 2026, Google Play) | A drafted reply waits under each message. Tap to see it, tap to send it. | 96 words a minute sent, silent (fixed holding replies; AI drafts need a key) | 20.9 words a minute, silent | different measure |
+| "why can we not reply to a text message??" (21 May 2026, Google Play) | A drafted reply waits under each message. Tap to see it, tap to send it. | 91 words a minute sent, silent (fixed holding replies; AI drafts need a key) | 20.9 words a minute, silent | different measure |
 | "sometimes fail with a "server error"" (6 Feb 2026, Google Play) | If one AI provider fails, the next is tried. If every one fails, a short reply in the sender's language is still ready to send. | 200 of 200 messages had a reply ready with every AI provider failing (600 failed calls) | 99.995% uptime, the best AI API status page (Aug to Nov 2026) | different measure |
 | "AI summary comes out in English (tr)" (26 May 2026, App Store) | Replies are written in the sender’s language; their meaning is shown in yours. | 200 of 200 replies in the sender’s language (fixed holding replies; AI drafts need a key) | 99.2% of the English score in Japanese | different measure |
 | "you need programming expertise to get keys and secrets" (10 Oct 2026, App Store) | The wearer types no key. Keys live on the backend; the glasses pair with a 6-digit code. | 0 keys typed by the wearer | 850 million weekly store users | different measure |
@@ -111,7 +111,7 @@ Every complaint from public reviews that a glasses app can act on: what owners s
 | "If you start Conversate from the R1 ring it quits early" (5 Feb 2026, Trustpilot) | Listen to the room keeps going until you stop it from the glasses menu. | 54000 of 54000 pieces kept over 60 hours (logic test, not a recording) | 50 hours of continuous recording | different measure |
 | "access to a kindle reader" (19 Jul 2026, App Store) | Reader: your own long texts from Notion or Google Docs, a line at a time at reading pace. | 2,000,000 characters paged, every one reachable (tests) | the e-book app itself at 1920 x 1080 | different measure |
 | "Translate does not detect the language" (13 Sep 2026, press) | For messages, the language comes from the text; nothing to set. | 0 languages set by the wearer | 60+ spoken languages found automatically | different measure |
-| "only have a voice input" (13 Nov 2026, X) | Reply with two taps and no voice. | 96 words a minute sent, silent (fixed holding replies; AI drafts need a key) | 20.9 words a minute, silent | different measure |
+| "only have a voice input" (13 Nov 2026, X) | Reply with two taps and no voice. | 91 words a minute sent, silent (fixed holding replies; AI drafts need a key) | 20.9 words a minute, silent | different measure |
 | "Only walking or cycling navigation" (1 Nov 2026, App Store) | Directions: hold and say where; walking steps a line at a time, from free OpenStreetMap routing with no account. | built; arrival time not measured | accurate arrival time on 97% of trips | not measured |
 | "The route does not automatically update" (4 Apr 2026, Google Play) | Directions works the route out again when the phone moves more than 40 m off it. | built; not measured on the same test | 75% fewer wrong-side-of-street positions | not measured |
 | "responds that it can’t help me" (1 Oct 2026, App Store) | Ask: hold on your day list and say a question; the answer shows a line at a time. | built; real answers need an AI key on the Gloz server | Arena text score 1507 | needs a key |

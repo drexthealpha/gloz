@@ -6,7 +6,7 @@
   "from": "Layla",
   "lang": "ar",
   "text": "هل يمكننا نقل اجتماع مجلس الإدارة إلى الساعة الثالثة غدا؟",
-  "holding": "وصلتني رسالتك. سأرد عليك قريبا.",
+  "holding": "وصلتني، سأرد قريبا.",
   "en": "Can we move the board meeting to three o'clock tomorrow?"
  },
  {
@@ -16,7 +16,7 @@
   "from": "Dariush",
   "lang": "fa",
   "text": "گزارش سه‌ماهه آماده است. امروز وقت دارید نگاهی بیندازید؟",
-  "holding": "پیامت رسید. به زودی جواب می‌دهم.",
+  "holding": "رسید، زود جواب می‌دهم.",
   "en": "The quarterly report is ready. Do you have time to look at it today?"
  },
  {
@@ -26,7 +26,7 @@
   "from": "Priya",
   "lang": "hi",
   "text": "अनुबंध का नया मसौदा भेज दिया है। क्या शुक्रवार तक मंज़ूरी मिल सकती है?",
-  "holding": "संदेश मिल गया। जल्द ही जवाब दूँगा।",
+  "holding": "मिल गया, जल्द जवाब दूँगा।",
   "en": "I have sent the new draft of the contract. Can it be approved by Friday?"
  },
  {
@@ -36,7 +36,7 @@
   "from": "Somchai",
   "lang": "th",
   "text": "ลูกค้าขอเลื่อนการประชุมเป็นวันพฤหัสบดี สะดวกไหมครับ",
-  "holding": "ได้รับข้อความแล้ว จะตอบกลับเร็ว ๆ นี้",
+  "holding": "ได้รับแล้ว จะตอบเร็ว ๆ นี้",
   "en": "The client asked to move the meeting to Thursday. Does that work for you?"
  },
  {
@@ -56,7 +56,7 @@
   "from": "Kenji",
   "lang": "ja",
   "text": "明日の会議の資料を共有しました。ご確認をお願いします。",
-  "holding": "受け取りました。すぐに返信します。",
+  "holding": "了解、すぐ返信します。",
   "en": "I have shared the papers for tomorrow's meeting. Please take a look."
  },
  {
@@ -66,7 +66,7 @@
   "from": "Minji",
   "lang": "ko",
   "text": "투자자 미팅이 다음 주 화요일로 확정되었습니다. 괜찮으신가요?",
-  "holding": "메시지 받았어요. 곧 답장할게요.",
+  "holding": "받았어요, 곧 답할게요.",
   "en": "The investor meeting is set for next Tuesday. Is that all right with you?"
  },
  {
@@ -76,7 +76,7 @@
   "from": "Wei",
   "lang": "zh",
   "text": "下周三的工厂参观已经安排好了，您几点到？",
-  "holding": "收到了，我稍后回复你。",
+  "holding": "收到，稍后回复。",
   "en": "Next Wednesday's factory visit is arranged. What time will you arrive?"
  },
  {
@@ -86,7 +86,7 @@
   "from": "Irina",
   "lang": "ru",
   "text": "Договор подписан. Отправить вам копию сегодня?",
-  "holding": "Получил. Скоро отвечу.",
+  "holding": "Получил, скоро отвечу.",
   "en": "The contract is signed. Shall I send you a copy today?"
  },
  {
@@ -96,7 +96,7 @@
   "from": "Sam",
   "lang": "en",
   "text": "Can you join the 4pm call with the auditors? It should take 20 minutes.",
-  "holding": "Got it. I will reply properly soon.",
+  "holding": "Got it, replying soon.",
   "en": "Can you join the 4pm call with the auditors? It should take 20 minutes."
  }
 ]

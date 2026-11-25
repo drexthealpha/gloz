@@ -285,7 +285,7 @@ test('with no signal, the holding reply is written on the phone in the sender la
   const { holdingReply } = await import('../app/src/core/holding.ts')
   const d = holdingReply('ลูกค้าขอเลื่อนการประชุม', 'en')
   assert.equal(d.lang, 'th')
-  assert.match(d.text, /ได้รับข้อความ/)
+  assert.match(d.text, /ได้รับแล้ว/)
   assert.match(d.gloss!, /Got it/)
 })
 
