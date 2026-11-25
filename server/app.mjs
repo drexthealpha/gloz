@@ -62,13 +62,20 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
   const health = { connectors: connectors.map(c => c.name), errors: {} }
   async function pollOnce() {
     for (const c of connectors) {
+      if (c.listen && timer) continue   // pushed by its own listener while the server runs
       try { for (const m of await c.poll()) add(m); delete health.errors[c.name] } catch (e) { health.errors[c.name] = String(e.message || e) }
     }
     prune()
     save()
   }
   let timer = null
-  const startPolling = () => { if (!timer) { pollOnce(); timer = setInterval(pollOnce, pollMs) } }
+  const startPolling = () => {
+    if (timer) return
+    pollOnce()
+    timer = setInterval(pollOnce, pollMs)
+    // A service that can push (Telegram long polling) delivers each message as it arrives.
+    for (const c of connectors) if (c.listen) void c.listen(ms => { for (const m of ms) add(m); prune(); save() }, () => !timer).catch(e => { health.errors[c.name] = String(e.message || e) })
+  }
   const stop = () => { clearInterval(timer); timer = null }
 
   const byName = Object.fromEntries(connectors.map(c => [c.name, c]))

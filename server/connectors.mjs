@@ -19,10 +19,9 @@ export function telegram() {
   const api = m => `https://api.telegram.org/bot${token}/${m}`
   const chats = list(env.GLOZ_TELEGRAM_CHATS)
   let offset = 0
-  return {
-    name: 'telegram',
-    async poll() {
-      const j = await getJSON(api(`getUpdates?timeout=0&offset=${offset}&allowed_updates=["message"]`))
+  // wait: seconds Telegram holds the request open until a message comes (long polling), 0 to return at once.
+  async function updates(wait) {
+      const j = await getJSON(api(`getUpdates?timeout=${wait}&offset=${offset}&allowed_updates=["message"]`))
       const out = []
       for (const u of j.result) {
         offset = Math.max(offset, u.update_id + 1)
@@ -33,6 +32,15 @@ export function telegram() {
         out.push({ id: `telegram:${m.chat.id}:${m.message_id}`, source: 'telegram', chat: m.chat.title || from, from, text: m.text, at: m.date * 1000, ref: { chat: m.chat.id, mid: m.message_id } })
       }
       return out
+  }
+  return {
+    name: 'telegram',
+    poll: () => updates(0),
+    // Pushes each message as soon as Telegram has it; on an error, waits 3 s and listens again.
+    async listen(push, stopped) {
+      while (!stopped()) {
+        try { const ms = await updates(25); if (ms.length) push(ms) } catch { await new Promise(r => setTimeout(r, 3000)) }
+      }
     },
     async send(msg, text) {
       await getJSON(api('sendMessage'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ chat_id: msg.ref.chat, text, reply_parameters: { message_id: msg.ref.mid } }) })

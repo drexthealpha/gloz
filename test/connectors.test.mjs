@@ -118,3 +118,15 @@ test('AI drafts: when the first provider fails, the next one writes the draft', 
   assert.equal(d.lang, 'ar')
   assert.equal(d.gloss, 'Yes, three works.')
 })
+
+test('Telegram: the listener asks Telegram to hold the request open and pushes each message as it comes', async () => {
+  process.env.GLOZ_TELEGRAM_BOT_TOKEN = 't'
+  let n = 0
+  replies = [{ match: 'getUpdates', body: () => (++n === 1 ? { ok: true, result: [{ update_id: 1, message: { message_id: 2, date: 1700000000, chat: { id: 5 }, from: { first_name: 'Ana' }, text: 'now?' } }] } : { ok: true, result: [] }) }]
+  const { telegram } = await load()
+  const pushed = []
+  await telegram().listen(ms => pushed.push(...ms), () => n >= 2)
+  assert.equal(pushed.length, 1)
+  assert.equal(pushed[0].text, 'now?')
+  assert.match(calls[0].url, /timeout=25/)
+})

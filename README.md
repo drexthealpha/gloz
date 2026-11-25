@@ -233,7 +233,7 @@ at most $0.00282 with gpt-4.1-mini (at least 354 drafts for $1) or $0.0235 with 
 | From | To | What is sent | When |
 |---|---|---|---|
 | Glasses app (phone) | your Gloz server only (the one address in [app/app.json](app/app.json)) | pairing token; the reply you approved; your voice while you hold | when you pair, reply or hold |
-| Gloz server | Telegram, Slack, Discord, Gmail (only those you set up) | read requests for the chats you picked; the reply you approved | every 2 s; on send |
+| Gloz server | Telegram, Slack, Discord, Gmail (only those you set up) | read requests for the chats you picked; the reply you approved | Telegram: a request held open until a message comes, so it arrives at once; the others every 2 s; on send |
 | Gloz server | the AI provider you set up (OpenRouter, Anthropic or OpenAI) | the message on screen and up to 8 earlier messages of that chat, to draft a reply; a message to translate if Translate is on | when a message is on screen |
 | Gloz server | nowhere | your voice, when Whisper runs on the server | never leaves the server |
 | Gloz server | OpenAI (only if Whisper is not installed and an OpenAI key is set) | your voice while you hold, to turn it into text | when you hold |
