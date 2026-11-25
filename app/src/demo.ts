@@ -276,7 +276,7 @@ const sentHead = document.getElementById('senthead')!
 if (!(samples as any[]).some(m => m.draft)) document.getElementById('nokey')!.hidden = false
 api.onChange = () => {
   sentHead.hidden = !api.sent.length && !Object.keys(api.waiting).length
-  const wait = Object.entries(api.waiting).map(([id, t]) => { const m = (samples as any[]).find(x => x.id === id); return `<li><b>${m.from} · ${m.source}</b>: waiting for the signal<br>${t.replace(/</g, '&lt;')}</li>` }).join('')
+  const wait = Object.entries(api.waiting).map(([id, t]) => { const m = (samples as any[]).find(x => x.id === id); const g = api.glosses[id] ?? (t === m.holding && m.lang !== 'en' ? HOLDING_REPLIES.en : undefined); return `<li><b>${m.from} · ${m.source}</b>: waiting for the signal<br>${t.replace(/</g, '&lt;')}${g ? `<br><span class="sub">${g.replace(/</g, '&lt;')}</span>` : ''}</li>` }).join('')   // a waiting reply shows its meaning too
   sentList.innerHTML = wait + api.sent.map(s => `<li><b>${s.to}</b><br>${s.text.replace(/</g, '&lt;')}${s.meaning ? `<br><span class="sub">${s.meaning.replace(/</g, '&lt;')}</span>` : ''}</li>`).join('')
 }
 api.onChange()
