@@ -290,6 +290,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   function homeInput(i: string) {
     if (saying === 'listening') { if (i === 'release' || i === 'tap') void finishSay(); return }
     if (saying === 'working') { if (i === 'prev') { sayGen++; saying = ''; sayTo = null; render() } return }   // the demo's Cancel
+    if (homeNote && i === 'tap') { homeNote = ''; return render() }
     if (i === 'hold') { sayTo = null; saying = 'listening'; sayPcm = []; homeNote = ''; g.mic(true).catch(() => {}); return render() }
     if (i === 'release') return
     if (i === 'next') { dayAt = dayAt < day.length ? dayAt + 1 : 0; homeNote = ''; return render() }
@@ -327,8 +328,8 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   async function act(it: Said) {
     const call = (id: string, body: unknown) => (api?.mode ? api.mode(id, body) : Promise.reject(new Error('not paired')))
     try {
-      if (it.tool === 'tasks' && it.op === 'add') { const r = await call('tasks', { action: 'add', title: it.arg }); flash(r?.error || `✓ Task: ${short(it.arg)}`); return void loadDay() }
-      if (it.tool === 'notes' && it.op === 'add') { const r = await call('notes', { action: 'add', text: it.arg }); flash(r?.error || `✓ Note: ${short(it.arg)}`); return void loadDay() }
+      if (it.tool === 'tasks' && it.op === 'add') { const r = await call('tasks', { action: 'add', title: it.arg }); flash(r?.error || `✓ Task${r?.sample ? ' (sample)' : ''}: ${short(it.arg)}`); return void loadDay() }
+      if (it.tool === 'notes' && it.op === 'add') { const r = await call('notes', { action: 'add', text: it.arg }); flash(r?.error || `✓ Note${r?.sample ? ' (sample)' : ''}: ${short(it.arg)}`); return void loadDay() }
       if (it.tool === 'music' && it.op) { const r = await call('music', { action: it.op }); flash(r?.error || r?.need || (r?.track ? `${r.playing ? 'Playing' : 'Paused'}: ${r.track}` : 'Done ✓')); return void loadDay() }
     } catch { return flash(words(settings.myLang).noSignal) }
     openTool(it.tool, it.arg)

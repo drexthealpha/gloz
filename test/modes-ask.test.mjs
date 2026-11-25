@@ -30,7 +30,7 @@ test('ask: words said are sent, the answer shows paged with a hint', async () =>
   const c = m.card()
   assert.equal(c.kind, 'message')
   assert.match(c.text, /8849 Meter/)
-  assert.match(c.hint, /^(down: next answer · )?(up: earlier answer · )?hold: ask again$/)
+  assert.match(c.hint, /^up: earlier part · (down: next answer · )?hold: ask again$/)
   // A follow-up carries the earlier question and answer.
   m.say('Und der K2?'); await tick()
   assert.equal(ctx.calls[1].history.length, 1)

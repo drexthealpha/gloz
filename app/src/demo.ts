@@ -244,7 +244,7 @@ const appsLabel = () => {
   apps.hidden = !bridge.inApp
   keyScroll.textContent = bridge.inApp ? 'down: next · up: earlier' : 'down: skip or next · up: earlier'
   keyDouble.textContent = bridge.inApp ? 'back' : 'close'
-  keyHold.textContent = bridge.inApp ? 'where the screen offers it' : 'speak a reply, or on home say anything'
+  keyHold.textContent = bridge.inApp ? 'where the screen offers it' : 'speak a reply, or after the messages ask or add a task'
   if (bridge.inApp) { meaning.style.visibility = 'hidden'; document.getElementById('mute')!.hidden = true }
 }
 apps.onclick = () => { bridge.menu(10); setTimeout(appsLabel, 50) }
