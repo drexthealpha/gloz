@@ -17,6 +17,8 @@ jobs:
         run: npm test
       - name: Public text (no em dashes, no banned words)
         run: npm run check:text
+      - name: No keys or tokens in tracked files
+        run: npm run check:secrets
       - name: Type check, app build, demo build, .ehpk
         working-directory: app
         run: |

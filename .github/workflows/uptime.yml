@@ -1,26 +1,24 @@
 name: Demo up check
 on:
   schedule:
-    - cron: '17 * * * *'
+    # GitHub starts scheduled runs late or skips them, so each run checks every hour for 5 hours.
+    - cron: '17 */6 * * *'
   workflow_dispatch:
 permissions:
   contents: write
 jobs:
   check:
     runs-on: ubuntu-24.04
+    timeout-minutes: 330
     steps:
-      - name: Check the live demo and write the badge
+      - name: Check the live demo every hour and publish the badge
         run: |
-          code=$(curl -s -o page.html -w '%{http_code}' https://drexthealpha.github.io/gloz/ || echo 000)
-          if [ "$code" = "200" ] && grep -q 'id="g2"' page.html; then msg=up; color=brightgreen; else msg=down; color=red; fi
-          echo "{\"schemaVersion\":1,\"label\":\"live demo\",\"message\":\"$msg\",\"color\":\"$color\"}" > status.json
-          echo "$(date -u +%FT%TZ) $code $msg" > last.txt
-          cat status.json last.txt
-      - name: Publish to the status branch
-        run: |
-          git init -q pub && cd pub
-          git config user.name "drexthealpha"
-          git config user.email "142920951+drexthealpha@users.noreply.github.com"
-          cp ../status.json ../last.txt .
-          git add . && git commit -qm "Demo status $(cat last.txt)"
-          git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:status
+          for round in 1 2 3 4 5 6; do
+            code=$(curl -s -o page.html -w '%{http_code}' https://drexthealpha.github.io/gloz/ || echo 000)
+            if [ "$code" = "200" ] && grep -q 'id="g2"' page.html; then msg=up; color=brightgreen; else msg=down; color=red; fi
+            echo "{\"schemaVersion\":1,\"label\":\"live demo\",\"message\":\"$msg\",\"color\":\"$color\"}" > status.json
+            echo "$(date -u +%FT%TZ) $code $msg" > last.txt
+            cat status.json last.txt
+            rm -rf pub && git init -q pub && cp status.json last.txt pub/ && (cd pub && git config user.name "drexthealpha" && git config user.email "142920951+drexthealpha@users.noreply.github.com" && git add . && git commit -qm "Demo status $(cat last.txt)" && git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:status)
+            if [ $round -lt 6 ]; then sleep 3600; fi
+          done

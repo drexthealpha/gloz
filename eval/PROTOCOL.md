@@ -10,6 +10,8 @@ Does Gloz show a new message to the wearer better than plain G2 text display, in
 
 200 held-out messages, 20 per script: Arabic, Persian, Hindi, Thai, Hebrew, Japanese, Korean, Chinese, Russian, English. Drawn from Tatoeba sentence exports (CC BY 2.0 FR) by eval/build-set.mjs with seed 20261123, 20 to 120 characters each. The expected answer for each message is its exact text.
 
+We found no public benchmark that measures reading and answering messages on smart glasses, so this test uses public sentences anyone can download and rerun.
+
 ## The two arms
 
 - Plain: the message in one full-screen firmware text container (576 x 288, padding 4, brightness 4), the way any plain G2 app shows text.

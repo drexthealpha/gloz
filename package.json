@@ -8,7 +8,8 @@
     "eval": "node eval/run.mjs heldout",
     "eval:time": "node eval/time.mjs",
     "check:text": "node scripts/check-text.mjs",
-    "check:setup": "node scripts/check-setup.mjs"
+    "check:setup": "node scripts/check-setup.mjs",
+    "check:secrets": "node scripts/check-secrets.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",
