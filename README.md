@@ -6,7 +6,7 @@
 
 [![CI](https://github.com/drexthealpha/gloz/actions/workflows/ci.yml/badge.svg)](https://github.com/drexthealpha/gloz/actions/workflows/ci.yml) [![live demo](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/drexthealpha/gloz/status/status.json)](https://drexthealpha.github.io/gloz/)
 
-**Try it now, no install, no sign-in:** https://drexthealpha.github.io/gloz/ (the glasses) and https://drexthealpha.github.io/gloz/phone/ (the phone screens) · **Video, <!-- gen:video -->115 s<!-- /gen -->, in the Even Hub simulator:** https://drexthealpha.github.io/gloz/gloz-demo.mp4 · **Package:** [gloz.ehpk](https://github.com/drexthealpha/gloz/releases/latest/download/gloz.ehpk)
+**Try it now, no install, no sign-in:** https://drexthealpha.github.io/gloz/ (the glasses) and https://drexthealpha.github.io/gloz/phone/ (the phone screens; any 6 digits pair there) · **Video, <!-- gen:video -->115 s<!-- /gen -->, in the Even Hub simulator:** https://drexthealpha.github.io/gloz/gloz-demo.mp4 · **Package:** [gloz.ehpk](https://github.com/drexthealpha/gloz/releases/latest/download/gloz.ehpk)
 Click to tap, scroll to swipe, hold to speak, double click to close. "Cut the signal" shows a reply waiting through a drop.
 
 ## How it works on the glasses
@@ -45,7 +45,7 @@ Messages come from **Telegram (your account or a bot), Slack, Discord and Gmail*
 
 ## Results
 
-Locked evaluation: the protocol and the 200 held-out messages were committed before the first run ([eval/PROTOCOL.md](eval/PROTOCOL.md), [eval/set/heldout.json](eval/set/heldout.json)); changes made on the dev set are written in the protocol with the reason, before any held-out run. Both arms run in the Even Hub simulator. Plain G2 text is one firmware text container, the way any plain app shows a message; Gloz is the same message drawn by Gloz at size 3 of 6. A reader (Tesseract OCR) reads each screen; the primary score is how much blur, standing for weaker eyesight, a message survives before it is lost.
+Locked evaluation: the protocol and the 200 held-out messages were committed before the first run ([eval/PROTOCOL.md](eval/PROTOCOL.md), [eval/set/heldout.json](eval/set/heldout.json)): locked 23 Nov 11:19, first held-out run 23 Nov 14:00. The public history was squashed on 23 and 24 Nov to remove private files, so main no longer shows those two commits; changes made on the dev set are written in the protocol with the reason, before any held-out run. Both arms run in the Even Hub simulator. Plain G2 text is one firmware text container, the way any plain app shows a message; Gloz is the same message drawn by Gloz at size 3 of 6. A reader (Tesseract OCR) reads each screen; the primary score is how much blur, standing for weaker eyesight, a message survives before it is lost.
 
 <!-- gen:heldout -->
 | Script | Plain: blur survived (median px) | Gloz: blur survived (median px) | Plain: shown, sharp | Gloz: shown, sharp | Gloz wins |

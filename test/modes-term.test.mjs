@@ -33,7 +33,7 @@ test('the samples on the glasses match the server samples', () => {
   const run = sampleTerm({ op: 'run' })
   assert.deepEqual({ ...run, lines: [] }, { ...SAMPLE_RUN, lines: [] })
   assert.match(run.lines[0], / up 3 days/)
-  assert.equal(run.lines[1], 'done')
+  assert.equal(run.lines[1], 'finished')
 })
 
 test('handler: off unless GLOZ_TERMINAL=1, and nothing runs then', async () => {
@@ -53,7 +53,7 @@ test('handler: only allowed names run, through execFile with no shell and the li
   assert.deepEqual(seen[0].args, ['status'])
   assert.equal(seen[0].opts.shell, false)
   assert.equal(seen[0].opts.timeout, 10000)
-  assert.deepEqual(r.lines, ['On branch main', 'nothing to commit', 'done'])
+  assert.deepEqual(r.lines, ['On branch main', 'nothing to commit', 'finished'])
   assert.equal(r.code, 0)
   assert.ok(r.startMs >= 0)
 })

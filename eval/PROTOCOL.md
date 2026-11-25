@@ -1,6 +1,6 @@
 # Locked evaluation protocol
 
-Written and committed before the first run. The held-out set (eval/set/heldout.json) and this protocol are not edited after that commit; the git history shows the order. Tuning uses eval/set/dev.json only.
+Written and committed before the first run: locked 23 Nov 2026 11:19, first held-out run 23 Nov 14:00. The held-out set (eval/set/heldout.json) and this protocol are not edited after that commit. The public history was squashed on 23 and 24 Nov to remove private files, so main no longer shows those two commits. Tuning uses eval/set/dev.json only.
 
 ## Question
 

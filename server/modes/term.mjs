@@ -17,7 +17,7 @@ function sampleLines(cmd) {
   if (cmd === 'git') return ['on branch main, nothing to commit']
   return [SAMPLE_RUN.lines[0].replace('10:42:07', new Date().toTimeString().slice(0, 8))]
 }
-export const SAMPLE_RUN = { lines: [' 10:42:07 up 3 days,  2:11,  1 user,  load average: 0.08, 0.12, 0.10', 'done'], code: 0, cut: false, timedOut: false, ms: 9, startMs: 3, sample: true }
+export const SAMPLE_RUN = { lines: [' 10:42:07 up 3 days,  2:11,  1 user,  load average: 0.08, 0.12, 0.10', 'finished'], code: 0, cut: false, timedOut: false, ms: 9, startMs: 3, sample: true }
 
 const allowed = env => String(env.GLOZ_TERMINAL_ALLOW || '').split(',').map(s => s.trim()).filter(Boolean)
 
@@ -32,7 +32,7 @@ export function spoken(text) {
 export async function handle(body, { env, stt = transcribe, run = execFile }) {
   const op = body?.op
   if (env.GLOZ_SAMPLE === '1' && op === 'say') { if (body?.pcm) { let t = ''; try { t = (await stt(Buffer.from(String(body.pcm), 'base64'), String(body.lang || 'en'))).text } catch { return { error: 'No speech engine on the server' } } if (!String(t || '').trim()) return { error: 'Nothing heard' } } }
-  if (env.GLOZ_SAMPLE === '1') return op === 'run' ? { ...SAMPLE_RUN, lines: [...sampleLines(String(body?.cmd || '')), 'done'] } : op === 'say' ? { cmd: typeof body?.text === 'string' && body.text.trim() ? spoken(body.text) : 'df', sample: true } : SAMPLE_LIST
+  if (env.GLOZ_SAMPLE === '1') return op === 'run' ? { ...SAMPLE_RUN, lines: [...sampleLines(String(body?.cmd || '')), 'finished'] } : op === 'say' ? { cmd: typeof body?.text === 'string' && body.text.trim() ? spoken(body.text) : 'df', sample: true } : SAMPLE_LIST
   if (env.GLOZ_TERMINAL !== '1') return { on: false }
   const allow = allowed(env)
   if (op === 'list') return { on: true, allow }
@@ -57,7 +57,7 @@ export async function handle(body, { env, stt = transcribe, run = execFile }) {
         const timedOut = Boolean(err?.killed) && err.code !== 'ERR_CHILD_PROCESS_STDIO_MAXBUFFER'
         const code = typeof err?.code === 'number' ? err.code : err ? null : 0
         const lines = all.slice(0, MAX_CHARS).split(/\r?\n/).filter(l => l.trim())
-        lines.push(timedOut ? 'stopped after 10 s' : cut ? `${code === 0 ? 'done' : `failed (exit ${code ?? '?'})`} · output cut at 20,000 characters` : code === 0 ? 'done' : `failed (exit ${code ?? '?'})`)
+        lines.push(timedOut ? 'stopped after 10 s' : cut ? `${code === 0 ? 'finished' : `failed (exit ${code ?? '?'})`} · output cut at 20,000 characters` : code === 0 ? 'finished' : `failed (exit ${code ?? '?'})`)
         done({ lines, code, cut, timedOut, ms: Math.round(performance.now() - t0), startMs })
       })
       child?.once?.('spawn', () => { startMs = Number((performance.now() - t0).toFixed(2)) })

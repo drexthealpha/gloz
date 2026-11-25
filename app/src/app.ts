@@ -277,10 +277,10 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
     if (s.note && !homeNote) return base
     const n = day.length + 1
     const skipped = s.skippedMsgs?.length ?? 0
-    if (dayAt === 0) return { kind: 'status', text: homeNote || base.text, hint: ['tap: check now', day.length && 'down: your day', skipped && w.showSkipped(skipped), 'hold: say anything'].filter(Boolean).join(' · '), progress: day.length ? [1, n] : undefined }
+    if (dayAt === 0) return { kind: 'status', text: homeNote || base.text, hint: ['tap: check now', day.length && 'down: your day', skipped && w.showSkipped(skipped), 'hold: ask, or add a task'].filter(Boolean).join(' · '), progress: day.length ? [1, n] : undefined }
     const it = day[dayAt - 1]
-    if (homeNote) return { kind: 'status', text: homeNote, hint: 'down: next · hold: say anything', progress: [dayAt + 1, n] }
-    return { kind: 'status', text: it.text, hint: [it.sample && 'sample', it.tool === 'dash' ? 'tap: today at a glance' : 'tap: open', 'down: next', 'up: earlier', 'hold: say anything'].filter(Boolean).join(' · '), progress: [dayAt + 1, n] }
+    if (homeNote) return { kind: 'status', text: homeNote, hint: 'down: next · hold: ask, or add a task', progress: [dayAt + 1, n] }
+    return { kind: 'status', text: it.text, hint: [it.sample && 'sample', it.tool === 'dash' ? 'tap: today at a glance' : 'tap: open', 'down: next', 'up: earlier', 'hold: ask, or add a task'].filter(Boolean).join(' · '), progress: [dayAt + 1, n] }
   }
   function flash(text: string) {
     homeNote = text
