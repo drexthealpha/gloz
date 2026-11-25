@@ -20,7 +20,7 @@ Every requirement and rule on https://dorahacks.io/hackathon/even-realities/deta
 |---|---|
 | "Teams of 1 to 4 people ... You can join one team only." | One person. |
 | "A team can submit up to 2 projects" | One project. |
-| "Build during the hackathon. Open-source libraries and existing APIs are allowed; say in your README what existed before Nov 23." | README, "What existed before Nov 23". First commit of this repository: 24 Nov 2026 (`git log --reverse`), inside the build week. |
+| "Build during the hackathon. Open-source libraries and existing APIs are allowed; say in your README what existed before Nov 23." | README, "What existed before Nov 23". First commit visible after the 23 and 24 Nov squash: 24 Nov 2026 (`git log --reverse`), inside the build week. |
 | "Build your core integration on the apps listed in your track. On top of that, you can add any other tools (for example an LLM for reply drafts or speech-to-text). Entering a second track is optional." | Tracks 01 and 04. Services used: Telegram, Slack, Discord (track 01); Gmail, Claude, ChatGPT, OpenRouter (track 04). Speech to text runs on Gloz's own backend, as the page asks ("send it to your own server"). See [server/connectors.mjs](server/connectors.mjs), [server/ai.mjs](server/ai.mjs), [server/stt.mjs](server/stt.mjs). |
 | "If your app genuinely connects apps from several tracks ... you can enter up to 2 tracks." | One flow: a message from Telegram, Slack, Discord or Gmail, answered with a draft from Claude, ChatGPT or OpenRouter. |
 | "Money safety: demos use testnet, paper trading or read-only data. Do not hold user funds. No financial advice. Never commit API keys or secrets." | Gloz moves no money and gives no advice. Keys are read from the backend's environment only; `.env` is in [.gitignore](.gitignore); [.env.example](.env.example) holds names only. |
@@ -50,7 +50,7 @@ README, "For judges: where to look", has one row for each: Usefulness on G2, Rea
 |---|---|
 | Name 20 characters or fewer, not containing "Even" | "Gloz" |
 | Root double tap calls `shutDownPageContainer(1)` | [app/src/glasses.ts](app/src/glasses.ts) `exit()`, called on double tap in [app/src/app.ts](app/src/app.ts) |
-| First launch needing setup shows a message on the glasses, never a black screen | "Open Gloz on your phone to pair" ([app/src/core/flow.ts](app/src/core/flow.ts), tested) |
+| First launch needing setup shows a message on the glasses, never a black screen | "Open Gloz on your phone to pair" (text in [app/src/core/words.ts](app/src/core/words.ts), shown by [app/src/core/flow.ts](app/src/core/flow.ts), tested) |
 | Setup remembered across launches | pairing token and settings in local storage |
 | Every permission used | `network` (backend), `g2-microphone` (hold to speak), `location` (only while Navigation or the Dashboard is open) |
 
@@ -67,4 +67,4 @@ https://drexthealpha.github.io/gloz/gloz-demo.mp4 (<!-- gen:video -->115 s<!-- /
 
 ## Checked
 
-Checked on 24 Nov 2026 by an agent that did not build Gloz, on a fresh clone of the public repository: no rule on the page failed (tests, text check, setup check, no secrets in history, live demo with no sign-in, status badge, video under 3 minutes, package). It could not check team size, the services' terms in practice, or the submission itself, which only the DoraHacks form and the founder can show. Test counts and timings are in the CI run for each commit.
+Checked on 25 Nov 2026 at commit e43691b by an agent that did not build Gloz, on a fresh clone of the public repository: no rule on the page failed (tests, text check, setup check, no secrets in history, live demo with no sign-in, status badge, video under 3 minutes, package). It could not check team size, the services' terms in practice, or the submission itself, which only the DoraHacks form and the founder can show. Test counts and timings are in the CI run for each commit.

@@ -113,6 +113,8 @@ export const readerApp: AppEntry = {
         page = 0
         while (page + 1 < starts.length && starts[page + 1] <= at) page++
         resumed = page > 0
+        // Says where it picked up for a moment, then the usual hint returns.
+        if (resumed) setTimeout(() => { if (resumed) { resumed = false; if (view === 'page') ctx.render() } }, 4000)
         ctx.store.set('reader.doc', d.id)
         show('page')
       } catch { line = 'No signal'; show('error') }

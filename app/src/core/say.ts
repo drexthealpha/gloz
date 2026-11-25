@@ -1,7 +1,8 @@
 // Say anything: what the wearer said on the home screen, turned into one action.
 // Plain word rules, no AI, so it works the same with or without a key and can be tested.
 export type Tool = 'tasks' | 'notes' | 'ask' | 'nav' | 'reader' | 'prompter' | 'term' | 'music' | 'stocks' | 'dash'
-export interface Said { tool: Tool; op?: 'add' | 'play' | 'pause' | 'next'; arg?: string }
+// guess: no command word was said; inside a tool such words stay with that tool.
+export interface Said { tool: Tool; op?: 'add' | 'play' | 'pause' | 'next'; arg?: string; guess?: true }
 
 const clean = (s: string) => s.trim().replace(/[.!?。！？]+$/u, '').trim()
 
@@ -25,6 +26,7 @@ export function said(text: string): Said | null {
   if (m(/^(?:dashboard|my day|today)$/i)) return { tool: 'dash' }
   if (m(/^(?:tasks|my tasks)$/i)) return { tool: 'tasks' }
   if (m(/^(?:notes|my notes)$/i)) return { tool: 'notes' }
-  // Anything else is a question.
-  return { tool: 'ask', arg: t }
+  // A question (a question word, "tell me", or a question mark) goes to Ask; anything else said is a task to add.
+  if (/[?？]$/.test(text.trim()) || /^(?:what|who|whom|whose|when|where|why|how|which|is|are|was|were|can|could|do|does|did|will|would|should|shall|may|tell me|explain|define|translate|summari[sz]e)\b/i.test(t)) return { tool: 'ask', arg: t, guess: true }
+  return { tool: 'tasks', op: 'add', arg: t, guess: true }
 }

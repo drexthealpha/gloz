@@ -1,6 +1,6 @@
 # Locked evaluation protocol
 
-Written and committed before the first run: locked 23 Nov 2026 11:19, first held-out run 23 Nov 14:00. The held-out set (eval/set/heldout.json) and this protocol are not edited after that commit. The public history was squashed on 23 and 24 Nov to remove private files, so main no longer shows those two commits. Tuning uses eval/set/dev.json only.
+Written and committed before the first run: locked 23 Nov 2026 11:19, first held-out run 23 Nov 14:00. The held-out set (eval/set/heldout.json) is not edited after that commit; this protocol changes only by the dated amendments below, each with its reason. The public history was squashed on 23 and 24 Nov to remove private files, so main no longer shows those two commits. Tuning uses eval/set/dev.json only.
 
 ## Question
 
@@ -51,7 +51,7 @@ The simulator font is not pixel exact to the glasses (simulator docs, Caveats). 
 
 ## Amendments made on the dev set, before the first held-out run
 
-Committed before eval/results/heldout.* exists; the git history shows the order.
+Committed before eval/results/heldout.* existed (23 Nov, 11:19 against 14:00). Main was squashed on 23 and 24 Nov to remove private files, so it no longer shows that order.
 
 1. Reading scale. On dev, Tesseract missed whole lines of large, clean text when scaled up 3 times. Each screen is now read at 1, 2 and 3 times scale, for both arms, and the reading Tesseract reports the highest confidence for is kept. The expected text is never used to choose.
 2. Primary score. On dev, a single blur of 1.5 px left Russian and English tied at 5 of 5, so it did not measure size at all; picking a larger blur by hand would mean choosing the threshold that makes one arm fail. The primary score is now free of that choice: for each message, the largest blur in the fixed ladder 0, 1, 1.5, 2, 3, 4, 5, 6, 8 px at which the message is still shown (CER at most 0.10). The ladder is climbed until the first failure; a message not shown even at 0 px scores -1. This is how much worse the wearer's sight can be before the message is lost.

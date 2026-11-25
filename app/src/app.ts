@@ -280,7 +280,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
     if (dayAt === 0) return { kind: 'status', text: homeNote || base.text, hint: ['tap: check now', day.length && 'down: your day', skipped && w.showSkipped(skipped), 'hold: ask, or add a task'].filter(Boolean).join(' · '), progress: day.length ? [1, n] : undefined }
     const it = day[dayAt - 1]
     if (homeNote) return { kind: 'status', text: homeNote, hint: 'down: next · hold: ask, or add a task', progress: [dayAt + 1, n] }
-    return { kind: 'status', text: it.text, hint: [it.sample && 'sample', it.tool === 'dash' ? 'tap: today at a glance' : 'tap: open', 'down: next', 'up: earlier', 'hold: ask, or add a task'].filter(Boolean).join(' · '), progress: [dayAt + 1, n] }
+    return { kind: 'status', text: it.text, hint: [it.sample && 'sample', it.tool === 'dash' ? 'tap: today at a glance' : 'tap: open', 'down: next', 'up: earlier'].filter(Boolean).join(' · '), progress: [dayAt + 1, n] }
   }
   function flash(text: string) {
     homeNote = text
@@ -318,7 +318,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
     } catch (e) { text = ''; if (/stt 503/.test(String(e))) noEngine = true }
     if (my !== sayGen) return
     saying = ''
-    if (sayTo) { const to = sayTo; sayTo = null; const other = said(text); if (other && other.tool !== 'ask' && other.tool !== to.id) { if (other.op) { closeApp(); return act(other) } closeApp(); return openTool(other.tool, other.arg) } if (text.trim() && active === to) to.say!(text.trim()); else if (active === to) { const n = noEngine ? 'No speech engine on the server' : words(settings.myLang).notHeard; toolNote = n; render(); setTimeout(() => { if (toolNote === n) { toolNote = ''; render() } }, 3500) } return }
+    if (sayTo) { const to = sayTo; sayTo = null; const other = said(text); if (other && !other.guess && other.tool !== to.id) { if (other.op) { closeApp(); return act(other) } closeApp(); return openTool(other.tool, other.arg) } if (text.trim() && active === to) to.say!(text.trim()); else if (active === to) { const n = noEngine ? 'No speech engine on the server' : words(settings.myLang).notHeard; toolNote = n; render(); setTimeout(() => { if (toolNote === n) { toolNote = ''; render() } }, 3500) } return }
     const it = said(text)
     if (!it) return flash(noEngine ? 'No speech engine on the server' : words(settings.myLang).notHeard)
     await act(it)
