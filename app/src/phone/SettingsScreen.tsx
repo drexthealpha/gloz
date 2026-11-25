@@ -43,7 +43,7 @@ export function SettingsScreen({ settings, current, onChange, live, unmute, pick
           <Label id="sizel" className="text-base"><ALargeSmall aria-hidden="true" className="size-5" /> {t('textSize')}</Label>
           <output className="text-base font-semibold">{t('sizeOf', s.size)}</output>
         </div>
-        <Slider data-primary id="size" aria-labelledby="sizel" aria-valuetext={t('sizeOf', s.size)} min={1} max={6} step={1}
+        <Slider data-primary id="size" aria-labelledby="sizel" aria-valuetext={t('sizeOf', s.size)} min={1} max={7} step={1}
           value={s.size} onValueChange={v => set({ size: v })} />
       </div>
       <div className="flex flex-col gap-3">

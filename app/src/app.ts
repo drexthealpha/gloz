@@ -227,7 +227,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   g.onMenu = async id => {
     const w = words(settings.myLang)
     let note = ''
-    if (id === 1 || id === 2) { settings.size = Math.min(6, Math.max(1, settings.size + (id === 1 ? 1 : -1))); note = w.sizeNote(settings.size) }
+    if (id === 1 || id === 2) { settings.size = Math.min(7, Math.max(1, settings.size + (id === 1 ? 1 : -1))); note = w.sizeNote(settings.size) }
     if (id === 3) { settings.low = !settings.low; note = settings.low ? w.movedDown : w.movedUp }
     // Without AI on the server, translation cannot run: it stays off and says why.
     if (id === 4) { if (!settings.translate && !aiOn) note = w.needsAi; else { settings.translate = !settings.translate; after = 0; note = settings.translate ? w.translateOn : w.translateOff; g.setMenu(menuItems(settings.myLang, r.on, w.stopListening, false, aiOn ? settings.translate : null)) } }

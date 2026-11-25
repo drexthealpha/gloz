@@ -12,7 +12,7 @@ import {
 } from '@evenrealities/even_hub_sdk'
 import type { Card } from './core/types.ts'
 import { dwell } from './core/layout.ts'
-import { layoutCard, drawLine, tiles, blankStrip, drawGrid, tiles4, STRIP, type Lines } from './render.ts'
+import { layoutCard, drawLine, tiles, blankStrip, drawGrid, tiles4, STRIP, FULL_H, type Lines } from './render.ts'
 
 export type Input = 'tap' | 'next' | 'prev' | 'hold' | 'release' | 'exit'
 
@@ -153,7 +153,8 @@ export class Glasses {
 
   show(c: Card, force = false) {
     // A grid card and a line card need different pages: switch when the kind of card changes.
-    if (Boolean(c.grid) !== this.full) { this.full = Boolean(c.grid); this.rebuildDue = true; force = true }
+    const full = Boolean(c.grid) || this.size === 7
+    if (full !== this.full) { this.full = full; this.rebuildDue = true; force = true }
     // A new hint ("Checked ✓", no signal) keeps the line the wearer is on; new text starts at line 1.
     const sameText = Boolean(this.card) && this.card!.kind === c.kind && this.card!.text === c.text && this.card!.head === c.head
     if (sameText && this.card!.hint === c.hint && !force) return
@@ -195,6 +196,13 @@ export class Glasses {
       if (my !== this.gen) return   // a newer screen is waiting: skip this one
       if (c.grid && !this.menuOpen) {
         const four = await tiles4(drawGrid(c.grid, c.hint ?? ''))
+        if (my !== this.gen) return
+        await this.switchPage()
+        for (let k = 0; k < 4; k++) { await within(this.bridge.updateImageRawData(new ImageRawDataUpdate({ containerID: 2 + k, containerName: `t${k}`, imageData: four[k] }))); await new Promise(r => setTimeout(r, 150)) }
+        return
+      }
+      if (this.full && !this.menuOpen) {
+        const four = await tiles4(drawLine(c, l, i, { pages: c.parts !== false }, FULL_H))
         if (my !== this.gen) return
         await this.switchPage()
         for (let k = 0; k < 4; k++) { await within(this.bridge.updateImageRawData(new ImageRawDataUpdate({ containerID: 2 + k, containerName: `t${k}`, imageData: four[k] }))); await new Promise(r => setTimeout(r, 150)) }

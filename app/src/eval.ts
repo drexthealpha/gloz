@@ -10,7 +10,7 @@ import {
   ImageContainerProperty,
   ImageRawDataUpdate,
 } from '@evenrealities/even_hub_sdk'
-import { layoutCard, drawLine, tiles, STRIP } from './render.ts'
+import { layoutCard, drawLine, tiles, tiles4, STRIP, FULL_H } from './render.ts'
 import type { Card } from './core/types.ts'
 
 const RUNNER = 'http://127.0.0.1:8799'
@@ -29,11 +29,17 @@ const glozPage = () => ({
   ],
 })
 
+const fullPage = () => ({
+  containerTotalNum: 5,
+  textObject: [new TextContainerProperty({ xPosition: 0, yPosition: 0, width: 576, height: 288, containerID: 1, containerName: 'input', content: ' ', isEventCapture: 1, zOrderIndex: 1 })],
+  imageObject: [[0, 0], [288, 0], [0, 144], [288, 144]].map(([x, y], k) => new ImageContainerProperty({ xPosition: x, yPosition: y, width: 288, height: 144, containerID: 2 + k, containerName: `t${k}`, zOrderIndex: 2 + k })),
+})
+
 await bridge.createStartUpPageContainer(new CreateStartUpPageContainer(plainPage(' ')))
 console.log('[eval] up')
 
 let last = -1
-let layout: 'plain' | 'gloz' = 'plain'
+let layout: 'plain' | 'gloz' | 'full' = 'plain'
 for (;;) {
   let cmd: any
   try { cmd = await (await fetch(`${RUNNER}/cmd`)).json() } catch { await new Promise(r => setTimeout(r, 200)); continue }
@@ -43,6 +49,13 @@ for (;;) {
     await bridge.rebuildPageContainer(new RebuildPageContainer(plainPage(cmd.text)))
     layout = 'plain'
     console.log(`[eval] ready ${cmd.n} lines 1`)
+  } else if (cmd.size === 7) {
+    if (layout !== 'full') { await bridge.rebuildPageContainer(new RebuildPageContainer(fullPage())); layout = 'full' }
+    const c: Card = { kind: 'message', text: cmd.text }
+    const l = layoutCard(c, cmd.size)
+    const four = await tiles4(drawLine(c, l, cmd.line, { pages: false }, FULL_H))
+    for (let k = 0; k < 4; k++) await bridge.updateImageRawData(new ImageRawDataUpdate({ containerID: 2 + k, containerName: `t${k}`, imageData: four[k] }))
+    console.log(`[eval] ready ${cmd.n} lines ${l.lines.length}`)
   } else {
     if (layout !== 'gloz') { await bridge.rebuildPageContainer(new RebuildPageContainer(glozPage())); layout = 'gloz' }
     const c: Card = { kind: 'message', text: cmd.text }

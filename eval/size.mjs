@@ -30,9 +30,9 @@ try {
   await waitLog('[eval] up', 60000)
   out.plain = inkHeight(await show({ arm: 'plain', text: 'H' }))
   out.gloz = {}
-  for (let s = 1; s <= 6; s++) out.gloz[s] = inkHeight(await show({ arm: 'gloz', text: 'H', size: s, line: 0 }))
+  for (let s = 1; s <= 7; s++) out.gloz[s] = inkHeight(await show({ arm: 'gloz', text: 'H', size: s, line: 0 }))
 } finally { kill(sim); kill(vite); srv.close() }
-out.ratio = Number((out.gloz[6] / out.plain).toFixed(2))
+out.ratio = Number((out.gloz[7] / out.plain).toFixed(2))   // the largest size
 out.note = 'lit pixel height of a capital H in the simulator framebuffer'
 writeFileSync(new URL('./results/size.json', import.meta.url), JSON.stringify(out, null, 1) + '\n')
 console.log(out)

@@ -34,7 +34,7 @@ export const STRINGS = {
   changeServer: s('Change server address'), // Next step offered after a pairing error (max 30)
   settingsTitle: s('Gloz settings'), // Heading of the settings screen (max 24)
   textSize: s('Text size on the glasses'), // Label of the text-size slider (max 32)
-  sizeOf: s('{n} of 6'), // Text size value, for example 3 of 6 (max 12)
+  sizeOf: s('{n} of 7'), // Text size value, for example 3 of 7 (max 12)
   more: s('More settings'), // Opens the rest of the settings (max 24)
   loading: s('Opening more settings…'), // Shown for a moment while More settings opens (max 32)
   line: s('Text position on the glasses'), // Label: where the line of text sits on the glasses (max 32)

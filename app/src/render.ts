@@ -16,7 +16,7 @@ function ctx2d(): CanvasRenderingContext2D {
   return measureCtx
 }
 
-function fontPx(size: number) { return SIZES[Math.min(6, Math.max(1, size)) - 1] }
+function fontPx(size: number) { return SIZES[Math.min(7, Math.max(1, size)) - 1] }
 
 // Hint text sits under the line, small, only where a press needs saying.
 const HINT_PX = 20
@@ -49,13 +49,14 @@ export function layoutCard(c: Card, size: number): Lines {
 }
 
 // Renders line i of a card into a 576 x 144 canvas, white on black.
-export function drawLine(c: Card, l: Lines, i: number, opts: { pages?: boolean } = {}): HTMLCanvasElement {
+// H is the height drawn: a 144 px strip, or the whole 288 px display for the largest size.
+export function drawLine(c: Card, l: Lines, i: number, opts: { pages?: boolean } = {}, H = STRIP): HTMLCanvasElement {
   const cv = document.createElement('canvas')
   cv.width = W
-  cv.height = STRIP
+  cv.height = H
   const g = cv.getContext('2d')!
   g.fillStyle = '#000'
-  g.fillRect(0, 0, W, STRIP)
+  g.fillRect(0, 0, W, H)
   g.fillStyle = '#fff'
   const line = l.lines[i] ?? ''
   // Base direction comes from the message body, not the sender's name in front of it.
@@ -78,7 +79,7 @@ export function drawLine(c: Card, l: Lines, i: number, opts: { pages?: boolean }
   // Text that is too tall for the room above the hint is drawn smaller, never over it.
   // The label's letters reach below its middle line by about half its size; the line starts under them.
   const top = label ? Math.ceil(4 + HINT_PX * 1.35) + 6 : 0
-  const room = (hint ? STRIP - HINT_PX - 14 : STRIP - 8) - top
+  const room = (hint ? H - HINT_PX - 14 : H - 8) - top
   let px = l.px
   g.font = `${px}px ${FONT}`
   // Measured on the letters' own baseline, the one they are drawn on.
@@ -95,7 +96,7 @@ export function drawLine(c: Card, l: Lines, i: number, opts: { pages?: boolean }
   const pages = opts.pages !== false && l.lines.length > 1 ? `part ${i + 1}/${l.lines.length}${i === l.lines.length - 1 ? ' · end' : ''}`
     : c.kind === 'status' && c.progress && c.progress[1] > 1 ? `${c.progress[0]}/${c.progress[1]}` : ''
   if (hint || pages) {
-    const y = STRIP - HINT_PX / 2 - 6
+    const y = H - HINT_PX / 2 - 6
     g.font = `${HINT_PX}px ${FONT}`
     g.fillStyle = '#aaa'
     g.direction = direction(hint)

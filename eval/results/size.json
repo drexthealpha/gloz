@@ -6,8 +6,9 @@
   "3": 34,
   "4": 45,
   "5": 59,
-  "6": 77
+  "6": 77,
+  "7": 141
  },
- "ratio": 4.81,
+ "ratio": 8.81,
  "note": "lit pixel height of a capital H in the simulator framebuffer"
 }

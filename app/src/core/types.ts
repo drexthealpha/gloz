@@ -30,7 +30,7 @@ export interface Card {
 }
 
 export interface Settings {
-  size: number          // 1 to 6
+  size: number          // 1 to 7
   low: boolean          // line sits low on the display
   translate: boolean
   myLang: string        // the wearer's language, e.g. "en"
@@ -40,5 +40,5 @@ export interface Settings {
 
 export const DEFAULT_SETTINGS: Settings = { size: 3, low: false, translate: false, myLang: 'en', autoPace: true }
 
-// Font heights in pixels for sizes 1 to 6. Size 3 is the default.
-export const SIZES = [28, 36, 48, 64, 84, 110]
+// Font heights in pixels for sizes 1 to 7 (7 fills the whole display, a few letters a screen). Size 3 is the default.
+export const SIZES = [28, 36, 48, 64, 84, 110, 200]

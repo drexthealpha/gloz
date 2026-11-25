@@ -258,12 +258,12 @@ setInterval(muteLabel, 1000)
 muteLabel()
 bridge.onOpen = () => gloz.top()
 // 7. while Gloz is closed the buttons wait too
-setInterval(() => { for (const b of document.querySelectorAll<HTMLButtonElement>('.row button')) b.disabled = bridge.mode !== 'app' || (b === bigger && gloz.settings().size >= 6) || (b === smaller && gloz.settings().size <= 1) }, 300)
+setInterval(() => { for (const b of document.querySelectorAll<HTMLButtonElement>('.row button')) b.disabled = bridge.mode !== 'app' || (b === bigger && gloz.settings().size >= 7) || (b === smaller && gloz.settings().size <= 1) }, 300)
 
 // Size buttons call the same settings the phone screen and glasses menu use.
 const bigger = document.getElementById('bigger') as HTMLButtonElement, smaller = document.getElementById('smaller') as HTMLButtonElement
-const sizeButtons = () => { bigger.disabled = gloz.settings().size >= 6; smaller.disabled = gloz.settings().size <= 1 }
-bigger.onclick = () => { gloz.update({ size: Math.min(6, gloz.settings().size + 1) }); sizeButtons() }
+const sizeButtons = () => { bigger.disabled = gloz.settings().size >= 7; smaller.disabled = gloz.settings().size <= 1 }
+bigger.onclick = () => { gloz.update({ size: Math.min(7, gloz.settings().size + 1) }); sizeButtons() }
 smaller.onclick = () => { gloz.update({ size: Math.max(1, gloz.settings().size - 1) }); sizeButtons() }
 sizeButtons()
 again.onclick = () => { try { sessionStorage.clear(); localStorage.removeItem('gloz.muted') } catch {} scrollTo(0, 0); history.scrollRestoration = 'manual'; location.reload() }
