@@ -52,7 +52,7 @@ function make(ctx: ModeCtx): Mode {
       if (!r) return { kind: 'status', text: note || 'No quotes', hint: 'tap: try again' }
       const q = r.quotes[at]
       const time = r.sample ? (Date.now() - gotMs < 4000 ? `sample · updated ${got}` : 'sample') : busy ? 'updating' : note ? `${note} · ${when(q.t)}` : when(q.t)
-      return { kind: 'status', text: line(q), hint: Date.now() - gotMs < 4000 ? `${time} · double tap: back` : `${time} · tap: refresh · down: next`, progress: [at + 1, r.quotes.length] }
+      return { kind: 'status', text: line(q), hint: Date.now() - gotMs < 4000 ? `${time}${r.quotes.length > 1 ? ' · down: next' : ''} · double tap: back` : `${time} · tap: refresh · down: next`, progress: [at + 1, r.quotes.length] }
     },
     input(i) {
       if (i === 'tap' && !busy) return void load()

@@ -51,7 +51,7 @@ for (const [file, want] of Object.entries(PAGES)) {
     if (!block.test(md)) { console.log(`${file}: the gen:${k} marker is missing`); process.exit(1) }
     // A function, so a "$" in the text (prices) is never read as a pattern; a short value stays inline.
     const val = blocks[k]
-    md = md.replace(new RegExp(`(<!-- gen:${k} -->)[\\s\\S]*?(<!-- /gen -->)`, 'g'), (_, a, b) => val.includes('\n') || val.length > 40 ? `${a}\n${val}\n${b}` : `${a}${val}${b}`)
+    md = md.replace(new RegExp(`(<!-- gen:${k} -->)[\\s\\S]*?(<!-- /gen -->)`, 'g'), (_, a, b) => k !== 'first' && (val.includes('\n') || val.length > 40) ? `${a}\n${val}\n${b}` : `${a}${val}${b}`)   // the README's first line stays one line
   }
   if (md !== before) { stale = true; if (!process.argv.includes('--check')) writeFileSync(path, md) }
 }

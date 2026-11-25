@@ -1,8 +1,4 @@
-# Gloz
-
-<!-- gen:first -->
-**Gloz lets the executive who wears Even G2 all day read and answer every message without the phone, in their language, at their size.** In the Even Hub simulator, plain G2 text showed 0 of 100 held-out messages in Arabic, Persian, Hindi, Thai and Hebrew; Gloz showed 84. Gloz won 10 of 10 scripts, and cut the median time from message seen to reply sent from 3.0 s to 2.5 s.
-<!-- /gen -->
+<!-- gen:first -->**Gloz lets the executive who wears Even G2 all day read and answer every message without the phone, in their language, at their size.** In the Even Hub simulator, plain G2 text showed 0 of 100 held-out messages in Arabic, Persian, Hindi, Thai and Hebrew; Gloz showed 84. Gloz won 10 of 10 scripts, and cut the median time from message seen to reply sent from 3.0 s to 2.5 s.<!-- /gen -->
 
 [![CI](https://github.com/drexthealpha/gloz/actions/workflows/ci.yml/badge.svg)](https://github.com/drexthealpha/gloz/actions/workflows/ci.yml) [![live demo](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/drexthealpha/gloz/status/status.json)](https://drexthealpha.github.io/gloz/)
 

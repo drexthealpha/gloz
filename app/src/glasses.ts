@@ -220,7 +220,7 @@ export class Glasses {
       // A page's reading time starts when it is on the glasses, not when it was asked for;
       // a repaint of the same page (a new hint) does not start it again.
       const key = `${c.kind}|${c.head ?? ''}|${c.text}|${i}`
-      if (key !== this.landed && this.line === i && this.card === c) { this.landed = key; this.lineAt = Date.now() }
+      if (!late && key !== this.landed && this.line === i && this.card === c) { this.landed = key; this.lineAt = Date.now() }   // a timed-out send has not landed
       await new Promise(r => setTimeout(r, 150))
     }).then(() => {
       // A send that timed out may still land late, over a newer half: draw the whole screen again.

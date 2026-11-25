@@ -336,7 +336,8 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
     try {
       if (it.tool === 'tasks' && it.op === 'add') { const r = await call('tasks', { action: 'add', title: it.arg }); flash(r?.error || `✓ Task${r?.sample ? ' (sample)' : ''}: ${short(it.arg)}`); return void loadDay() }
       if (it.tool === 'notes' && it.op === 'add') { const r = await call('notes', { action: 'add', text: it.arg }); flash(r?.error || `✓ Note${r?.sample ? ' (sample)' : ''}: ${short(it.arg)}`); return void loadDay() }
-      if (it.tool === 'music' && it.op) { const r = await call('music', { action: it.op }); flash(r?.error || r?.need || (r?.track ? `${r.playing ? 'Playing' : 'Paused'}: ${r.track}` : 'Done ✓')); return void loadDay() }
+      // Music: the command runs, then the player opens, so pause and next track are one press away.
+      if (it.tool === 'music' && it.op) { const r = await call('music', { action: it.op }); if (r?.error || r?.need) return flash(r.error || r.need); return openTool('music') }
     } catch { return flash(words(settings.myLang).noSignal) }
     openTool(it.tool, it.arg)
   }
