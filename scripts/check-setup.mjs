@@ -24,7 +24,7 @@ try { const out = sh('npm test'); const m = out.match(/# pass (\d+)[\s\S]*# fail
 catch (e) { fail(`tests: ${String(e.stdout || e).slice(-400)}`) }
 
 try { sh('npx tsc --noEmit && npx vite build', `${root}/app`); ok('app builds') } catch (e) { fail(`app build: ${String(e.stdout || e).slice(-300)}`) }
-try { sh('npx -y @evenrealities/evenhub-cli@0.2.0 pack app.json dist -o gloz.ehpk --sdk-ver 0.0.16', `${root}/app`); existsSync(`${root}/app/gloz.ehpk`) ? ok('gloz.ehpk packed') : fail('no gloz.ehpk') }
+try { sh('npx evenhub pack app.json dist -o gloz.ehpk --sdk-ver 0.0.16', `${root}/app`); existsSync(`${root}/app/gloz.ehpk`) ? ok('gloz.ehpk packed') : fail('no gloz.ehpk') }
 catch (e) { fail(`pack: ${String(e.stdout || e).slice(-300)}`) }
 
 // Backend: start it with no keys on a spare port, read the pairing code it prints, pair.

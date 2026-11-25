@@ -277,8 +277,8 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   const SAY_WHAT: Record<string, string> = { nav: 'where', tasks: 'the task', notes: 'the note', ask: 'your question', term: 'the command', reader: 'the title' }
   function homeCard(): Card {
     const w = words(settings.myLang)
-    if (saying === 'listening') return { kind: 'status', text: `Listening · say ${SAY_WHAT[sayTo?.id ?? ''] ?? 'what you want'}`, hint: 'let go: done · double tap: cancel' }
-    if (saying === 'working') return { kind: 'status', text: 'Getting your words…', hint: 'wait a moment' }
+    if (saying === 'listening') return { kind: 'status', text: `Listening · say ${SAY_WHAT[sayTo?.id ?? ''] ?? 'what you want'}`, hint: 'let go or tap: done · double tap: cancel' }
+    if (saying === 'working') return { kind: 'status', text: 'Getting your words…', hint: 'wait a moment · double tap: cancel' }
     const base = card(s, settings.myLang)
     if (s.note && !homeNote) return base
     const n = day.length + 1

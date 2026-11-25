@@ -13,5 +13,5 @@ if (origin) {
   writeFileSync('app.json', JSON.stringify(app, null, 2) + '\n')
 } else console.log('No GLOZ_BACKEND_ORIGIN: the package whitelists the placeholder address; set it to your server to use the package.')
 try {
-  execSync('npx -y @evenrealities/evenhub-cli@0.2.0 pack app.json dist -o gloz.ehpk --sdk-ver 0.0.16', { stdio: 'inherit' })
+  execSync('npx evenhub pack app.json dist -o gloz.ehpk --sdk-ver 0.0.16', { stdio: 'inherit' })
 } finally { writeFileSync('app.json', src) }

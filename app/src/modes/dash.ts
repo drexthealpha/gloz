@@ -70,9 +70,11 @@ export interface Cell { x: number; y: number; w: number; h: number; px: number; 
 export function grid(texts: string[], measure: (s: string, px: number) => number, W = 576, H = 288, pad = 6): Cell[] {
   const n = Math.min(texts.length, 12)
   if (!n) return []
-  const cols = COLS[n], rows = Math.ceil(n / cols), w = W / cols, h = H / rows
+  const cols = COLS[n], rows = Math.ceil(n / cols), h = H / rows
   return texts.slice(0, n).map((t, i) => {
-    const x = (i % cols) * w, y = Math.floor(i / cols) * h, room = w - pad * 2
+    // A short last row shares the whole width, so no cell is left empty.
+    const row = Math.floor(i / cols), inRow = row === rows - 1 ? n - cols * row : cols, w = W / inRow
+    const x = (i % cols) * w, y = row * h, room = w - pad * 2
     const fit = (s: string, px: number) => { const ls = wrap(s, room, m => measure(m, px)); return ls.length * px * 1.2 <= h - pad * 2 && ls.every(l => measure(l, px) <= room) ? ls : null }
     // Fewest lines first, so a short item is never broken inside a word to stay large.
     for (let k = 1; k * MIN_PX * 1.2 <= h - pad * 2; k++) {

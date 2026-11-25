@@ -19,9 +19,10 @@ export type Input = 'tap' | 'next' | 'prev' | 'hold' | 'release' | 'exit'
 // A send the glasses never answer must not hold every later screen back: after 3 s the next one goes.
 function within<T>(p: Promise<T>, ms = 3000): Promise<T | void> {
   let t: ReturnType<typeof setTimeout> | undefined
-  const late = new Promise<void>(ok => { t = setTimeout(() => { console.warn('[gloz] draw timed out'); ok() }, ms) })
-  return Promise.race([p, late]).finally(() => clearTimeout(t))
+  const timedOut = new Promise<void>(ok => { t = setTimeout(() => { console.warn('[gloz] draw timed out'); late = true; ok() }, ms) })
+  return Promise.race([p, timedOut]).finally(() => clearTimeout(t))
 }
+let late = false   // a send timed out since the last full screen was drawn
 
 export class Glasses {
   private bridge: EvenAppBridge
@@ -213,6 +214,9 @@ export class Glasses {
       const key = `${c.kind}|${c.head ?? ''}|${c.text}|${i}`
       if (key !== this.landed && this.line === i && this.card === c) { this.landed = key; this.lineAt = Date.now() }
       await new Promise(r => setTimeout(r, 150))
+    }).then(() => {
+      // A send that timed out may still land late, over a newer half: draw the whole screen again.
+      if (late && my === this.gen) { late = false; this.paint() }
     }).catch(e => console.error('[gloz] draw', e))
   }
 

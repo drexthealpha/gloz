@@ -18,6 +18,8 @@ export default defineConfig(({ mode }) => ({
   esbuild: { legalComments: 'eof' },
   build: {
     target: 'esnext',
+    minify: 'terser',
+    terserOptions: { compress: { passes: 2 } },
     modulePreload: false,
     outDir: mode === 'demo' ? 'dist-demo' : mode === 'check' ? 'dist-check' : 'dist',
     rollupOptions: { input: { index: resolve(__dirname, mode === 'demo' ? 'demo.html' : mode === 'check' ? 'phone-check.html' : 'index.html') } },

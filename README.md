@@ -35,6 +35,8 @@ Messages come from **Telegram (your account or a bot), Slack, Discord and Gmail*
 
 ## For judges: where to look
 
+**Track:** 01 Messaging & News (main) and 04 AI Assistants & Work.
+
 | Criterion | Where to look |
 |---|---|
 | Usefulness on G2 · 30% | The live demo, then [the held-out results](#results): plain G2 text drops Arabic, Persian, Hindi, Thai and Hebrew; Gloz shows them, one line at a time, with the phone in the pocket. Who it is for: [Business potential](#business-potential-and-safety). |

@@ -25,7 +25,7 @@ jobs:
           npx tsc --noEmit
           npx vite build
           npx vite build --mode demo
-          npx -y @evenrealities/evenhub-cli@0.2.0 pack app.json dist -o gloz.ehpk --sdk-ver 0.0.16
+          npx evenhub pack app.json dist -o gloz.ehpk --sdk-ver 0.0.16
       - name: Results and README numbers match the committed run
         run: node eval/score.mjs --check && node scripts/readme.mjs --check
   setup:
