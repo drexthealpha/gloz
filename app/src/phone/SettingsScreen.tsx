@@ -51,7 +51,7 @@ export function SettingsScreen({ settings, current, onChange, live, unmute, pick
           {t('more')} <ChevronDown aria-hidden="true" className={open ? 'rotate-180' : ''} />
         </Button>
         {open && (
-          <div id="more" className="flex flex-col gap-3">
+          <div id="more" className="flex flex-col gap-2">
             <Suspense fallback={<p className="m-0 text-muted-foreground">{t('loading')}</p>}>
               <More s={s} set={set} l={l} setL={setL} live={live} unmute={unmute} pick={pick} theme={theme} onTheme={onTheme} />
             </Suspense>

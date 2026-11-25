@@ -143,7 +143,7 @@ Every complaint from public reviews that a glasses app can act on: what owners s
 
 ### Complaints only Even Realities can fix
 
-These 69 complaints are about the hardware, the Even app, the store or the company, so no glasses app can fix them. For each: what owners said, the best solution found today, and the number to beat.
+These 69 complaints are about the hardware, the Even app, the store or the company, so no glasses app can fix them. What Gloz does for these owners: on the phone screen, "Fix my glasses" asks what is wrong, the order number and since when, then opens Even Realities' own support form with the subject and a full description already written (what that form asks for), so the first request for a repair, replacement or refund is complete. For each complaint: what owners said, the best solution found today, and the number to beat.
 
 | # | What owners said | Best solution today | Number to beat |
 |---|---|---|---|

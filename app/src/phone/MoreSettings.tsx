@@ -6,6 +6,7 @@ import { Label } from '@/phone/components/ui/label'
 import { Switch } from '@/phone/components/ui/switch'
 import { ToggleGroup, ToggleGroupItem } from '@/phone/components/ui/toggle-group'
 import { NativeSelect, NativeSelectOption } from '@/phone/components/ui/native-select'
+import { Input } from '@/phone/components/ui/input'
 import { t } from './strings'
 import { big, field, LANGS, Listen } from './shared'
 import type { Live, Set, Theme } from './SettingsScreen'
@@ -17,6 +18,8 @@ export default function MoreSettings({ s, set, l, setL, live, unmute, pick, them
   const [copied, setCopied] = useState('')
   const [unmutedNote, setUnmutedNote] = useState(false)
   const [chatsOpen, setChatsOpen] = useState(false)
+  const [fixOpen, setFixOpen] = useState(false)
+  const [fix, setFix] = useState({ what: 'fixDrops' as FixKey, order: '', serial: '', since: '' })
   return (
     <>
       <div className="flex flex-col gap-2">
@@ -76,13 +79,53 @@ export default function MoreSettings({ s, set, l, setL, live, unmute, pick, them
         </section>
       )}
       <section className="flex flex-col gap-3">
-        <h2 className="m-0 text-xl font-semibold">{t('howTo')}</h2>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="m-0 text-xl font-semibold">{t('howTo')}</h2>
+          <Button variant="outline" className={`${big} max-w-full whitespace-normal`} aria-expanded={fixOpen} aria-controls="fixform" onClick={() => setFixOpen(!fixOpen)}>{t('fix')}</Button>
+        </div>
         <ul className="m-0 flex list-none flex-col gap-2 p-0">
           {(['help1', 'help2', 'help3', 'help4'] as const).map(k => (
             <li key={k} className="flex flex-wrap items-center justify-between gap-3"><span className="min-w-0 flex-1 basis-40">{t(k)}</span><Listen k={k} label={`${t('listen')}: ${t(k)}`} /></li>
           ))}
         </ul>
       </section>
+      {fixOpen && (
+      <section className="flex flex-col gap-2">
+        {(
+          <div id="fixform" className="flex flex-col gap-2">
+            <Label htmlFor="fixwhat" className="text-base">{t('fixWhat')}</Label>
+            <NativeSelect id="fixwhat" className={field} value={fix.what} onChange={e => setFix({ ...fix, what: e.target.value as FixKey })}>
+              {FIX.map(k => <NativeSelectOption key={k} value={k}>{t(k)}</NativeSelectOption>)}
+            </NativeSelect>
+            <Label htmlFor="fixorder" className="text-base">{t('fixOrderNr')}</Label>
+            <Input id="fixorder" dir="auto" className={field} value={fix.order} onChange={e => setFix({ ...fix, order: e.target.value })} />
+            <Label htmlFor="fixserial" className="text-base">{t('fixSerial')}</Label>
+            <Input id="fixserial" dir="auto" className={field} value={fix.serial} onChange={e => setFix({ ...fix, serial: e.target.value })} />
+            <Label htmlFor="fixsince" className="text-base">{t('fixSince')}</Label>
+            <Input id="fixsince" type="date" dir="ltr" className={field} value={fix.since} onChange={e => setFix({ ...fix, since: e.target.value })} />
+            <Button className={big} onClick={() => window.open(fixUrl(fix), '_blank', 'noopener')}>{t('fixSend')}</Button>
+            <p className="m-0 text-muted-foreground">{t('fixNote')}</p>
+          </div>
+        )}
+      </section>
+      )}
     </>
   )
+}
+
+// The problems the owner can pick; each opens Even Realities' own form with what it asks for already written.
+const FIX = ['fixDrops', 'fixBattery', 'fixBroken', 'fixFit', 'fixOrder', 'fixRefund', 'fixApp'] as const
+type FixKey = typeof FIX[number]
+export function fixUrl(f: { what: FixKey; order: string; serial: string; since: string }) {
+  const what = t(f.what)
+  const body = [
+    `Problem: ${what}`,
+    `Order number: ${f.order || 'not given'}`,
+    `Serial number: ${f.serial || 'not given'}`,
+    `Since: ${f.since || 'not given'}`,
+    `Phone: ${navigator.userAgent}`,
+    'I would like a repair, replacement or refund under the warranty. Sent from Gloz.',
+  ].join('\n')
+  const q = new URLSearchParams({ ticket_form_id: '13767048726415', tf_subject: `Even G2: ${what}${f.order ? ` (order ${f.order})` : ''}`, tf_description: body })
+  return `https://support.evenrealities.com/hc/en-us/requests/new?${q}`
 }
