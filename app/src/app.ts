@@ -49,6 +49,17 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   // left out by `seen`, so a message that was on screen but not answered is never lost on a reopen.
   let after = 0
   const muted = new Set<string>(JSON.parse(store.get('gloz.muted') || '[]'))
+  // Hints fade once known: in a tool, a press used 5 times drops out of the hint (at least one press stays).
+  const VERB: Record<string, string> = { tap: 'tap', next: 'down', prev: 'up', hold: 'hold', exit: 'double tap' }
+  let known: Record<string, number> = {}
+  try { known = JSON.parse(store.get('gloz.known') || '{}') } catch {}
+  const knows = (v: string) => (known[`${active?.id}:${v}`] || 0) >= 5
+  function used(i: string) { const v = VERB[i]; if (!active || !v) return; const k = `${active.id}:${v}`; known[k] = (known[k] || 0) + 1; store.set('gloz.known', JSON.stringify(known)) }
+  function fade(h?: string) {
+    if (!h) return h
+    const parts = h.split(' · '), keep = parts.filter(p => !(p.includes(':') && knows(p.split(':')[0])))
+    return (keep.some(p => p.includes(':')) ? keep : parts).join(' · ')
+  }
   // Chats the wearer picked on the phone: when any are picked, only they reach the glasses.
   const only = new Set<string>(JSON.parse(store.get('gloz.only') || '[]'))
   const chats = new Map<string, string>(JSON.parse(store.get('gloz.chats') || '[]'))   // chat key -> "chat · service", newest last
@@ -77,7 +88,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
 
   function render() {
     if (home() || saying) { g.show(homeCard()); onState?.(saying ? { ...s, view: 'listen' } : s, settings); return }
-    if (active) { const c = active.card(); g.show(toolNote ? { ...c, hint: toolNote } : c.hint?.includes('double tap') ? c : { ...c, back: 'double tap: back' }); onState?.(s, settings); return }
+    if (active) { const c = active.card(), h = fade(c.hint); g.show(toolNote ? { ...c, hint: toolNote } : c.hint?.includes('double tap') || knows('double tap') ? { ...c, hint: h } : { ...c, hint: h, back: 'double tap: back' }); onState?.(s, settings); return }
     g.show(r.on ? { ...roomCard(r, settings.myLang), ...(roomNote ? { text: roomNote } : quiet && !r.paused && !r.lines.length ? { text: words(settings.myLang).nothingHeardYet } : {}) } : card(s, settings.myLang))
     onState?.(s, settings)
   }
@@ -188,6 +199,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   }
 
   g.onInput = i => {
+    used(i)
     if (i === 'exit' && active?.back?.()) return render()
     if (i === 'exit' && saying) { sayGen++; saying = ''; sayTo = null; g.mic(false).catch(() => {}); return render() }
     if (i === 'exit' && !active && (s.view === 'listen' || (s.view === 'thinking' && s.hearing))) return dispatch({ t: 'cancel' })
