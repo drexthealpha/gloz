@@ -190,7 +190,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   g.onInput = i => {
     if (i === 'exit' && active?.back?.()) return render()
     if (i === 'exit' && saying) { sayGen++; saying = ''; sayTo = null; g.mic(false).catch(() => {}); return render() }
-    if (i === 'exit' && !active && s.view === 'listen') return dispatch({ t: 'cancel' })
+    if (i === 'exit' && !active && (s.view === 'listen' || (s.view === 'thinking' && s.hearing))) return dispatch({ t: 'cancel' })
     if (i === 'exit') return doubleTap(active) === 'home' ? closeApp() : g.exit()
     if (saying) return homeInput(i)
     if (active?.say && i === 'hold') { sayTo = active; saying = 'listening'; sayPcm = []; g.mic(true).catch(() => {}); return render() }

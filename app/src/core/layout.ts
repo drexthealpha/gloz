@@ -34,7 +34,8 @@ export function wrap(text: string, width: number, measure: Measure): string[] {
     let line = ''
     for (const seg of segments(para, 'word')) {
       const next = line + seg
-      if (measure(next.trimEnd()) <= width || (line.trim() && !/[\p{L}\p{N}]/u.test(seg))) { line = next; continue }
+      // A time or number (07:12, 3.5) is never broken at its colon or point.
+      if (measure(next.trimEnd()) <= width || (line.trim() && !/[\p{L}\p{N}]/u.test(seg)) || (/\d[:.,]$/.test(line) && /^\d/.test(seg))) { line = next; continue }
       if (line.trim()) lines.push(line.trim())
       // A segment wider than the line (a long link or word) is cut by grapheme.
       if (measure(seg.trim()) > width) {

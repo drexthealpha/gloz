@@ -34,6 +34,9 @@ export function pieces(line: string): string[] {
   return out.length ? out : ['']
 }
 
+// What common commands do, in plain words, next to their names.
+const WHAT: Record<string, string> = { uptime: 'time since start', df: 'free disk space', git: 'code changes', free: 'free memory', ls: 'list files', date: 'server time', whoami: 'user name' }
+
 function load(ctx: ModeCtx): string[] {
   try { const v = JSON.parse(ctx.store.get(KEY) || '[]'); return Array.isArray(v) ? v : [] } catch { return [] }
 }
@@ -90,10 +93,10 @@ function make(ctx: ModeCtx): Mode {
       if (state === 'off') return { kind: 'status', text: 'Terminal is off', hint: 'server: set GLOZ_TERMINAL=1 and GLOZ_TERMINAL_ALLOW' }
       if (state === 'busy') return { kind: 'status', text: 'Working', hint: 'wait a moment' }
       // One output line per screen, fitted to it; the hint offers only presses that move.
-      if (state === 'out') return { kind: 'status', text: line === 0 ? `${ran}: ${out[0]}` : `… ${out[line]}`, hint: [sample && 'sample', finished && line === out.length - 1 && 'finished', 'tap: all commands', line < out.length - 1 && 'down: next line', line > 0 && 'up: earlier'].filter(Boolean).join(' · '), progress: [line + 1, out.length] }
+      if (state === 'out') return { kind: 'status', text: line === 0 ? `${ran}: ${out[0]}` : `${ran}, continued: ${out[line]}`, hint: [sample && 'sample', finished && line === out.length - 1 && 'finished', 'tap: all commands', line < out.length - 1 && 'down: next line', line > 0 && 'up: earlier'].filter(Boolean).join(' · '), progress: [line + 1, out.length] }
       if (note) return { kind: 'status', text: note, hint: 'tap: ok · hold: say a command' }
       if (!cmds.length) return { kind: 'status', text: 'No commands allowed', hint: 'server: set GLOZ_TERMINAL_ALLOW · hold: speak' }
-      return { kind: 'status', text: cmds[at], hint: `${heardIt ? (sample ? 'heard (sample) · ' : 'you said this · ') : sample ? 'sample · ' : ''}tap: run · down: next · hold: say a command`, progress: [at + 1, cmds.length] }
+      return { kind: 'status', text: WHAT[cmds[at].split(' ')[0]] ? `${cmds[at]} (${WHAT[cmds[at].split(' ')[0]]})` : cmds[at], hint: `${heardIt ? (sample ? 'heard (sample) · ' : 'you said this · ') : sample ? 'sample · ' : ''}tap: run · down: next · hold: say a command`, progress: [at + 1, cmds.length] }
     },
     input(i) {
       if (state === 'loading' || state === 'off' || state === 'busy') return

@@ -36,7 +36,7 @@ export function dayItems(d: DayData, lang = 'en', now = new Date()): DayItem[] {
   if (title(d.notes ?? null)) out.push({ tool: 'notes', text: `Note: ${title(d.notes ?? null)}`, sample: fromSample(d.notes ?? null) })
   if (title(d.reader ?? null)) out.push({ tool: 'reader', text: `Reading: ${title(d.reader ?? null)}`, sample: fromSample(d.reader ?? null) })
   if (title(d.prompter ?? null)) out.push({ tool: 'prompter', text: `Script: ${title(d.prompter ?? null)}`, sample: fromSample(d.prompter ?? null) })
-  out.push({ tool: 'nav', text: 'Directions' })
+  out.push({ tool: 'nav', text: 'Directions', sample: d.dash?.sample })   // sample routes come only from a sample server, as the sample day does
   if (d.term?.on && d.term.allow?.length) out.push({ tool: 'term', text: `Server command: ${d.term.allow[0]}`, sample: d.term.sample })
   // One line: long titles are cut at a word.
   return out.map(i => ({ ...i, text: i.text.length > 30 ? i.text.slice(0, 29).replace(/\s+\S*$/, '') + '…' : i.text }))

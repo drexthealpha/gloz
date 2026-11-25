@@ -157,7 +157,8 @@ export function step(s: State, ev: Event): { s: State; fx: Effect[] } {
       fx.push({ e: 'mic', on: false })
       return { s: { ...s, view: 'thinking', hearing: true }, fx }
     case 'heard': {
-      if (!msg) return { s, fx }
+      // Words that arrive after the wearer cancelled are dropped.
+      if (!msg || !s.hearing) return { s, fx }
       s = { ...s, hearing: false }
       const w = word(ev.text)
       if (w === 'send') return { s: send({ ...s, view: 'draft' }, fx), fx }
@@ -215,10 +216,11 @@ export function step(s: State, ev: Event): { s: State; fx: Effect[] } {
       if (!ev.text && ev.was !== undefined && s.note !== ev.was) return { s, fx }
       return { s: { ...s, note: ev.text || undefined }, fx }
     case 'cancel':
-      // A double tap while saying a reply stops listening and goes back to where the hold began.
-      if (s.view !== 'listen') return { s, fx }
-      fx.push({ e: 'mic', on: false })
-      return { s: { ...s, view: s.heldFrom === 'draft' ? 'draft' : 'message', heldFrom: undefined }, fx }
+      // A double tap while saying a reply, or while it is being written down, goes back to where the hold began.
+      if (s.view !== 'listen' && !(s.view === 'thinking' && s.hearing)) return { s, fx }
+      if (s.view === 'listen') fx.push({ e: 'mic', on: false })
+      fx.push({ e: 'later', ms: 3500, ev: { t: 'note', text: '', was: '\u0000cancelled' } })
+      return { s: { ...s, view: s.heldFrom === 'draft' ? 'draft' : 'message', heldFrom: undefined, hearing: false, note: '\u0000cancelled' }, fx }
   }
 }
 
@@ -226,7 +228,7 @@ export function step(s: State, ev: Event): { s: State; fx: Effect[] } {
 // purpose: people read the first two words of a line (NN/g), and the wearer is mid-meeting.
 export function card(s: State, lang = 'en'): Card {
   const c = cardOf(s, lang)
-  const note = s.note === '\u0000notHeard' ? words(lang).notHeard : s.note === '\u0000nothingToReply' ? words(lang).nothingToReply : s.note === '\u0000noMore' ? words(lang).noMore : s.note === '\u0000laterOnline' ? words(lang).laterOnline : s.note === '\u0000firstPart' ? words(lang).firstPart : s.note === '\u0000nothingEarlier' ? words(lang).nothingEarlier : s.note
+  const note = s.note === '\u0000notHeard' ? words(lang).notHeard : s.note === '\u0000nothingToReply' ? words(lang).nothingToReply : s.note === '\u0000noMore' ? words(lang).noMore : s.note === '\u0000laterOnline' ? words(lang).laterOnline : s.note === '\u0000firstPart' ? words(lang).firstPart : s.note === '\u0000nothingEarlier' ? words(lang).nothingEarlier : s.note === '\u0000cancelled' ? words(lang).cancelled : s.note
   // On a message, a note keeps the sender's name in front of it.
   const who = c.kind === 'message' ? current(s)?.from : undefined
   return note ? { ...c, hint: who ? `${who} · ${note}` : note } : c

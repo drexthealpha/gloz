@@ -16,6 +16,13 @@ import { layoutCard, drawLine, tiles, blankStrip, drawGrid, tiles4, STRIP, type 
 
 export type Input = 'tap' | 'next' | 'prev' | 'hold' | 'release' | 'exit'
 
+// A send the glasses never answer must not hold every later screen back: after 3 s the next one goes.
+function within<T>(p: Promise<T>, ms = 3000): Promise<T | void> {
+  let t: ReturnType<typeof setTimeout> | undefined
+  const late = new Promise<void>(ok => { t = setTimeout(() => { console.warn('[gloz] glasses did not answer a draw in 3 s'); ok() }, ms) })
+  return Promise.race([p, late]).finally(() => clearTimeout(t))
+}
+
 export class Glasses {
   private bridge: EvenAppBridge
   private card: Card | null = null
@@ -43,6 +50,7 @@ export class Glasses {
 
   private menu: { itemName: string; itemID: number }[] = []
   private full = false   // a grid card fills the display with four tiles
+  private rebuildDue = false   // the page must switch before the next screen is sent
 
   private page() {
     const y = this.y()
@@ -66,7 +74,7 @@ export class Glasses {
   // The menu is part of the page: a new menu means a rebuilt page.
   setMenu(menu: { itemName: string; itemID: number }[]) {
     this.menu = menu
-    this.drawing = this.drawing.then(() => this.bridge.rebuildPageContainer(new RebuildPageContainer(this.page()))).then(() => {})
+    this.drawing = this.drawing.then(() => within(this.bridge.rebuildPageContainer(new RebuildPageContainer(this.page())))).then(() => {})
     if (this.card) this.show(this.card, true)
   }
 
@@ -135,7 +143,7 @@ export class Glasses {
     this.size = size
     this.low = low
     this.autoPace = autoPace
-    if (moved) this.drawing = this.drawing.then(() => this.bridge.rebuildPageContainer(new RebuildPageContainer(this.page()))).then(() => {})
+    if (moved) this.drawing = this.drawing.then(() => within(this.bridge.rebuildPageContainer(new RebuildPageContainer(this.page())))).then(() => {})
     // A new size makes new pages, so it starts again; moving the line keeps the page the wearer is on.
     if (this.card && resized) this.show(this.card, true)
     else if (this.card && moved) this.paint()
@@ -143,7 +151,7 @@ export class Glasses {
 
   show(c: Card, force = false) {
     // A grid card and a line card need different pages: switch when the kind of card changes.
-    if (Boolean(c.grid) !== this.full) { this.full = Boolean(c.grid); this.drawing = this.drawing.then(() => this.bridge.rebuildPageContainer(new RebuildPageContainer(this.page()))).then(() => {}); force = true }
+    if (Boolean(c.grid) !== this.full) { this.full = Boolean(c.grid); this.rebuildDue = true; force = true }
     // A new hint ("Checked ✓", no signal) keeps the line the wearer is on; new text starts at line 1.
     const sameText = Boolean(this.card) && this.card!.kind === c.kind && this.card!.text === c.text && this.card!.head === c.head
     if (sameText && this.card!.hint === c.hint && !force) return
@@ -186,23 +194,31 @@ export class Glasses {
       if (c.grid && !this.menuOpen) {
         const four = await tiles4(drawGrid(c.grid, c.hint ?? ''))
         if (my !== this.gen) return
-        for (let k = 0; k < 4; k++) { await this.bridge.updateImageRawData(new ImageRawDataUpdate({ containerID: 2 + k, containerName: `t${k}`, imageData: four[k] })); await new Promise(r => setTimeout(r, 150)) }
+        await this.switchPage()
+        for (let k = 0; k < 4; k++) { await within(this.bridge.updateImageRawData(new ImageRawDataUpdate({ containerID: 2 + k, containerName: `t${k}`, imageData: four[k] }))); await new Promise(r => setTimeout(r, 150)) }
         return
       }
       const [a, b] = await tiles(this.menuOpen ? blankStrip() : drawLine(c, l, i, { pages: c.parts !== false }))
       if (my !== this.gen) return
+      await this.switchPage()
       // The glasses hold an image sent within 100 ms of the one before until the next send
       // (Even Hub docs, Display: "Image sends are paced at 100ms"), so the halves go 150 ms apart
       // and the next screen waits too; otherwise a page could show only when something else changed.
-      await this.bridge.updateImageRawData(new ImageRawDataUpdate({ containerID: 2, containerName: 'left', imageData: a }))
+      await within(this.bridge.updateImageRawData(new ImageRawDataUpdate({ containerID: 2, containerName: 'left', imageData: a })))
       await new Promise(r => setTimeout(r, 150))
-      await this.bridge.updateImageRawData(new ImageRawDataUpdate({ containerID: 3, containerName: 'right', imageData: b }))
+      await within(this.bridge.updateImageRawData(new ImageRawDataUpdate({ containerID: 3, containerName: 'right', imageData: b })))
       // A page's reading time starts when it is on the glasses, not when it was asked for;
       // a repaint of the same page (a new hint) does not start it again.
       const key = `${c.kind}|${c.head ?? ''}|${c.text}|${i}`
       if (key !== this.landed && this.line === i && this.card === c) { this.landed = key; this.lineAt = Date.now() }
       await new Promise(r => setTimeout(r, 150))
     }).catch(e => console.error('[gloz] draw', e))
+  }
+
+  private async switchPage() {
+    if (!this.rebuildDue) return
+    this.rebuildDue = false
+    await within(this.bridge.rebuildPageContainer(new RebuildPageContainer(this.page())))
   }
 
   async mic(on: boolean) { await this.bridge.audioControl(on) }

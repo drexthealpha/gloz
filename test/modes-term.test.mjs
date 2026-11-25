@@ -86,14 +86,14 @@ test('handler: one real harmless command (node --version) runs and reports its s
   assert.ok(r.startMs > 0 && r.startMs < r.ms + 1)
 })
 
-test('mode: list, move, nothing runs before the tap, then output line by line, the name on the first line only', async () => {
+test('mode: list, move, nothing runs before the tap, then output line by line, later lines say they continue', async () => {
   const { ctx, calls, kv } = fakeCtx(b => b.op === 'list' ? { on: true, allow: ['uptime', 'git status'] } : { lines: ['up 3 days', 'exit 0'], code: 0 })
   const m = termApp.make(ctx)
   await m.start()
-  assert.equal(m.card().text, 'uptime')
+  assert.equal(m.card().text, 'uptime (time since start)')   // a common command says what it does
   assert.equal(m.card().hint, 'tap: run · down: next · hold: say a command')
   m.input('next')
-  assert.equal(m.card().text, 'git status')
+  assert.equal(m.card().text, 'git status (code changes)')
   assert.equal(calls.filter(c => c.op === 'run').length, 0)
   m.input('tap'); await tick()
   assert.deepEqual(calls.at(-1), { op: 'run', cmd: 'git status' })
@@ -101,10 +101,10 @@ test('mode: list, move, nothing runs before the tap, then output line by line, t
   assert.equal(m.card().hint, 'tap: all commands · down: next line')
   assert.deepEqual(m.card().progress, [1, 2])
   m.input('next')
-  assert.equal(m.card().text, '… exit 0')   // later lines go on from the first, without the name
+  assert.equal(m.card().text, 'git status, continued: exit 0')
   assert.equal(m.card().hint, 'tap: all commands · up: earlier')   // the last line offers no down
   m.input('tap')
-  assert.equal(m.card().text, 'git status')
+  assert.equal(m.card().text, 'git status (code changes)')
   assert.deepEqual(JSON.parse(kv['term.saved']), ['git status'])
 })
 
@@ -115,7 +115,7 @@ test('mode: a spoken command waits for a tap; off and no signal are clear', asyn
   m.say('run df h'); await tick()
   assert.equal(calls[1].op, 'say')
   assert.equal(calls[1].text, 'run df h')
-  assert.equal(m.card().text, 'df -h')
+  assert.equal(m.card().text, 'df -h (free disk space)')
   assert.equal(calls.length, 2)
   const off = termApp.make(fakeCtx({ on: false }).ctx)
   await off.start()
@@ -129,7 +129,7 @@ test('mode: a spoken command waits for a tap; off and no signal are clear', asyn
   n.input('tap'); await tick()
   assert.equal(n.card().text, 'Not allowed: rm')
   n.input('tap')
-  assert.equal(n.card().text, 'uptime')
+  assert.equal(n.card().text, 'uptime (time since start)')
 })
 
 test('mode: a long output line is cut into pieces that each fit one screen', async () => {

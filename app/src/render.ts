@@ -104,7 +104,7 @@ export function drawLine(c: Card, l: Lines, i: number, opts: { pages?: boolean }
     // A long hint is drawn a little smaller first (down to 80%), and cut only if it still does not fit.
     const fits = () => g.measureText(h).width <= W - PAD * 2 - (pages ? g.measureText(pages).width + 16 : 0)
     // The way back is added when the whole line still fits at 80%.
-    if (c.back && h) { const save = g.font; h = `${hint} · ${c.back}`; g.font = `${HINT_PX * 0.8}px ${FONT}`; const ok = fits(); g.font = save; if (!ok) h = hint }
+    if (c.back && h) { const save = g.font; g.font = `${HINT_PX * 0.8}px ${FONT}`; let rest = hint; h = `${rest} · ${c.back}`; while (!fits() && rest.includes(' · ')) { rest = rest.slice(0, rest.lastIndexOf(' · ')); h = `${rest} · ${c.back}` } g.font = save }
     for (let px = HINT_PX; h && !fits() && px > HINT_PX * 0.8; px--) g.font = `${px - 1}px ${FONT}`
     while (h && !fits() && h.includes(' · ')) h = h.slice(0, h.lastIndexOf(' · '))
     while (h && !fits()) h = h.slice(0, -2).trimEnd() + '…'
@@ -130,6 +130,7 @@ export function blankStrip(): HTMLCanvasElement {
 // The whole display (576 x 288) as a grid of short items: up to 12, each at the largest size
 // that fits its cell, never below 20 px; the hint sits along the bottom.
 export const FULL_H = 288
+const CELL_PAD = 10
 export function drawGrid(texts: string[], hint: string): HTMLCanvasElement {
   const cv = document.createElement('canvas')
   cv.width = W
@@ -139,7 +140,7 @@ export function drawGrid(texts: string[], hint: string): HTMLCanvasElement {
   g.fillRect(0, 0, W, FULL_H)
   const measure = (s: string, px: number) => { g.font = `${px}px ${FONT}`; return g.measureText(s).width }
   const H = hint ? FULL_H - HINT_PX - 12 : FULL_H
-  const cells = grid(texts, measure, W, H)
+  const cells = grid(texts, measure, W, H, CELL_PAD)   // text keeps clear of the cell lines
   g.textBaseline = 'top'
   g.strokeStyle = '#555'
   for (const c of cells) {
@@ -148,7 +149,7 @@ export function drawGrid(texts: string[], hint: string): HTMLCanvasElement {
     g.fillStyle = '#fff'
     const lh = c.px * 1.2
     const top = c.y + (c.h - c.lines.length * lh) / 2
-    c.lines.forEach((l, i) => { g.direction = direction(l); g.textAlign = g.direction === 'rtl' ? 'right' : 'left'; g.fillText(l, g.direction === 'rtl' ? c.x + c.w - 6 : c.x + 6, top + i * lh) })
+    c.lines.forEach((l, i) => { g.direction = direction(l); g.textAlign = g.direction === 'rtl' ? 'right' : 'left'; g.fillText(l, g.direction === 'rtl' ? c.x + c.w - CELL_PAD : c.x + CELL_PAD, top + i * lh) })
   }
   if (hint) {
     g.font = `${HINT_PX}px ${FONT}`

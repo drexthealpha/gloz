@@ -341,5 +341,17 @@ test('a double tap while saying a reply cancels it and goes back to the message'
   assert.match(card(s).hint!, /double tap: cancel/)
   const r = run(s, { t: 'cancel' })
   assert.equal(r.s.view, 'message')
-  assert.deepEqual(r.fx, [{ e: 'mic', on: false }])
+  assert.deepEqual(r.fx[0], { e: 'mic', on: false })
+  assert.match(card(r.s).hint!, /Cancelled$/)
+  // Let go first, then a double tap: the words being written down are dropped when they come.
+  let w = run(start(true), { t: 'inbox', msgs: [m('a')] }, { t: 'hold' }, { t: 'release' }, { t: 'cancel' }).s
+  assert.equal(w.view, 'message')
+  w = run(w, { t: 'heard', text: 'too late' }).s
+  assert.equal(w.view, 'message')
+  assert.match(card(w).hint!, /Cancelled$/)
+})
+
+test('a time is never broken at its colon when a line wraps', () => {
+  const measure = (s: string) => s.length * 10
+  for (const w of [60, 70, 80, 90]) assert.ok(!wrap('Now 07:12 AM', w, measure).some(l => /:$/.test(l)), `width ${w}`)
 })

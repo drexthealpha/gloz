@@ -14,8 +14,11 @@ export default defineConfig(({ mode }) => ({
   resolve: { alias: { '@': resolve(__dirname, 'src'), react: 'preact/compat', 'react-dom/client': 'preact/compat/client', 'react-dom': 'preact/compat', 'react/jsx-runtime': 'preact/jsx-runtime' } },
   publicDir: mode === 'demo' ? 'demo-public' : 'public',
   server: { host: true, port: 5173, fs: { allow: ['..'] } },
+  // License notices are kept once each, at the end of each file.
+  esbuild: { legalComments: 'eof' },
   build: {
     target: 'esnext',
+    modulePreload: false,
     outDir: mode === 'demo' ? 'dist-demo' : mode === 'check' ? 'dist-check' : 'dist',
     rollupOptions: { input: { index: resolve(__dirname, mode === 'demo' ? 'demo.html' : mode === 'check' ? 'phone-check.html' : 'index.html') } },
   },
