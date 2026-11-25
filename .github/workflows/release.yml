@@ -40,6 +40,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           tag="day-$(date -u +%Y-%m-%d)"
+          # A second release on the same day is named by its build.
+          if gh release view "$tag" > /dev/null 2>&1; then tag="build-${GITHUB_SHA::7}"; fi
+          if gh release view "$tag" > /dev/null 2>&1; then echo "Release $tag already exists"; exit 0; fi
           range="${{ steps.new.outputs.last }}"; [ -n "$range" ] && range="$range..HEAD" || range="HEAD"
           git log $range --pretty='- %s' > notes.md
           gh release create "$tag" app/gloz.ehpk --title "Gloz $(date -u +%d\ %b\ %Y)" --notes-file notes.md --target "$GITHUB_SHA"
