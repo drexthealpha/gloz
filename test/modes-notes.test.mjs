@@ -193,3 +193,16 @@ test('the app: no signal and setup lines show, never a blank', async () => {
   assert.equal(m.card().text, 'Notion key refused: check GLOZ_NOTION_TOKEN')
   for (const c of [m.card()]) assert.ok(c.hint)
 })
+
+test('the app: back from words not yet saved says Not saved, long enough to read', async t => {
+  const { ctx } = fakeCtx(b => sampleNotes(b))
+  const m = notesApp.make(ctx)
+  t.after(() => m.stop?.())
+  await m.start(); await tick()
+  m.say('call the bank Monday'); await tick()
+  assert.equal(m.card().text, 'call the bank Monday')
+  assert.equal(m.back(), true)
+  assert.equal(m.card().text, 'Not saved')
+  await new Promise(r => setTimeout(r, 3000))
+  assert.equal(m.card().text, 'Not saved')
+})

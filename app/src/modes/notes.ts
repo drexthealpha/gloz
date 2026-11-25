@@ -118,7 +118,7 @@ export const notesApp: AppEntry = {
       start: load,
       // Words said add to a note being written; a tap saves it.
       say(text) { draft = (view === 'heard' ? `${draft} ${text}` : text).trim(); line = ''; show('heard') },
-      back() { if (view !== 'heard') return false; draft = ''; line = 'Not saved'; show('note'); setTimeout(() => { if (view === 'note') void load() }, 2500); return true },
+      back() { if (view !== 'heard') return false; draft = ''; line = 'Not saved'; show('note'); setTimeout(() => { if (view === 'note') void load() }, 3500); return true },
       input(i) {
         if (view === 'heard') {
           if (i === 'tap' && draft) return void save()
