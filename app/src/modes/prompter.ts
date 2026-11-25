@@ -116,7 +116,7 @@ export const prompterApp: AppEntry = {
         case 'error': return { kind: 'status', text: line, hint: 'tap: try again' }
         case 'pick': return { kind: 'status', text: docs[pick].title || 'Untitled', hint: 'tap: use this script · down: next · up: earlier', progress: [pick + 1, docs.length] }
         case 'script': {
-          const lead = note ? `${note} · ` : following ? (sampleVoice ? 'Following (sample) · ' : 'Following · ') : ''
+          const lead = note ? `${note} · ` : following ? (sampleVoice ? 'Sample: moves on its own · ' : 'Following · ') : ''
           const other = docs.length > 1 ? ' · hold: other scripts' : ''
           if (at >= words.length) return { kind: 'status', text: 'End of script', hint: `${lead}up: line back${other}` }
           const l = lineOf(at)

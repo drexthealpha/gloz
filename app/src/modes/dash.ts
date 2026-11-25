@@ -23,7 +23,8 @@ export interface DashData {
 }
 
 // Sample meetings sit ahead of now, so "Next" is always true.
-const ahead = (m: number) => { const t = new Date(Date.now() + m * 60000); t.setMinutes(0, 0, 0); if (t.getHours() >= 22 || t.getHours() < 7) { if (t.getHours() >= 22) t.setDate(t.getDate() + 1); t.setHours(9 + Math.floor(m / 120)) } return t.toISOString() }
+const SHOWN = Date.now()
+const ahead = (m: number) => { const t = new Date(SHOWN + m * 60000); t.setMinutes(0, 0, 0); if (t.getHours() >= 22 || t.getHours() < 7) { if (t.getHours() >= 22) t.setDate(t.getDate() + 1); t.setHours(9 + Math.floor(m / 120)) } return t.toISOString() }
 export function sampleDash(_body: unknown): DashData {
   return {
     sample: true,

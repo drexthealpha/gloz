@@ -24,9 +24,9 @@ const pair = async () => {
 }
 // Sample chats, as the glasses app lists the chats it has seen.
 const picked = new Set<string>()
-const chats = () => [['telegram:Board', 'Board · telegram'], ['slack:#launch', '#launch · slack'], ['gmail:Layla', 'Layla · gmail']].map(([key, label]) => ({ key, label, on: picked.has(key) }))
+const chats = () => [['telegram:Board', 'Board · telegram'], ['slack:#finance', '#finance · slack'], ['gmail:Contract draft', 'Contract draft · gmail'], ['telegram:Partners', 'Partners · telegram', 1], ['slack:#leadership', '#leadership · slack', 1]].map(([key, label, m]) => ({ key: String(key), label: String(label), on: picked.has(String(key)), muted: Boolean(m) && muted > 0 }))
 // The sample note is for pairing; the settings screen does not need it.
-const settings = () => (document.getElementById('samplenote')?.remove(), settingsScreen(root, s, () => {}, () => status || phoneStatus(toRead, 1, muted * 2, 0), () => said, () => muted, () => { toRead += muted * 2; muted = 0 }, undefined, chats, (k, on) => { if (on) picked.add(k); else picked.delete(k) }))
+const settings = () => (document.getElementById('samplenote')?.remove(), settingsScreen(root, s, () => {}, () => status || `Sample · ${phoneStatus(toRead, 1, muted * 2, 0)}`, () => said, () => muted, () => { toRead += muted * 2; muted = 0 }, undefined, chats, (k, on) => { if (on) picked.add(k); else picked.delete(k) }))
 // A code that pairs leads on to the settings screen, as in the app.
 if (screen === 'settings') settings()
 else pairScreen(root, screen === 'server' ? '' : 'https://gloz.example.org', async (b, code) => { await pair(); void b; void code; void settings() })

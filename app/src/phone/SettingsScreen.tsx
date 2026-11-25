@@ -10,7 +10,7 @@ import { field, LANGS } from './shared'
 import type { Settings } from '../core/types'
 
 const More = lazy(() => import('./MoreSettings'))
-export type Chat = { key: string; label: string; on: boolean }
+export type Chat = { key: string; label: string; on: boolean; muted?: boolean }
 export type Live = { status: string; said: string; muted: number; chats: Chat[] }
 export type Theme = 'device' | 'light' | 'dark'
 export type Set = (n: Partial<Settings> & { roomLang?: string }) => void

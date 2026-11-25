@@ -324,3 +324,22 @@ test('only a reply the AI wrote is labelled as an AI draft', () => {
   const fixed = run(start(true), { t: 'inbox', msgs: [m('a', 'Hi')] }, { t: 'draft', id: 'a', draft: { text: 'Got it', by: 'default', langName: 'English' } as any }, { t: 'tap' })
   assert.ok(!String(card(fixed.s).head).includes('AI'))
 })
+
+test('a note stays its full time: an older note\'s clear never removes a newer note', () => {
+  let { s, fx } = run(start(true), { t: 'inbox', msgs: [m('a')] }, { t: 'note', text: 'First' })
+  const oldClear = fx.find(f => f.e === 'later')!.ev
+  s = run(s, { t: 'note', text: 'Muted Ana' }).s
+  s = run(s, oldClear).s
+  assert.match(card(s).hint!, /Muted Ana$/)
+  s = run(s, { t: 'note', text: '', was: 'Muted Ana' }).s
+  assert.doesNotMatch(card(s).hint!, /Muted Ana/)
+})
+
+test('a double tap while saying a reply cancels it and goes back to the message', () => {
+  let { s, fx } = run(start(true), { t: 'inbox', msgs: [m('a')] }, { t: 'hold' })
+  assert.equal(s.view, 'listen')
+  assert.match(card(s).hint!, /double tap: cancel/)
+  const r = run(s, { t: 'cancel' })
+  assert.equal(r.s.view, 'message')
+  assert.deepEqual(r.fx, [{ e: 'mic', on: false }])
+})

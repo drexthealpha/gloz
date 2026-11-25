@@ -206,7 +206,7 @@ api.heard = () => new Promise(res => {
   sayIn.focus({ preventScroll: true })
   sayBox.scrollIntoView({ block: 'nearest' })
   // Cancel, or Escape in the field: back to the message, nothing heard, nothing sent.
-  const cancel = () => { sayIn.value = ''; sayBox.hidden = true; canvas.scrollIntoView({ block: 'nearest' }); bridge.emit(UP) }
+  const cancel = () => { sayIn.value = ''; sayBox.hidden = true; canvas.scrollIntoView({ block: 'nearest' }); canvas.focus({ preventScroll: true }); bridge.emit(UP) }
   ;(document.getElementById('saycancel') as HTMLButtonElement).onclick = cancel
   sayIn.onkeydown = e => { if (e.key === 'Escape') { e.preventDefault(); cancel() } }
   sayBox.onsubmit = e => {
@@ -219,6 +219,7 @@ api.heard = () => new Promise(res => {
     sayIn.placeholder = 'Type your words'
     sayBox.hidden = true
     canvas.scrollIntoView({ block: 'nearest' })
+    canvas.focus({ preventScroll: true })
     res(words)
   }
 })

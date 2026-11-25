@@ -190,6 +190,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   g.onInput = i => {
     if (i === 'exit' && active?.back?.()) return render()
     if (i === 'exit' && saying) { sayGen++; saying = ''; sayTo = null; g.mic(false).catch(() => {}); return render() }
+    if (i === 'exit' && !active && s.view === 'listen') return dispatch({ t: 'cancel' })
     if (i === 'exit') return doubleTap(active) === 'home' ? closeApp() : g.exit()
     if (saying) return homeInput(i)
     if (active?.say && i === 'hold') { sayTo = active; saying = 'listening'; sayPcm = []; g.mic(true).catch(() => {}); return render() }
@@ -233,7 +234,8 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
     else if (id === 8) { const who = [...new Set((s.mutedMsgs ?? []).map(x => x.from))].join(', '); note = who ? w.unmutedWho(who) : w.unmuted; muted.clear(); store.set('gloz.muted', '[]'); after = 0; dispatch({ t: 'unmute' }); poll() }
     if (id === 10) { closeApp(); return }
     if (id === 7) { if (r.on) note = r.lines.length ? w.roomStop : w.roomStopEmpty; roomNote = ''; quiet = false; silentPieces = 0; roomDo({ t: r.on ? 'stop' : 'start' }); g.setMenu(menuItems(settings.myLang, r.on, w.stopListening, false, aiOn ? settings.translate : null)) }
-    if (note) dispatch({ t: 'note', text: note, ms: 3500 })   // a menu choice is confirmed long enough to look back
+    if (note && home()) flash(note)
+    else if (note) dispatch({ t: 'note', text: note, ms: 3500 })   // a menu choice is confirmed long enough to look back
     saveSettings(settings)
     g.setLook(settings.size, settings.low, settings.autoPace)
     render()
@@ -380,7 +382,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
     check() { poll() },
     unmuteAll() { muted.clear(); store.set('gloz.muted', '[]'); after = 0; dispatch({ t: 'unmute' }); poll() },
     muted: () => muted.size,
-    chats: () => [...chats].reverse().slice(0, 12).map(([key, label]) => ({ key, label, on: only.has(key) })),
+    chats: () => [...chats].reverse().slice(0, 12).map(([key, label]) => ({ key, label, on: only.has(key), muted: muted.has(key) })),
     pick(key: string, on: boolean) { if (on) only.add(key); else only.delete(key); store.set('gloz.only', JSON.stringify([...only])); after = 0; poll() },
     top() { g.top() },
   }

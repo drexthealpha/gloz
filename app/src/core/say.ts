@@ -27,6 +27,6 @@ export function said(text: string): Said | null {
   if (m(/^(?:tasks|my tasks)$/i)) return { tool: 'tasks' }
   if (m(/^(?:notes|my notes)$/i)) return { tool: 'notes' }
   // A question (a question word, "tell me", or a question mark) goes to Ask; anything else said is a task to add.
-  if (/[?？]$/.test(text.trim()) || /^(?:what|who|whom|whose|when|where|why|how|which|is|are|was|were|can|could|do|does|did|will|would|should|shall|may|tell me|explain|define|translate|summari[sz]e)\b/i.test(t)) return { tool: 'ask', arg: t, guess: true }
+  if (/[?？]$/.test(text.trim()) || /^(?:what|who|whom|whose|when|where|why|how|which|is|are|was|were|can|could|do|does|did|will|would|should|shall|may|tell me|explain|define|translate|summari[sz]e)\b/i.test(t)) return { tool: 'ask', arg: /[?？]$/.test(text.trim()) && !/[?？]$/.test(t) ? `${t}?` : t, guess: true }
   return { tool: 'tasks', op: 'add', arg: t, guess: true }
 }

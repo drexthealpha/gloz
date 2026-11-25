@@ -48,7 +48,7 @@ export default function MoreSettings({ s, set, l, setL, live, unmute, pick, them
       {unmutedNote && <p role="status" className="m-0 font-semibold">{t('unmuted')}</p>}
       {(l.muted > 0 || l.chats.length > 0) && (
         <div className="flex min-h-12 flex-wrap items-center justify-between gap-3">
-          <span className="min-w-0 flex-1 basis-40">{l.muted > 0 ? (l.muted === 1 ? t('mutedChat') : t('mutedChats', l.muted)) : l.chats.some(c => c.on) ? t('onlyPicked') : t('allChats')}</span>
+          <span className="min-w-0 flex-1 basis-40">{[l.muted > 0 && (l.muted === 1 ? t('mutedChat') : t('mutedChats', l.muted)), l.chats.some(c => c.on) && t('onlyPicked')].filter(Boolean).join(' · ') || t('allChats')}</span>
           <Button variant="outline" className={big} aria-expanded={chatsOpen} aria-controls="chatlist" onClick={() => setChatsOpen(!chatsOpen)}>{t('chats')}</Button>
         </div>
       )}
@@ -58,7 +58,7 @@ export default function MoreSettings({ s, set, l, setL, live, unmute, pick, them
           {l.muted > 0 && <Button variant="outline" className={`${big} w-full`} onClick={() => { unmute(); setL(live()); setUnmutedNote(true); setTimeout(() => setUnmutedNote(false), 4000) }}>{t('unmute')}</Button>}
           {l.chats.map((c, k) => (
             <div key={c.key} className="flex min-h-12 flex-wrap items-center justify-between gap-3">
-              <Label htmlFor={`chat${k}`} className="min-w-0 flex-1 basis-40 text-base"><bdi>{c.label}</bdi></Label>
+              <Label htmlFor={`chat${k}`} className="min-w-0 flex-1 basis-40 text-base"><bdi>{c.label}</bdi>{c.muted && ` · ${t('isMuted')}`}</Label>
               <Switch id={`chat${k}`} aria-label={c.label} checked={c.on} onCheckedChange={v => { pick(c.key, v); setL(live()) }} />
             </div>
           ))}

@@ -86,7 +86,7 @@ test('handler: one real harmless command (node --version) runs and reports its s
   assert.ok(r.startMs > 0 && r.startMs < r.ms + 1)
 })
 
-test('mode: list, move, nothing runs before the tap, then output line by line', async () => {
+test('mode: list, move, nothing runs before the tap, then output line by line, the name on the first line only', async () => {
   const { ctx, calls, kv } = fakeCtx(b => b.op === 'list' ? { on: true, allow: ['uptime', 'git status'] } : { lines: ['up 3 days', 'exit 0'], code: 0 })
   const m = termApp.make(ctx)
   await m.start()
@@ -101,7 +101,7 @@ test('mode: list, move, nothing runs before the tap, then output line by line', 
   assert.equal(m.card().hint, 'tap: all commands · down: next line')
   assert.deepEqual(m.card().progress, [1, 2])
   m.input('next')
-  assert.equal(m.card().text, 'git status: exit 0')
+  assert.equal(m.card().text, '… exit 0')   // later lines go on from the first, without the name
   assert.equal(m.card().hint, 'tap: all commands · up: earlier')   // the last line offers no down
   m.input('tap')
   assert.equal(m.card().text, 'git status')
