@@ -131,3 +131,11 @@ test('mode: a spoken command waits for a tap; off and no signal are clear', asyn
   n.input('tap')
   assert.equal(n.card().text, 'uptime')
 })
+
+test('mode: a long output line is cut into pieces that each fit one screen', async () => {
+  const { pieces } = await import('../app/src/modes/term.ts')
+  const p = pieces(' 05:21:02 up 3 days,  2:11,  1 user,  load average: 0.08, 0.12, 0.10')
+  assert.ok(p.length > 1)
+  assert.ok(p.every(x => x.length <= 24))
+  assert.equal(p.join(' '), '05:21:02 up 3 days, 2:11, 1 user, load average: 0.08, 0.12, 0.10')
+})

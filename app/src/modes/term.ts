@@ -20,6 +20,20 @@ export function sampleTerm(body: any): any {
   return { on: true, allow: ['uptime', 'df', 'git'], sample: true }
 }
 
+// One output line in pieces of at most 24 characters, cut between words where it can.
+export function pieces(line: string): string[] {
+  const words = line.trim().split(/\s+/).filter(Boolean)
+  const out: string[] = []
+  let cur = ''
+  for (const w of words) {
+    if (cur && (cur + ' ' + w).length > 24) { out.push(cur); cur = '' }
+    cur = cur ? `${cur} ${w}` : w
+    while (cur.length > 24) { out.push(cur.slice(0, 24)); cur = cur.slice(24) }
+  }
+  if (cur) out.push(cur)
+  return out.length ? out : ['']
+}
+
 function load(ctx: ModeCtx): string[] {
   try { const v = JSON.parse(ctx.store.get(KEY) || '[]'); return Array.isArray(v) ? v : [] } catch { return [] }
 }
@@ -63,7 +77,8 @@ function make(ctx: ModeCtx): Mode {
       const r: Run = await ctx.call({ op: 'run', cmd })
       if (!r || r.error || !r.lines) { note = r?.error || 'No output'; state = 'pick'; return ctx.render() }
       if (!r.sample) { saved = [cmd, ...saved.filter(c => c !== cmd)].slice(0, 10); ctx.store.set(KEY, JSON.stringify(saved)) }
-      out = r.lines.at(-1) === 'finished' && r.lines.length > 1 ? r.lines.slice(0, -1) : r.lines; finished = out !== r.lines; line = 0; ran = cmd; state = 'out'
+      const body = r.lines.at(-1) === 'finished' && r.lines.length > 1 ? r.lines.slice(0, -1) : r.lines
+      finished = body !== r.lines; out = body.flatMap(pieces); line = 0; ran = cmd; state = 'out'
     } catch { note = 'No signal'; state = 'pick' }
     ctx.render()
   }
