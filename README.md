@@ -228,7 +228,7 @@ at most $0.00282 with gpt-4.1-mini (at least 354 drafts for $1) or $0.0235 with 
 - **The people whose messages are shown.** Only chats the wearer picks; "Mute this chat" removes one. Nothing is sent without the wearer's tap or word: a reply needs a tap to show it and a second tap to send it ([test/core.test.ts](test/core.test.ts)), and 0 of 20 single presses sent anything in `eval/complaints.mjs`.
 - **Keys.** No key is in the app or in the repository: CI fails on anything shaped like a key in a tracked file (`npm run check:secrets`).
 
-### What leaves the phone and the server
+### Data policy: what leaves the phone and the server
 
 | From | To | What is sent | When |
 |---|---|---|---|

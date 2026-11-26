@@ -1,7 +1,7 @@
 // Draws one line of a card as an image, so every script the phone can show
 // reaches the glasses, at any size. The firmware font drops what it lacks
 // (Arabic, Hebrew, Persian, Hindi, Thai in our probe); the phone's own fonts do not.
-import { SIZES, type Card } from './core/types.ts'
+import { SIZES, DEFAULT_SETTINGS, type Card } from './core/types.ts'
 import { wrap, direction } from './core/layout.ts'
 import { grid } from './modes/dash.ts'
 
@@ -46,7 +46,8 @@ export function layoutCard(c: Card, size: number): Lines {
   }
   const lines = wrap(text, room, measure)
   // A short message or reply that fits one line one size smaller is drawn that way, read at a glance.
-  if (lines.length > 1 && size > 1) {
+  // Only at the usual size or smaller: a size the wearer chose to be larger is kept.
+  if (lines.length > 1 && size > 1 && size <= DEFAULT_SETTINGS.size) {
     ctx.font = `${fontPx(size - 1)}px ${FONT}`
     const one = wrap(text, room, measure)
     if (one.length === 1) return { lines: one, px: fontPx(size - 1), head: c.head }

@@ -298,8 +298,9 @@ setInterval(() => { for (const b of document.querySelectorAll<HTMLButtonElement>
 // Size buttons call the same settings the phone screen and glasses menu use.
 const bigger = document.getElementById('bigger') as HTMLButtonElement, smaller = document.getElementById('smaller') as HTMLButtonElement
 const sizeButtons = () => { bigger.disabled = gloz.settings().size >= 7; smaller.disabled = gloz.settings().size <= 1 }
-bigger.onclick = () => { gloz.update({ size: Math.min(7, gloz.settings().size + 1) }); sizeButtons() }
-smaller.onclick = () => { gloz.update({ size: Math.max(1, gloz.settings().size - 1) }); sizeButtons() }
+// The same path as the glasses menu, so the glasses confirm the new size ("Text size 4 of 7").
+bigger.onclick = () => { bridge.menu(1); setTimeout(sizeButtons, 50) }
+smaller.onclick = () => { bridge.menu(2); setTimeout(sizeButtons, 50) }
 sizeButtons()
 again.onclick = () => { try { sessionStorage.clear(); localStorage.removeItem('gloz.muted') } catch {} scrollTo(0, 0); history.scrollRestoration = 'manual'; location.reload() }
 const lower = document.getElementById('lower')!
