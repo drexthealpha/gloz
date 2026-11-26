@@ -119,122 +119,126 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
     return true
   }
 
+  // Each route answers [status, json]. /health and /pair are open; every other route needs a paired device.
+  async function pair({ req }) {
+    const { code } = await body(req)
+    const who = req.socket.remoteAddress || '?'
+    const lock = pairLocks.get(who) || { wrong: 0, until: 0 }
+    if (Date.now() < lock.until) return [429, { error: 'too many wrong codes, try again in a minute' }]
+    if (!same(String(code || '').trim(), state.pairCode)) {
+      if (++lock.wrong >= 5) { lock.wrong = 0; lock.until = Date.now() + 60_000 }
+      pairLocks.set(who, lock)
+      if (++wrongTotal >= 5) {
+        wrongTotal = 0
+        if (!process.env.GLOZ_PAIR_CODE) { state.pairCode = String(randomInt(100000, 1000000)); save(); log(`Five wrong codes: new pairing code ${state.pairCode}`) }
+      }
+      return [403, { error: 'wrong code' }]
+    }
+    pairLocks.delete(who)
+    wrongTotal = 0
+    const token = randomBytes(24).toString('base64url')
+    state.tokens.push({ h: sha(token), used: now() })
+    // Each code pairs once; a new one is printed for the next device.
+    if (!process.env.GLOZ_PAIR_CODE) { state.pairCode = String(randomInt(100000, 1000000)); log(`Pairing code for the next device: ${state.pairCode}`) }
+    save()
+    return [200, { token }]
+  }
+
+  // A message's translation and summary, made once and dropped with the message.
+  async function cached(k, make) {
+    if (!translations.has(k)) translations.set(k, await make().catch(() => undefined))
+    return translations.get(k)
+  }
+
+  async function inboxSince({ url }) {
+    const after = Number(url.searchParams.get('after') || 0)
+    const lang = url.searchParams.get('lang') || 'en'
+    const tr = url.searchParams.get('translate') === '1'
+    const out = []
+    for (const { seq: s, id } of inbox) {
+      const m = s > after && msgs.get(id)
+      if (!m) continue
+      const translated = tr ? await cached(`${id}|${lang}`, () => ai.translate(m.text, lang)) : undefined
+      const brief = ai.brief ? await cached(`${id}|brief|${lang}`, () => ai.brief(m.text, lang)) : undefined
+      out.push({ id: m.id, source: m.source, chat: m.chat, from: m.from, text: m.text, at: m.at, translated, brief })
+    }
+    return [200, { msgs: out, after: seq }]
+  }
+
+  async function draftReply({ req }) {
+    const { id, ask, lang } = await body(req)
+    const m = msgs.get(id)
+    if (!m) return [410, { error: 'message gone' }]
+    const thread = (threads.get(`${m.source}:${m.chat}`) || []).slice(0, -1)
+    const t0 = performance.now()
+    try { return [200, { ...(await ai.draft(m, thread, ask || '', lang || 'en')), ms: Math.round(performance.now() - t0) }] } catch (e) { return [503, { error: String(e.message || e) }] }
+  }
+
+  async function sendReply({ req }) {
+    const { key, id, text } = await body(req)
+    if (!key || !id || !text) return [400, { error: 'key, id and text are needed' }]
+    if (state.sent[key]) return [200, { ok: true, again: true }]
+    const r = state.refs[id]
+    const c = r && byName[r.source]
+    if (!c) return [410, { error: 'message unknown', drop: true }]
+    try { await c.send({ id, ref: r.ref }, text) } catch (e) { return [503, { error: String(e.message || e), retry: true }] }
+    state.sent[key] = Date.now()
+    r.done = true
+    drop(id)
+    save()
+    c.read?.({ id, ref: r.ref }).catch(() => {})
+    return [200, { ok: true }]
+  }
+
+  async function markRead({ req }) {
+    const { id } = await body(req)
+    const r = state.refs[id]
+    const c = r && byName[r.source]
+    if (c) await c.read?.({ id, ref: r.ref }).catch(() => {})
+    // Answered: it leaves the list a reopen asks for.
+    const i = inbox.findIndex(e => e.id === id)
+    if (i >= 0) inbox.splice(i, 1)
+    return [200, { ok: true }]
+  }
+
+  async function speech({ req, url }) {
+    const pcm = await body(req, true)
+    try { return [200, await stt.transcribe(pcm, url.searchParams.get('lang') || 'en')] } catch (e) { return [503, { error: String(e.message || e) }] }
+  }
+
+  // Listen mode: a few seconds of the room at a time, captioned in the wearer's language.
+  // ?spoken= the room's language if the wearer set one (empty: found by the engine), ?lang= the wearer's.
+  async function listen({ req, url }) {
+    const pcm = await body(req, true)
+    const lang = url.searchParams.get('lang') || 'en'
+    try {
+      const r = await stt.transcribe(pcm, url.searchParams.get('spoken') || '')
+      const translated = r.text ? await ai.translate(r.text, lang).catch(() => undefined) : undefined
+      return [200, { text: r.text, translated, ms: r.ms }]
+    } catch (e) { return [503, { error: String(e.message || e) }] }
+  }
+
+  async function tool({ req, url }) {
+    const h = MODES[decodeURIComponent(url.pathname.slice(6))]
+    if (!h) return [404, { error: 'no such app' }]
+    try { return [200, await h(await body(req), { ai, env: process.env })] } catch (e) { return [502, { error: String(e.message || e).slice(0, 200) }] }
+  }
+
+  const health_ = async () => [200, { ok: true, connectors: health.connectors, errors: health.errors, ai: ai.ready(), stt: await stt.ready(), paired: state.tokens.length }]
+  const OPEN = { 'GET /health': health_, 'POST /health': health_, 'POST /pair': pair }
+  const PAIRED = { 'GET /inbox': inboxSince, 'POST /draft': draftReply, 'POST /send': sendReply, 'POST /read': markRead, 'POST /stt': speech, 'POST /listen': listen }
+
   async function handle(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*')
     res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type')
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-    const send = (code, obj) => { res.writeHead(code, { 'content-type': 'application/json' }); res.end(JSON.stringify(obj)) }
     if (req.method === 'OPTIONS') { res.writeHead(204); return res.end() }
     const url = new URL(req.url, 'http://x')
-    const p = url.pathname
-
-    if (p === '/health') return send(200, { ok: true, connectors: health.connectors, errors: health.errors, ai: ai.ready(), stt: await stt.ready(), paired: state.tokens.length })
-    if (p === '/pair' && req.method === 'POST') {
-      const { code } = await body(req)
-      // Five wrong codes retire the code and stop pairing for a minute, so it cannot be guessed:
-      // 5 tries against 900,000 codes.
-      const who = req.socket.remoteAddress || '?'
-      const lock = pairLocks.get(who) || { wrong: 0, until: 0 }
-      if (Date.now() < lock.until) return send(429, { error: 'too many wrong codes, try again in a minute' })
-      if (!same(String(code || '').trim(), state.pairCode)) {
-        if (++lock.wrong >= 5) { lock.wrong = 0; lock.until = Date.now() + 60_000 }
-        pairLocks.set(who, lock)
-        if (++wrongTotal >= 5) {
-          wrongTotal = 0
-          if (!process.env.GLOZ_PAIR_CODE) { state.pairCode = String(randomInt(100000, 1000000)); save(); log(`Five wrong codes: new pairing code ${state.pairCode}`) }
-        }
-        return send(403, { error: 'wrong code' })
-      }
-      pairLocks.delete(who)
-      wrongTotal = 0
-      const token = randomBytes(24).toString('base64url')
-      state.tokens.push({ h: sha(token), used: now() })
-      // Each code pairs once; a new one is printed for the next device.
-      if (!process.env.GLOZ_PAIR_CODE) { state.pairCode = String(randomInt(100000, 1000000)); log(`Pairing code for the next device: ${state.pairCode}`) }
-      save()
-      return send(200, { token })
-    }
-    if (!authed(req)) return send(401, { error: 'pair first' })
-
-    if (p === '/inbox') {
-      const after = Number(url.searchParams.get('after') || 0)
-      const lang = url.searchParams.get('lang') || 'en'
-      const tr = url.searchParams.get('translate') === '1'
-      const out = []
-      for (const { seq: s, id } of inbox) {
-        if (s <= after) continue
-        const m = msgs.get(id)
-        if (!m) continue
-        let translated
-        if (tr) {
-          const k = `${id}|${lang}`
-          if (!translations.has(k)) translations.set(k, await ai.translate(m.text, lang).catch(() => undefined))
-          translated = translations.get(k)
-        }
-        const bk = `${id}|brief|${lang}`
-        if (ai.brief && !translations.has(bk)) translations.set(bk, await ai.brief(m.text, lang).catch(() => undefined))
-        out.push({ id: m.id, source: m.source, chat: m.chat, from: m.from, text: m.text, at: m.at, translated, brief: translations.get(bk) })
-      }
-      return send(200, { msgs: out, after: seq })
-    }
-    if (p === '/draft' && req.method === 'POST') {
-      const { id, ask, lang } = await body(req)
-      const m = msgs.get(id)
-      if (!m) return send(410, { error: 'message gone' })
-      const thread = (threads.get(`${m.source}:${m.chat}`) || []).slice(0, -1)
-      const t0 = performance.now()
-      try {
-        const d = await ai.draft(m, thread, ask || '', lang || 'en')
-        return send(200, { ...d, ms: Math.round(performance.now() - t0) })
-      } catch (e) { return send(503, { error: String(e.message || e) }) }
-    }
-    if (p === '/send' && req.method === 'POST') {
-      const { key, id, text } = await body(req)
-      if (!key || !id || !text) return send(400, { error: 'key, id and text are needed' })
-      if (state.sent[key]) return send(200, { ok: true, again: true })
-      const r = state.refs[id]
-      const c = r && byName[r.source]
-      if (!c) return send(410, { error: 'message unknown', drop: true })
-      try { await c.send({ id, ref: r.ref }, text) } catch (e) { return send(503, { error: String(e.message || e), retry: true }) }
-      state.sent[key] = Date.now()
-      r.done = true
-      drop(id)
-      save()
-      c.read?.({ id, ref: r.ref }).catch(() => {})
-      return send(200, { ok: true })
-    }
-    if (p === '/read' && req.method === 'POST') {
-      const { id } = await body(req)
-      const r = state.refs[id]
-      const c = r && byName[r.source]
-      if (c) await c.read?.({ id, ref: r.ref }).catch(() => {})
-      // Answered: it leaves the list a reopen asks for.
-      const i = inbox.findIndex(e => e.id === id)
-      if (i >= 0) inbox.splice(i, 1)
-      return send(200, { ok: true })
-    }
-    if (p.startsWith('/mode/') && req.method === 'POST') {
-      const id = decodeURIComponent(p.slice(6))
-      const h = MODES[id]
-      if (!h) return send(404, { error: 'no such app' })
-      try { return send(200, await h(await body(req), { ai, env: process.env })) } catch (e) { return send(502, { error: String(e.message || e).slice(0, 200) }) }
-    }
-    if (p === '/stt' && req.method === 'POST') {
-      const pcm = await body(req, true)
-      try { return send(200, await stt.transcribe(pcm, url.searchParams.get('lang') || 'en')) } catch (e) { return send(503, { error: String(e.message || e) }) }
-    }
-    // Listen mode: a few seconds of the room at a time, captioned in the wearer's language.
-    // ?spoken= the room's language if the wearer set one (empty: found by the engine), ?lang= the wearer's.
-    if (p === '/listen' && req.method === 'POST') {
-      const pcm = await body(req, true)
-      const lang = url.searchParams.get('lang') || 'en'
-      try {
-        const r = await stt.transcribe(pcm, url.searchParams.get('spoken') || '')
-        const translated = r.text ? await ai.translate(r.text, lang).catch(() => undefined) : undefined
-        return send(200, { text: r.text, translated, ms: r.ms })
-      } catch (e) { return send(503, { error: String(e.message || e) }) }
-    }
-    return send(404, { error: 'not found' })
+    const key = `${req.method} ${url.pathname}`
+    const route = OPEN[key] || (authed(req) ? PAIRED[key] || (req.method === 'POST' && url.pathname.startsWith('/mode/') ? tool : null) : 'unpaired')
+    const [code, obj] = route === 'unpaired' ? [401, { error: 'pair first' }] : route ? await route({ req, url }) : [404, { error: 'not found' }]
+    res.writeHead(code, { 'content-type': 'application/json' })
+    res.end(JSON.stringify(obj))
   }
 
   const server = createServer((req, res) => handle(req, res).catch(e => { res.writeHead(e.code === 413 ? 413 : 500); res.end(JSON.stringify({ error: String(e.message) })) }))
