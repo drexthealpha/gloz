@@ -363,3 +363,14 @@ test('Unmute all chats is in the glasses menu only while a chat is muted', async
   assert.ok(!menuItems('en', true, 'Stop listening', false, null, false).some(x => x.itemID === 8))
   assert.ok(menuItems('en', false, 'Stop listening', false, null, false).some(x => x.itemName === 'Translate (needs AI key)'))
 })
+
+test('a press from the R1 ring means the same as the same press on the glasses touchpad', async () => {
+  const { pressOf } = await import('../app/src/core/press.ts')
+  const { OsEventTypeList, EventSourceType } = await import('../app/node_modules/@evenrealities/even_hub_sdk/dist/index.js')
+  for (const t of [OsEventTypeList.CLICK_EVENT, OsEventTypeList.DOUBLE_CLICK_EVENT, OsEventTypeList.LONG_PRESS_EVENT, OsEventTypeList.LONG_PRESS_RELEASE_EVENT, OsEventTypeList.SCROLL_BOTTOM_EVENT, OsEventTypeList.SCROLL_TOP_EVENT]) {
+    const glasses = pressOf({ sysEvent: { eventType: t, eventSource: 1 } as any })
+    const ring = pressOf({ sysEvent: { eventType: t, eventSource: EventSourceType.RING } as any })
+    assert.ok(glasses !== null)
+    assert.equal(ring, glasses)
+  }
+})

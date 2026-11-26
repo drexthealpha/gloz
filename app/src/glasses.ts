@@ -12,6 +12,7 @@ import {
 } from '@evenrealities/even_hub_sdk'
 import type { Card } from './core/types.ts'
 import { dwell } from './core/layout.ts'
+import { pressOf } from './core/press.ts'
 import { layoutCard, drawLine, tiles, blankStrip, drawGrid, tiles4, STRIP, FULL_H, type Lines } from './render.ts'
 
 export type Input = 'tap' | 'next' | 'prev' | 'hold' | 'release' | 'exit'
@@ -101,15 +102,11 @@ export class Glasses {
     if (st === OsEventTypeList.FOREGROUND_ENTER_EVENT) { this.menuOpen = true; this.paint(); return }
     if (st === OsEventTypeList.FOREGROUND_EXIT_EVENT) { this.menuOpen = false; this.lineAt = Date.now(); this.paint(); this.onMenuClosed(); return }
     if (this.menuOpen) return
-    const sys = ev.sysEvent ? (ev.sysEvent.eventType ?? OsEventTypeList.CLICK_EVENT) : null
-    const txt = ev.textEvent ? (ev.textEvent.eventType ?? OsEventTypeList.CLICK_EVENT) : null
-    const t = sys ?? txt
-    if (t === OsEventTypeList.DOUBLE_CLICK_EVENT) return this.onInput('exit')
-    if (t === OsEventTypeList.LONG_PRESS_EVENT) return this.onInput('hold')
-    if (t === OsEventTypeList.LONG_PRESS_RELEASE_EVENT) return this.onInput('release')
-    if (t === OsEventTypeList.CLICK_EVENT) return this.onInput('tap')
-    if (t === OsEventTypeList.SCROLL_BOTTOM_EVENT) return this.move(1)
-    if (t === OsEventTypeList.SCROLL_TOP_EVENT) return this.move(-1)
+    // The same from the touchpad or the R1 ring (core/press.ts).
+    const p = pressOf(ev)
+    if (p === 'down') return this.move(1)
+    if (p === 'up') return this.move(-1)
+    if (p) return this.onInput(p)
   }
 
   // A swipe moves one line inside the card; past the last line it moves to the next card.

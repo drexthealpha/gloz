@@ -1,0 +1,47 @@
+/* The live demo's controls are shadcn/ui components (the same as the phone page). Only Tailwind's theme and
+   utilities are loaded, not its base reset, so the rest of the demo page keeps its own look. */
+@import "tailwindcss/theme" layer(theme) source(none);
+@import "tailwindcss/utilities" layer(utilities);
+@source "./demo-controls.tsx";
+@source "./phone/components/ui";
+
+/* The demo page is dark: shadcn/ui's dark tokens, with the glasses' green as the primary colour. */
+:root {
+  --radius: 0.625rem;
+  --background: oklch(0.17 0 0);
+  --foreground: oklch(0.93 0 0);
+  --muted: oklch(0.24 0 0);
+  --muted-foreground: oklch(0.72 0 0);
+  --border: oklch(0.36 0 0);
+  --input: oklch(0.6 0 0);
+  --ring: oklch(0.82 0.16 150);
+  --primary: oklch(0.86 0.2 150);
+  --primary-foreground: oklch(0.17 0 0);
+  --secondary: oklch(0.24 0 0);
+  --secondary-foreground: oklch(0.93 0 0);
+  --accent: oklch(0.3 0 0);
+  --accent-foreground: oklch(0.95 0 0);
+  --destructive: oklch(0.65 0.19 25);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+}
+
+/* A hidden control stays hidden even with a display class (the phone page has the same rule). */
+[hidden] { display: none !important; }

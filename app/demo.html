@@ -18,11 +18,7 @@
       .keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 0; font-size: 16px; color: var(--dim); text-align: center; }
       .keys b { display: block; color: var(--fg); font-size: 17px; }
       .row { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
-      button { min-height: 48px; min-width: 48px; padding: 0 14px; font-size: 17px; border-radius: 10px; border: 1px solid var(--line); background: #1d1d1d; color: var(--fg); cursor: pointer; }
-      button:disabled { opacity: 0.4; cursor: default; }
-      button[aria-pressed="true"] { background: #4a1d1d; border-color: #a33; }
       form { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
-      form input { flex: 1; min-height: 48px; font-size: 18px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--acc); background: #000; color: var(--fg); }
       h2 { font-size: 18px; margin: 20px 0 6px; color: var(--dim); font-weight: 500; }
       ol { padding-left: 22px; margin: 0; }
       li { margin: 6px 0; }
@@ -43,9 +39,9 @@
       <h1>Gloz</h1>
       <p class="sub">Every message on your glasses, in its own script, at your size; with AI on the Gloz server, in your language too. Sample messages; no sign-in.</p>
       <div class="glass"><canvas id="g2" width="576" height="288" aria-label="Even G2 display, 576 by 288. Click to tap, scroll to swipe, hold to speak, double click to close." tabindex="0"></canvas></div>
-      <form id="say" hidden><label for="sayin" style="flex-basis:100%;color:var(--dim);font-size:16px">No microphone in this demo: type what you would say.</label><input id="sayin" placeholder="Type your words" aria-label="What you would say"><button>Done</button><button type="button" id="saymic" hidden>Speak</button><button type="button" id="saycancel">Cancel</button><p id="saymicnote" hidden style="flex-basis:100%;color:var(--dim);font-size:16px;margin:0">Speak uses your browser's own speech service to turn your words into text.</p></form>
+      <div id="say-slot"></div>
       <p class="said" id="meaning" style="visibility:hidden;min-height:2.9em">&nbsp;</p>
-      <p id="again" hidden><button>Start the demo again</button></p>
+      <div id="again-slot"></div>
       <div class="keys" aria-hidden="true">
         <div><b>Click</b>tap</div>
         <div><b>Scroll</b><span id="keyscroll">down: skip or next · up: earlier</span></div>
@@ -53,21 +49,7 @@
         <div><b>Double click</b><span id="keydouble">close</span></div>
       </div>
       <p class="said" style="text-align:center;margin:0">Keyboard, after clicking the screen: Enter taps, arrow keys swipe, Escape goes back from an item, and is up elsewhere.</p>
-      <div class="row">
-        <button id="smaller" aria-label="Smaller text">A−</button>
-        <button id="bigger" aria-label="Bigger text">A+</button>
-        <button id="lower">Move text lower</button>
-        <button id="net" aria-pressed="false">Cut the phone's signal</button>
-        <button id="apps" hidden>Back to the list</button>
-        <button id="mute">Mute this chat</button>
-        <button id="unmute" hidden>Unmute all chats</button>
-      </div>
-      <form id="key" class="row">
-        <label for="keyin" style="flex-basis:100%;text-align:center">Real AI drafts: paste your own OpenRouter key. It stays in this tab and goes only to OpenRouter.</label>
-        <input id="keyin" type="password" autocomplete="off" dir="ltr" placeholder="sk-or-..." aria-describedby="keynote">
-        <button>Use my key</button>
-        <p id="keynote" class="said" style="flex-basis:100%;text-align:center;margin:0" aria-live="polite">Without a key, replies are a fixed holding reply.</p>
-      </form>
+      <div id="row-slot"></div>
 
       <section id="proof" hidden>
         <h2>Plain G2 text against Gloz, in Even Realities' own G2 simulator</h2>

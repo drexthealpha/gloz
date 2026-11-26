@@ -1,6 +1,7 @@
 // The live demo: the real Gloz app code, with a stand-in for the glasses (a
 // 576 x 288 green screen on the page) and a stand-in backend holding sample
 // messages. Nothing to install, no sign-in.
+import { mountControls } from './demo-controls.tsx'
 import { DRAFT_SYSTEM } from './core/prompt.ts'
 import { runGloz } from './app.ts'
 import { sampleDash } from './modes/dash.ts'
@@ -93,6 +94,8 @@ class DemoBridge {
 
 // --- stand-in backend -----------------------------------------------------------
 // No microphone here: what an app hears is sample words, and the teleprompter moves on a few words each time.
+// The controls are shadcn/ui components, drawn first so the code below finds them by id.
+mountControls()
 const heardSample = (f: (b: any) => any, words: string) => (b: any) => b?.action === 'stt' ? { text: words } : f(b)
 const SAMPLES: Record<string, (body: any) => any> = { dash: sampleDash, tasks: heardSample(sampleTasks, 'Sample: call the bank'), notes: heardSample(sampleNotes, 'Sample: call the plumber on Friday'), ask: sampleAsk, reader: sampleReader, prompter: (b: any) => b?.action === 'follow' ? { at: (Number(b.from) || 0) + (Number(b.at) || 0) + 4, heard: '', sample: true } : samplePrompter(b), nav: sampleNav, stocks: sampleStocks, music: sampleMusic, term: sampleTerm }
 // The visitor's own OpenRouter key, for live drafts: kept in this tab only (sessionStorage), sent only to OpenRouter.
