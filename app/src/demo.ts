@@ -12,6 +12,10 @@ import { sampleReader } from './modes/reader.ts'
 import { samplePrompter } from './modes/prompter.ts'
 import { sampleNav } from './modes/nav.ts'
 import { sampleStocks } from './modes/stocks.ts'
+// @ts-ignore: plain JS shared with the server
+import { handle as weatherNow } from '../../server/modes/weather.mjs'
+// @ts-ignore: plain JS shared with the server
+import { SAMPLE as sampleNews } from '../../server/modes/news.mjs'
 import { sampleMusic } from './modes/music.ts'
 import { sampleTerm } from './modes/term.ts'
 import type { Api } from './api.ts'
@@ -97,7 +101,10 @@ class DemoBridge {
 // The controls are shadcn/ui components, drawn first so the code below finds them by id.
 mountControls()
 const heardSample = (f: (b: any) => any, words: string) => (b: any) => b?.action === 'stt' ? { text: words } : f(b)
-const SAMPLES: Record<string, (body: any) => any> = { dash: sampleDash, tasks: heardSample(sampleTasks, 'Sample: call the bank'), notes: heardSample(sampleNotes, 'Sample: call the plumber on Friday'), ask: sampleAsk, reader: sampleReader, prompter: (b: any) => b?.action === 'follow' ? { at: (Number(b.from) || 0) + (Number(b.at) || 0) + 4, heard: '', sample: true } : samplePrompter(b), nav: sampleNav, stocks: sampleStocks, music: sampleMusic, term: sampleTerm }
+const SAMPLES: Record<string, (body: any) => any> = { dash: sampleDash, tasks: heardSample(sampleTasks, 'Sample: call the bank'), notes: heardSample(sampleNotes, 'Sample: call the plumber on Friday'), ask: sampleAsk, reader: sampleReader, prompter: (b: any) => b?.action === 'follow' ? { at: (Number(b.from) || 0) + (Number(b.at) || 0) + 4, heard: '', sample: true } : samplePrompter(b), nav: sampleNav, stocks: sampleStocks, music: sampleMusic, term: sampleTerm,
+  // A real forecast from Open-Meteo (it allows calls from a web page); with no position given, London's, named as such.
+  weather: async (b: any) => b?.lat == null ? { ...(await weatherNow({ lat: 51.507, lon: -0.128 }, { env: {} })), source: 'London (no position shared)' } : weatherNow(b, { env: {} }),
+  news: () => sampleNews }
 // The visitor's own OpenRouter key, for live drafts: kept in this tab only (sessionStorage), sent only to OpenRouter.
 let aiKey = ''
 try { aiKey = sessionStorage.getItem('gloz.demo.key') || '' } catch {}

@@ -2,6 +2,7 @@
 // the server writes it down and asks the AI, tried in the same order as server/ai.mjs.
 import { transcribe } from '../stt.mjs'
 import { NAMES } from '../lang.mjs'
+import { evidence } from '../take-apart.mjs'
 
 export const SAMPLE = { q: 'Sample: How tall is Mount Everest?', a: 'Mount Everest is 8,849 metres tall, measured by China and Nepal in 2020.' }
 export const NO_KEY = 'An AI key is needed on the Gloz server.'
@@ -27,7 +28,7 @@ async function call(p, system, messages) {
 }
 
 // body: { pcm: base64, lang, history: [{q, a}] } or { q } for a typed question.
-export async function handle(body, { env }) {
+export async function handle(body, { env, look = evidence }) {
   if (env.GLOZ_SAMPLE === '1') { if (body?.pcm) { let t = ''; try { t = (await transcribe(Buffer.from(String(body.pcm), 'base64'), String(body.lang || 'en'))).text } catch { return { error: 'No speech engine on the server' } } if (!String(t || '').trim()) return { error: 'Nothing heard' } } if (typeof body?.q === 'string' && body.q.trim()) return { q: body.q.trim(), a: 'Sample answer: with an AI key on the Gloz server, the real answer appears here.' }; return SAMPLE }
   const list = providers(env)
   if (!list.length) return { q: '', a: NO_KEY }
@@ -39,7 +40,10 @@ export async function handle(body, { env }) {
   if (!q) return { error: 'Nothing heard' }
   const history = (Array.isArray(body?.history) ? body.history : []).filter(h => h?.q && h?.a).slice(-10)
   const messages = [...history.flatMap(h => [{ role: 'user', content: String(h.q) }, { role: 'assistant', content: String(h.a) }]), { role: 'user', content: q }]
-  const system = `Answer the question for someone reading one line at a time on smart glasses. Answer in ${NAMES[lang] || lang}. Plain text, no lists or markdown, at most 60 words. If you do not know, say so.`
+  // "How does example.com's search work?": the site's own code is read first, and the answer comes from it.
+  const ev = await look(q)
+  if (ev) messages[messages.length - 1] = { role: 'user', content: `${q}\n\nEvidence from ${ev.url}, its own code:\n${ev.text}` }
+  const system = `Answer the question for someone reading one line at a time on smart glasses. Answer in ${NAMES[lang] || lang}. Plain text, no lists or markdown, at most 60 words. If you do not know, say so.${ev ? ' Explain how the feature works from the evidence given, naming what in the code shows it; if the evidence does not show it, say so.' : ''}`
   let last
   for (const p of list) {
     try { return { q, a: await call(p, system, messages) } } catch (e) { last = e }

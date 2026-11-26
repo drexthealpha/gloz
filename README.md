@@ -22,7 +22,7 @@ One line on the glasses at a time. A new message appears with the sender's name;
 | Listen to the room | captions of the conversation around you, in your language; tap pauses the microphone, swipe up goes back to any earlier line; the transcript is on the phone to copy or share |
 | phone, Chats on the glasses | pick the chats you want; with any picked, only those reach the glasses |
 | swipe down past the last message | your day, one line at a time: next meeting, tasks due, weather, now playing, a stock, your latest note, what you are reading, your script, directions, a server command; tap opens it |
-| hold on that screen and say anything | "add task ...", "note ...", "directions to ...", "read ...", "prompter", "run ...", "play", or any question; Gloz does it, or opens it with your words |
+| hold on that screen and say anything | "add task ...", "note ...", "directions to ...", "timer 5 minutes", "weather", "news", "read ...", "prompter", "run ...", "play", or any question, even "how does example.com's search work?" (Gloz reads that site's own code first); Gloz does it, or opens it with your words; the timer runs on the glasses with no signal, and weather and news keep their last answer |
 | double tap in any of them | back home |
 
 Nothing is sent without your tap or your word. Text is drawn as an image with the phone's own fonts, so Arabic, Persian, Hindi, Thai and Hebrew show on the glasses, at the size you pick (7 sizes; the largest fills the whole display). A reply written in a language you do not read is shown to you by its meaning. Replies wait in a saved outbox through any drop and go out when the link is back.
@@ -253,7 +253,7 @@ Check every step at once: `npm run check:setup`. Package for Even Hub: `cd app &
 ## What existed before Nov 23
 
 - The official Even Hub `minimal` template (Vite, TypeScript, SDK wiring): the starting files of `app/`.
-- Libraries: Even Hub SDK 0.0.16, CLI 0.2.0 and simulator 0.9.5; Vite; TypeScript; pngjs and tesseract.js for the evaluation. The service APIs of Telegram, Slack, Discord, Gmail, OpenRouter, Anthropic and OpenAI.
+- Libraries: Even Hub SDK 0.0.16, CLI 0.2.0 and simulator 0.9.5; Vite; TypeScript; rea (github.com/morluto/rea, MIT License, Copyright (c) 2026 morluto), optional on the server, for "how does ... work" answers; pngjs and tesseract.js for the evaluation. The service APIs of Telegram, Slack, Discord, Gmail, OpenRouter, Anthropic and OpenAI.
 - The held-out sentences: Tatoeba (CC BY 2.0 FR).
 - Public owner reviews and published best results, gathered before the build.
 - Everything else in this repository was written from 23 Nov 2026.

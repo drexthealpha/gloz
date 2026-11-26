@@ -10,5 +10,7 @@ import { prompterApp } from './prompter.ts'
 import { readerApp } from './reader.ts'
 import { notesApp } from './notes.ts'
 import { tasksApp } from './tasks.ts'
+import { timerApp } from './timer.ts'
+import { weatherApp, newsApp } from './feed.ts'
 
-export const APPS: AppEntry[] = [dashApp, tasksApp, notesApp, askApp, readerApp, prompterApp, navApp, stocksApp, musicApp, termApp]
+export const APPS: AppEntry[] = [dashApp, tasksApp, notesApp, askApp, weatherApp, newsApp, timerApp, readerApp, prompterApp, navApp, stocksApp, musicApp, termApp]

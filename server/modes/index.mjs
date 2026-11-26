@@ -10,5 +10,7 @@ import { handle as prompter } from './prompter.mjs'
 import { handle as reader } from './reader.mjs'
 import { handle as notes } from './notes.mjs'
 import { handle as tasks } from './tasks.mjs'
+import { handle as weather } from './weather.mjs'
+import { handle as news } from './news.mjs'
 
-export const MODES = { dash, ask, music, nav, stocks, term, prompter, reader, notes, tasks }
+export const MODES = { dash, ask, music, nav, stocks, term, prompter, reader, notes, tasks, weather, news }
