@@ -49,6 +49,8 @@ test('spoken words other than one command make a new draft, never a send', () =>
 
 test('the one word "send" sends, in ten languages', () => {
   for (const w of ['send', 'Send.', 'أرسل', 'بفرست', 'भेजो', 'ส่ง', 'שלח', '送信', '보내', '发送', 'Отправь']) assert.equal(word(w), 'send', w)
+  // Skip, in every language whose listening line names it.
+  for (const w of ['skip', 'تخطى', 'بعدی', 'דלג', 'छोड़ो', 'ข้าม', 'スキップ', '넘겨', '跳过', 'Дальше']) assert.equal(word(w), 'skip', w)
   assert.equal(word('send it to Bob tomorrow'), null)
 })
 

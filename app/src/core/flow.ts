@@ -59,6 +59,8 @@ const WORDS: Record<string, 'send' | 'skip' | 'back'> = {
   send: 'send', yes: 'send', 'send it': 'send', skip: 'skip', next: 'skip', later: 'skip', back: 'back',
   'أرسل': 'send', 'ارسل': 'send', 'بفرست': 'send', 'भेजो': 'send', 'ส่ง': 'send', 'שלח': 'send',
   '送信': 'send', '보내': 'send', '发送': 'send', '發送': 'send', 'отправь': 'send', 'отправить': 'send',
+  'تخطى': 'skip', 'تخط': 'skip', 'بعدی': 'skip', 'דלג': 'skip', 'छोड़ो': 'skip', 'ข้าม': 'skip',
+  'スキップ': 'skip', '넘겨': 'skip', '跳过': 'skip', '跳過': 'skip', 'дальше': 'skip', 'пропусти': 'skip',
 }
 export function word(text: string): 'send' | 'skip' | 'back' | null {
   const w = text.toLowerCase().replace(/[.!?,。！？،]/g, '').trim()
