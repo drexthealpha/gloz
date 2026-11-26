@@ -123,6 +123,25 @@ test('language guess picks the reply language for ten scripts', () => {
   for (const [k, v] of Object.entries(cases)) assert.equal(guessLang(v), k, v)
 })
 
+test('sample mode: each sample message gets the reply written for it ahead of time, with alternatives', async () => {
+  const { sample } = await import('../server/connectors.mjs')
+  process.env.GLOZ_SAMPLE = '1'
+  const svc = sample()
+  delete process.env.GLOZ_SAMPLE
+  const app = createApp({ connectors: [svc], ai: { ready: () => false, draft: ai.draft, translate: ai.translate }, stt: { ready: async () => false, transcribe: async () => ({}) }, dataDir: mkdtempSync(join(tmpdir(), 'gloz-')) })
+  await new Promise(r => app.server.listen(0, r))
+  const base = `http://127.0.0.1:${app.server.address().port}`
+  const { token } = await (await fetch(base + '/pair', { method: 'POST', body: JSON.stringify({ code: app.pairCode() }) })).json()
+  await app.pollOnce()
+  const call = async (p, b) => (await fetch(base + p, { method: b ? 'POST' : 'GET', headers: { authorization: `Bearer ${token}` }, body: b && JSON.stringify(b) })).json()
+  const first = (await call('/inbox?after=0')).msgs[0]
+  const d = await call('/draft', { id: first.id, lang: 'en' })
+  assert.equal(d.by, 'ai')
+  assert.equal(d.alts.length, 3)
+  assert.equal(d.text, d.alts[0].text)
+  app.server.close()
+})
+
 test('PCM from the glasses becomes audio samples', () => {
   const b = Buffer.alloc(4)
   b.writeInt16LE(16384, 0)

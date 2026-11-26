@@ -184,6 +184,8 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
     if (!meter(dev)) return [429, { error: 'daily draft limit reached on this server' }]
     const m = msgs.get(id)
     if (!m) return [410, { error: 'message gone' }]
+    // A sample message with no AI key on the server: the reply written for it ahead of time.
+    if (m.pre && !ask && !ai.ready()) return [200, { ...m.pre, ms: 0 }]
     const thread = (threads.get(`${m.source}:${m.chat}`) || []).slice(0, -1)
     const t0 = performance.now()
     try { return [200, { ...(await ai.draft(m, thread, ask || '', lang || 'en')), ms: Math.round(performance.now() - t0) }] } catch (e) { return [503, { error: String(e.message || e) }] }

@@ -218,7 +218,10 @@ export function sample() {
       if (given) return []
       given = true
       const list = JSON.parse(readFileSync(new URL('../app/src/demo-inbox.json', import.meta.url), 'utf8'))
-      return list.map((m, i) => ({ id: `sample:${m.id}`, source: 'sample', chat: m.chat, from: m.from, text: m.text, at: Date.now() - i * 60000, ref: {} }))
+      const alts = JSON.parse(readFileSync(new URL('../app/src/demo-alts.json', import.meta.url), 'utf8'))
+      // Each sample carries the reply an AI model (Claude) wrote for it ahead of time, with two alternatives.
+      return list.map((m, i) => ({ id: `sample:${m.id}`, source: 'sample', chat: m.chat, from: m.from, text: m.text, at: Date.now() - i * 60000, ref: {},
+        ...(m.draft ? { pre: { text: m.draft, gloss: m.gloss, by: 'ai', ...(alts[m.id] ? { alts: alts[m.id] } : {}) } } : {}) }))
     },
     async send(msg, text) { console.log(`[sample] reply to ${msg.id}: ${text}`) },
     async read() {},
