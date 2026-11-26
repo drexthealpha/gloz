@@ -33,7 +33,8 @@ const PARTS: Record<string, string[]> = {
   p: ['px', 'py', 'pt', 'pr', 'pb', 'pl', 'ps', 'pe'], px: ['pl', 'pr'], py: ['pt', 'pb'],
   m: ['mx', 'my', 'mt', 'mr', 'mb', 'ml', 'ms', 'me'], mx: ['ml', 'mr'], my: ['mt', 'mb'],
   size: ['h', 'w'], 'text-size': ['leading'], flex: ['shrink', 'grow', 'basis'], gap: ['gap-x', 'gap-y'], overflow: ['overflow-x', 'overflow-y'], inset: ['top', 'bottom', 'left', 'right'],
-  'border-width': ['border-t-width', 'border-r-width', 'border-b-width', 'border-l-width', 'border-x-width', 'border-y-width'],
+  // The sides' keys are built from their letters: the screens themselves use only start and end.
+  'border-width': 'trblxy'.split('').map(s => `border-${s}-width`),
 }
 
 export function merge(classes: string): string {

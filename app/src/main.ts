@@ -1,6 +1,7 @@
 // Gloz entry point inside the Even Realities app.
 import { waitForEvenAppBridge } from '@evenrealities/even_hub_sdk'
 import { HttpApi } from './api.ts'
+import { SampleApi } from './sample-api.ts'
 import { runGloz } from './app.ts'
 import { pairScreen, settingsScreen } from './phone/mount.tsx'
 import { phoneStatus } from './phone/strings.ts'
@@ -19,7 +20,8 @@ const bridge = await waitForEvenAppBridge()
 const base = get('gloz.backend') || BACKEND
 const token = get('gloz.token')
 let status = 'Paired'
-const gloz = await runGloz(bridge, token ? new HttpApi(base, token) : null, (s) => {
+// Until the phone pairs, the glasses show sample messages (marked "Sample:") so the wearer sees Gloz work at once.
+const gloz = await runGloz(bridge, token ? new HttpApi(base, token) : new SampleApi(), (s) => {
   status = !s.online ? `No signal${s.queued ? ` · ${s.queued} reply waiting` : ''}` : phoneStatus(Math.max(0, s.queue.length - (s.view === 'empty' ? 0 : s.at)), s.skippedMsgs?.length ?? 0, s.mutedMsgs?.length ?? 0, s.queued)
 })
 
