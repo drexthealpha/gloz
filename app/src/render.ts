@@ -52,6 +52,12 @@ export function layoutCard(c: Card, size: number): Lines {
     const one = wrap(text, room, measure)
     if (one.length === 1) return { lines: one, px: fontPx(size - 1), head: c.head }
   }
+  // A longer message shows two rows per part (at the usual size or smaller), so it takes half the parts.
+  if (lines.length > 1 && c.kind === 'message' && size <= DEFAULT_SETTINGS.size) {
+    const two: string[] = []
+    for (let k = 0; k < lines.length; k += 2) two.push(lines.slice(k, k + 2).join('\n'))
+    return { lines: two, px, head: c.head }
+  }
   return { lines, px, head: c.head }
 }
 
@@ -91,12 +97,19 @@ export function drawLine(c: Card, l: Lines, i: number, opts: { pages?: boolean }
   g.font = `${px}px ${FONT}`
   // Measured on the letters' own baseline, the one they are drawn on.
   g.textBaseline = 'alphabetic'
-  const box = () => { const m = g.measureText(line); return { up: m.actualBoundingBoxAscent || px * 0.8, down: m.actualBoundingBoxDescent || px * 0.25 } }
+  // A part can hold two rows (a longer message); each row is measured on its own letters.
+  const rows = line.split('\n')
+  const GAP = 8
+  const box = () => {
+    const ms = rows.map(r => g.measureText(r))
+    const up = Math.max(...ms.map(m => m.actualBoundingBoxAscent || px * 0.8)), down = Math.max(...ms.map(m => m.actualBoundingBoxDescent || px * 0.25))
+    return { up, down, h: rows.length * (up + down) + (rows.length - 1) * GAP }
+  }
   let b = box()
-  while (px > 20 && b.up + b.down > room) { px -= 4; g.font = `${px}px ${FONT}`; b = box() }
+  while (px > 20 && b.h > room) { px -= 4; g.font = `${px}px ${FONT}`; b = box() }
   // Placed by the drawn letters' own top and bottom, so tall letters never reach the label above.
-  const lineY = top + Math.max(0, (room - b.up - b.down) / 2) + b.up + 2
-  g.fillText(line, dir === 'rtl' ? W - PAD : PAD, lineY)
+  const lineY = top + Math.max(0, (room - b.h) / 2) + b.up + 2
+  rows.forEach((r, k) => g.fillText(r, dir === 'rtl' ? W - PAD : PAD, lineY + k * (b.up + b.down + GAP)))
   g.textBaseline = 'middle'
   // Which line of how many, as numbers, at the right end of the hint row.
   // A one-line item in a list shows where it sits in the list instead.
