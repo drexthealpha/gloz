@@ -27,7 +27,7 @@ One line on the glasses at a time. A new message appears with the sender's name;
 
 Nothing is sent without your tap or your word. Text is drawn as an image with the phone's own fonts, so Arabic, Persian, Hindi, Thai and Hebrew show on the glasses, at the size you pick (7 sizes; the largest fills the whole display). A reply written in a language you do not read is shown to you by its meaning. Replies wait in a saved outbox through any drop and go out when the link is back.
 
-Messages come from **Telegram (your account or a bot), Slack, Discord and Gmail**. Drafts come from **Claude, ChatGPT or any OpenRouter model**. Speech to text runs on Gloz's own backend. The backend holds every key; the glasses app holds only a pairing token. Each connector is tested against the service's documented replies with no keys ([test/connectors.test.mjs](test/connectors.test.mjs)); a run on live accounts needs your own keys in `.env`.
+Messages come from **Telegram (your account or a bot), Slack, Discord and Gmail**, straight from each service to Gloz's own server, so Gloz needs no access to the phone's notifications. Drafts come from **Claude, ChatGPT or any OpenRouter model**. Speech to text runs on Gloz's own backend. The backend holds every key; the glasses app holds only a pairing token. Each connector is tested against the service's documented replies with no keys ([test/connectors.test.mjs](test/connectors.test.mjs)); a run on live accounts needs your own keys in `.env`.
 
 ## For judges: where to look
 
@@ -134,7 +134,7 @@ Every complaint from public reviews that a glasses app can act on: what owners s
 1. **Stay connected and reconnect alone.** Best today: the phone OS wakes the companion app when the paired device comes back in range (Android Companion Device Manager presence, iOS Bluetooth state restoration).
 2. **Login that works offline and never logs out.** Best today: local features with no account; sign-in valid until six months unused (Google OAuth refresh tokens); passkeys, 93% sign-in success (FIDO Passkey Index, 15 Oct 2026).
 3. **No phone drain when the glasses are away.** Best today: OS presence events instead of constant scanning; Google Play flags apps where over 5% of sessions hold more than 2 hours of wake locks a day.
-4. **Plugin access to phone notifications.** Best today: Apple Notification Center Service and Android NotificationListenerService.
+4. **Plugin access to phone notifications.** Best today: Apple Notification Center Service and Android NotificationListenerService. Gloz does not need it (its messages come through its own server); plugins without a server do.
 5. **Connection state for plugins.** Best today: the OS tells the companion app on every connect and disconnect.
 
 ### Complaints only Even Realities can fix
