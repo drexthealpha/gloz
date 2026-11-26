@@ -43,7 +43,7 @@
       <h1>Gloz</h1>
       <p class="sub">Every message on your glasses, in its own script, at your size; with AI on the Gloz server, in your language too. Sample messages; no sign-in.</p>
       <div class="glass"><canvas id="g2" width="576" height="288" aria-label="Even G2 display, 576 by 288. Click to tap, scroll to swipe, hold to speak, double click to close." tabindex="0"></canvas></div>
-      <form id="say" hidden><label for="sayin" style="flex-basis:100%;color:var(--dim);font-size:16px">No microphone in this demo: type what you would say.</label><input id="sayin" placeholder="Type your words" aria-label="What you would say"><button>Done</button><button type="button" id="saycancel">Cancel</button></form>
+      <form id="say" hidden><label for="sayin" style="flex-basis:100%;color:var(--dim);font-size:16px">No microphone in this demo: type what you would say.</label><input id="sayin" placeholder="Type your words" aria-label="What you would say"><button>Done</button><button type="button" id="saymic" hidden>Speak</button><button type="button" id="saycancel">Cancel</button><p id="saymicnote" hidden style="flex-basis:100%;color:var(--dim);font-size:16px;margin:0">Speak uses your browser's own speech service to turn your words into text.</p></form>
       <p class="said" id="meaning" style="visibility:hidden;min-height:2.9em">&nbsp;</p>
       <p id="again" hidden><button>Start the demo again</button></p>
       <div class="keys" aria-hidden="true">

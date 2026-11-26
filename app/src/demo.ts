@@ -223,6 +223,8 @@ canvas.focus()
 const sayBox = document.getElementById('say') as HTMLFormElement
 const sayIn = document.getElementById('sayin') as HTMLInputElement
 const sayLabel = sayBox.querySelector('label')!
+// Where the browser can listen, the label offers it.
+if ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition) sayLabel.textContent = 'Say it with Speak, or type what you would say.'
 const sayText = sayLabel.textContent
 api.heard = () => new Promise(res => {
   sayBox.hidden = false
@@ -258,6 +260,21 @@ keyForm.onsubmit = e => {
   aiKey = keyIn.value.trim(); keyIn.value = ''
   try { if (aiKey) sessionStorage.setItem('gloz.demo.key', aiKey); else sessionStorage.removeItem('gloz.demo.key') } catch {}
   keyNote(aiKey ? 'Key kept in this tab. The next reply you open is written by OpenRouter.' : 'Without a key, replies are a fixed holding reply.')
+}
+
+// Speak: where the browser has speech recognition, the words can be said instead of typed.
+const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+const micBtn = document.getElementById('saymic') as HTMLButtonElement
+if (SR) { micBtn.hidden = false; (document.getElementById('saymicnote') as HTMLElement).hidden = false }
+micBtn.onclick = () => {
+  const rec = new SR()
+  rec.lang = navigator.language || 'en-US'
+  rec.interimResults = false
+  micBtn.textContent = 'Listening…'; micBtn.disabled = true
+  rec.onresult = (e: any) => { sayIn.value = e.results[0][0].transcript; sayBox.requestSubmit() }
+  rec.onerror = () => { sayLabel.textContent = 'Speech did not work here: type your words instead.' }
+  rec.onend = () => { micBtn.textContent = 'Speak'; micBtn.disabled = false }
+  rec.start()
 }
 
 // Signal on and off, to show replies waiting through a drop.
