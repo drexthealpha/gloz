@@ -68,7 +68,11 @@ export async function draft(msg, thread = [], askText = '', myLang = 'en') {
   const j = json(out.text)
   const text = String(j.reply).trim()
   const rl = guessLang(text)
-  return { text, gloss: j.gloss && rl !== myLang ? String(j.gloss).trim() : undefined, lang: rl, langName: NAMES[rl], by: 'ai' }
+  const gloss = j.gloss && rl !== myLang ? String(j.gloss).trim() : undefined
+  // Up to three replies to pick from with a swipe or the ring: the first, then the AI's alternatives.
+  const alts = [{ text, gloss }, ...(Array.isArray(j.alts) ? j.alts : []).filter(a => a && String(a.reply || '').trim()).slice(0, 2)
+    .map(a => ({ text: String(a.reply).trim(), gloss: a.gloss && guessLang(String(a.reply)) !== myLang ? String(a.gloss).trim() : undefined }))]
+  return { text, gloss, lang: rl, langName: NAMES[rl], by: 'ai', ...(alts.length > 1 && !askText ? { alts } : {}) }
 }
 
 export async function translate(text, myLang = 'en') {

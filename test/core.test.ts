@@ -31,6 +31,24 @@ test('tap, tap sends the draft; nothing is sent before the second tap', () => {
   assert.equal(r.fx[0].text, 'Yes, 3 works.')
 })
 
+test('a swipe on a reply shows the next of three, wraps round, and tap sends the one on screen', () => {
+  const alts = [{ text: 'Yes, 3 works.' }, { text: 'Not today, tomorrow?' }, { text: 'Which 3, am or pm?' }]
+  let { s } = run(start(true), { t: 'inbox', msgs: [m('a')] }, { t: 'draft', id: 'a', draft: { text: alts[0].text, by: 'ai', alts } }, { t: 'tap' })
+  assert.match(card(s).head!, /AI draft 1\/3/)
+  assert.match(card(s).hint!, /down: another reply/)
+  s = run(s, { t: 'next' }).s
+  assert.equal(s.view, 'draft')
+  assert.match(card(s).text, /Not today/)
+  assert.match(card(s).head!, /2\/3/)
+  s = run(s, { t: 'next' }, { t: 'next' }).s
+  assert.match(card(s).text, /Yes, 3 works/)
+  const sent = run(s, { t: 'next' }, { t: 'tap' }).fx.find(f => f.e === 'send')
+  assert.equal(sent.text, 'Not today, tomorrow?')
+  // A reply with no alternatives: a swipe still skips the message.
+  const one = run(start(true), { t: 'inbox', msgs: [m('b')] }, { t: 'draft', id: 'b', draft: { text: 'OK', by: 'ai' } }, { t: 'tap' }, { t: 'next' }).s
+  assert.equal(one.view, 'skipped')
+})
+
 test('a tap before the draft arrives waits, then shows the draft', () => {
   let r = run(start(true), { t: 'inbox', msgs: [m('a')] }, { t: 'tap' })
   assert.equal(r.s.view, 'thinking')

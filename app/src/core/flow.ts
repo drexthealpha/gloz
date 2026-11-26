@@ -136,6 +136,9 @@ export function step(s: State, ev: Event): { s: State; fx: Effect[] } {
       if (s.view === 'empty') { fx.push({ e: 'later', ms: 3500, ev: { t: 'note', text: '', was: (s.online ? '\u0000noMore' : '\u0000laterOnline') } }); return { s: { ...s, note: s.online ? '\u0000noMore' : '\u0000laterOnline' }, fx } }
       if (s.view === 'skipped') return { s: advance(s, fx), fx }   // a second swipe moves on at once
       if (!msg || s.view === 'listen' || s.view === 'sent') return { s, fx }
+      // On a reply with alternatives, a swipe (or the ring) shows the next one; tap sends the one on screen.
+      { const d = s.drafts[msg.id]
+        if (s.view === 'draft' && typeof d === 'object' && d.alts && d.alts.length > 1) { const pick = ((d.pick ?? 0) + 1) % d.alts.length; return { s: { ...s, drafts: { ...s.drafts, [msg.id]: { ...d, ...d.alts[pick], pick } } }, fx } } }
       fx.push({ e: 'later', ms: 2000, ev: { t: 'done', id: msg?.id } })
       return { s: { ...s, view: 'skipped' }, fx }  // swipe past a message or its reply: skipped, shown for a moment
     case 'prev':
@@ -263,9 +266,12 @@ function cardOf(s: State, lang: string): Card {
     const x = d as Draft & { lang?: string; langName?: string }
     const name = langName(x.lang, lang) ?? x.langName
     // A reply written by the AI says so on the glasses (EU AI Act, Article 50).
-    const ai = d.by === 'ai' ? 'AI draft · ' : ''
-    if (d.gloss) return { kind: 'draft', head: name ? `↩ ${ai}${w.means(name, msg.from)}` : `↩ ${ai}`, text: d.gloss, hint: s.online ? w.draftHint : w.draftOffline, progress }
-    return { kind: 'draft', head: name ? `↩ ${ai}${w.inLang(name, msg.from)}` : `↩ ${ai}`, text: d.text, hint: s.online ? w.draftHint : w.draftOffline, progress }
+    // With alternatives, which one is on screen ("2/3"), and the hint says a swipe shows another.
+    const pos = d.alts && d.alts.length > 1 ? ` ${(d.pick ?? 0) + 1}/${d.alts.length}` : ''
+    const ai = d.by === 'ai' ? `AI draft${pos} · ` : pos ? `${pos.trim()} · ` : ''
+    const hint = s.online ? (pos ? w.draftHintAlts : w.draftHint) : w.draftOffline
+    if (d.gloss) return { kind: 'draft', head: name ? `↩ ${ai}${w.means(name, msg.from)}` : `↩ ${ai}`, text: d.gloss, hint, progress }
+    return { kind: 'draft', head: name ? `↩ ${ai}${w.inLang(name, msg.from)}` : `↩ ${ai}`, text: d.text, hint, progress }
   }
   // A long message starts with one sentence saying what it wants, then the full text.
   const brief = (msg as Msg & { brief?: string }).brief

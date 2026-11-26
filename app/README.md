@@ -6,7 +6,7 @@ Started from the official Even Hub `minimal` template (see "What existed before 
 - `src/core/`: the reading and reply flow, the outbox, line layout. No SDK, no network; tested in `test/`.
 - `src/render.ts`: draws each line as an image, so every script shows, at any size.
 - `src/glasses.ts`: one line on screen, presses to flow events.
-- `src/app.ts`, `src/main.ts`, `src/phone.ts`: the app, the entry point, the phone screen.
+- `src/app.ts`, `src/main.ts`, `src/phone/`: the app, the entry point, the phone screens (shadcn/ui).
 - `src/demo.ts`, `demo.html`: the live demo, the same code with a stand-in for the glasses.
 - `eval.html`, `probe.html`: evaluation pages, not built into the app.
 

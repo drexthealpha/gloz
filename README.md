@@ -13,6 +13,7 @@ One line on the glasses at a time. A new message appears with the sender's name;
 |---|---|
 | tap | shows the reply Gloz drafted |
 | tap again | sends it, in the sender's language |
+| swipe down on the reply, or scroll the ring | the next of up to three AI replies ("2/3"), for example yes, not now, or a question back; tap sends the one on screen |
 | hold, say a few words, let go | writes a new reply from what you said; it still waits for your tap |
 | say "send" while holding | sends the reply on screen |
 | swipe down | the next message; a skipped one stays unread on your phone |
@@ -38,7 +39,7 @@ Messages come from **Telegram (your account or a bot), Slack, Discord and Gmail*
 |---|---|
 | Usefulness on G2 · 30% | The live demo, then [the held-out results](#results): plain G2 text drops Arabic, Persian, Hindi, Thai and Hebrew; Gloz shows them, one line at a time, with the phone in the pocket. Who it is for: [Business potential](#business-potential-and-safety). |
 | Read and write · 25% | In the live demo, paste your own OpenRouter key under the glasses and each reply is drafted live by AI (the key stays in your browser tab and goes only to OpenRouter). Tap, tap: [app/src/core/flow.ts](app/src/core/flow.ts) (every press, tested in [test/core.test.ts](test/core.test.ts)); drafts with no long dictation: [server/ai.mjs](server/ai.mjs); time from message seen to reply sent: [eval/results/time.md](eval/results/time.md). |
-| Technical execution · 20% | <!-- gen:tests -->141 tests in 20 files, all run on every push, with line coverage in the log: [pass log](https://github.com/drexthealpha/gloz/actions/workflows/ci.yml)<!-- /gen -->. Real services, no stand-ins in the app: [server/connectors.mjs](server/connectors.mjs). Replies sent once even when retried: [server/app.mjs](server/app.mjs) `/send`. Outbox: [app/src/core/outbox.ts](app/src/core/outbox.ts). Tests with no keys and the evaluation in the Linux simulator run on every push: [CI](https://github.com/drexthealpha/gloz/actions/workflows/ci.yml). Setup checked by `npm run check:setup`. |
+| Technical execution · 20% | <!-- gen:tests -->143 tests in 20 files, all run on every push, with line coverage in the log: [pass log](https://github.com/drexthealpha/gloz/actions/workflows/ci.yml)<!-- /gen -->. Real services, no stand-ins in the app: [server/connectors.mjs](server/connectors.mjs). Replies sent once even when retried: [server/app.mjs](server/app.mjs) `/send`. Outbox: [app/src/core/outbox.ts](app/src/core/outbox.ts). Tests with no keys and the evaluation in the Linux simulator run on every push: [CI](https://github.com/drexthealpha/gloz/actions/workflows/ci.yml). Setup checked by `npm run check:setup`. |
 | UX for display and voice · 15% | One line on the glasses, drawn at the wearer's size: [app/src/render.ts](app/src/render.ts), [app/src/glasses.ts](app/src/glasses.ts). Every screen says what a press does. Voice: hold, speak, let go; one word acts. The phone screens are built with shadcn/ui: [app/src/phone](app/src/phone), live at https://drexthealpha.github.io/gloz/phone/. |
 | Business potential and safety · 10% | [Business potential and safety](#business-potential-and-safety): who pays, what it costs, what is stored (nothing after sending), what is never sent without the wearer. |
 

@@ -20,7 +20,7 @@ import { handle as weather } from '../../server/modes/weather.mjs'
 // @ts-ignore: plain JS shared with the server
 import { SAMPLE as news } from '../../server/modes/news.mjs'
 
-type Sample = Msg & { holding: string; draft?: string; gloss?: string; lang: string }
+type Sample = Msg & { holding: string; draft?: string; gloss?: string; lang: string}
 const all = samples as unknown as Sample[]
 const TOOLS: Record<string, (b: any) => any> = {
   dash: sampleDash, tasks: sampleTasks, notes: sampleNotes, ask: sampleAsk, reader: sampleReader, nav: sampleNav,

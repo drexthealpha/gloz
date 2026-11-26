@@ -15,6 +15,8 @@ export interface Draft {
   text: string          // reply in the sender's language
   gloss?: string        // the same reply in the wearer's language, when they differ
   by: 'ai' | 'default'  // who wrote it: the AI model, or Gloz's fixed fallback
+  alts?: { text: string; gloss?: string }[]   // other replies to pick from (the first is text/gloss)
+  pick?: number         // which of alts is on screen
 }
 
 // One thing on the glasses. The display layer turns a card into lines.

@@ -1,0 +1,139 @@
+{
+ "s1": [
+  {
+   "text": "سأراجع جدولي وأؤكد لك موعد الثالثة غدا قريبا.",
+   "gloss": "I'll check my schedule and confirm three o'clock tomorrow shortly."
+  },
+  {
+   "text": "نعم، الساعة الثالثة غدا مناسبة.",
+   "gloss": "Yes, three o'clock tomorrow works."
+  },
+  {
+   "text": "لا يناسبني غدا. هل يمكن بعد غد؟",
+   "gloss": "Tomorrow doesn't suit me. Could we do the day after?"
+  }
+ ],
+ "s2": [
+  {
+   "text": "ممنون. امروز خبر می‌دهم چه زمانی می‌توانم نگاهش کنم.",
+   "gloss": "Thanks. I'll let you know today when I can look at it."
+  },
+  {
+   "text": "بله، امروز عصر نگاهش می‌کنم.",
+   "gloss": "Yes, I'll look at it this afternoon."
+  },
+  {
+   "text": "امروز نمی‌رسم؛ فردا صبح چطور است؟",
+   "gloss": "I can't today; how about tomorrow morning?"
+  }
+ ],
+ "s3": [
+  {
+   "text": "धन्यवाद, मसौदा मिल गया। देखकर शुक्रवार के बारे में जल्द पुष्टि भेजी जाएगी।",
+   "gloss": "Thanks, the draft arrived. I'll review it and confirm about Friday soon."
+  },
+  {
+   "text": "ठीक है, शुक्रवार तक मंज़ूरी दे दी जाएगी।",
+   "gloss": "Fine, it will be approved by Friday."
+  },
+  {
+   "text": "शुक्रवार मुश्किल है। क्या सोमवार तक चलेगा?",
+   "gloss": "Friday is hard. Would Monday work?"
+  }
+ ],
+ "s4": [
+  {
+   "text": "ขอบคุณ ขอเช็กตารางก่อน แล้วจะยืนยันเรื่องวันพฤหัสบดีอีกครั้ง",
+   "gloss": "Thanks. Let me check my schedule first, then I'll confirm about Thursday."
+  },
+  {
+   "text": "ได้ วันพฤหัสบดีสะดวก",
+   "gloss": "Yes, Thursday works."
+  },
+  {
+   "text": "วันพฤหัสบดีไม่สะดวก ขอเป็นวันศุกร์ได้ไหม",
+   "gloss": "Thursday doesn't work. Could it be Friday?"
+  }
+ ],
+ "s5": [
+  {
+   "text": "תודה. אבדוק ואאשר בהמשך היום אם משחררים.",
+   "gloss": "Thanks. I'll check and confirm later today whether we release."
+  },
+  {
+   "text": "כן, אפשר לשחרר היום.",
+   "gloss": "Yes, we can release today."
+  },
+  {
+   "text": "עדיף לחכות למחר אחרי בדיקה נוספת.",
+   "gloss": "Better to wait for tomorrow after one more check."
+  }
+ ],
+ "s6": [
+  {
+   "text": "ありがとうございます。資料を確認して、改めてご連絡します。",
+   "gloss": "Thank you. I'll look at the papers and get back to you."
+  },
+  {
+   "text": "ありがとうございます。今日中に確認します。",
+   "gloss": "Thank you. I'll check them today."
+  },
+  {
+   "text": "ありがとうございます。会議の前に目を通します。",
+   "gloss": "Thank you. I'll read them before the meeting."
+  }
+ ],
+ "s7": [
+  {
+   "text": "알려주셔서 감사합니다. 일정 확인 후 화요일 가능 여부를 바로 말씀드리겠습니다.",
+   "gloss": "Thanks for letting me know. I'll check my schedule and tell you about Tuesday right away."
+  },
+  {
+   "text": "네, 화요일 좋습니다.",
+   "gloss": "Yes, Tuesday is fine."
+  },
+  {
+   "text": "화요일은 어렵습니다. 수요일은 어떠세요?",
+   "gloss": "Tuesday is hard. How about Wednesday?"
+  }
+ ],
+ "s8": [
+  {
+   "text": "谢谢安排！我确认行程后告诉您到达时间。",
+   "gloss": "Thanks for arranging it! I'll tell you my arrival time once my plans are confirmed."
+  },
+  {
+   "text": "我上午十点到。",
+   "gloss": "I'll arrive at ten in the morning."
+  },
+  {
+   "text": "我下午两点左右到。",
+   "gloss": "I'll arrive around two in the afternoon."
+  }
+ ],
+ "s9": [
+  {
+   "text": "Спасибо, отличная новость! Насчёт копии отвечу чуть позже.",
+   "gloss": "Thanks, great news! I'll reply about the copy a little later."
+  },
+  {
+   "text": "Да, пришлите, пожалуйста, сегодня.",
+   "gloss": "Yes, please send it today."
+  },
+  {
+   "text": "Спасибо! Копия не срочно, можно на этой неделе.",
+   "gloss": "Thanks! The copy isn't urgent; this week is fine."
+  }
+ ],
+ "s10": [
+  {
+   "text": "Thanks, let me check my calendar and confirm the 4pm auditors call shortly."
+  },
+  {
+   "text": "Yes, I'll join the 4pm call."
+  },
+  {
+   "text": "I can't make 4pm. Could we move it to 5?"
+  }
+ ]
+}

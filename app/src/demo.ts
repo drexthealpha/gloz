@@ -22,6 +22,8 @@ import type { Api } from './api.ts'
 import type { Draft, Msg } from './core/types.ts'
 import { HOLDING_REPLIES } from './demo-data.ts'
 import samples from './demo-inbox.json'
+// Two more replies per sample, written ahead of time like the drafts: the demo only, to keep the glasses app small.
+import demoAlts from './demo-alts.json'
 
 // --- stand-in glasses -----------------------------------------------------------
 type Handler = (ev: any) => void
@@ -122,7 +124,9 @@ async function liveDraft(from: string, chat: string, text: string, ask = '') {
   const out = (await r.json()).choices?.[0]?.message?.content || ''
   const j = JSON.parse((out.match(/\{[\s\S]*\}/) || [out])[0])
   keyNote('Replies are written now by OpenRouter with your key.')
-  return { text: String(j.reply).trim(), gloss: j.gloss ? String(j.gloss).trim() : undefined, lang: undefined, by: 'ai' as const }
+  const first = { text: String(j.reply).trim(), gloss: j.gloss ? String(j.gloss).trim() : undefined }
+  const alts = [first, ...(Array.isArray(j.alts) ? j.alts : []).filter((a: any) => a?.reply).slice(0, 2).map((a: any) => ({ text: String(a.reply).trim(), gloss: a.gloss ? String(a.gloss).trim() : undefined }))]
+  return { ...first, lang: undefined, by: 'ai' as const, ...(alts.length > 1 && !ask ? { alts } : {}) }
 }
 
 class DemoApi implements Api {
@@ -147,7 +151,7 @@ class DemoApi implements Api {
     // With the visitor's own key, the draft is written now by OpenRouter, under Gloz's own draft rules.
     if (aiKey) { try { const d = await liveDraft(m.from, m.chat, m.text); this.glosses[id] = d.gloss; return d } catch (e) { keyNote(`OpenRouter refused or failed (${String((e as Error).message).slice(0, 60)}); showing the holding reply`) } }
     // Drafts written by the AI model ahead of time (scripts/demo-drafts.mjs), when present.
-    const d = m.draft ? { text: m.draft, gloss: m.gloss, lang: m.draftLang, by: 'ai' as const } : { text: m.holding, gloss: m.lang === 'en' ? undefined : HOLDING_REPLIES.en, lang: m.lang, by: 'default' as const }
+    const d = m.draft ? { text: m.draft, gloss: m.gloss, lang: m.draftLang, by: 'ai' as const, alts: (demoAlts as Record<string, { text: string; gloss?: string }[]>)[m.id] } : { text: m.holding, gloss: m.lang === 'en' ? undefined : HOLDING_REPLIES.en, lang: m.lang, by: 'default' as const }
     this.glosses[id] = d.gloss
     return d
   }

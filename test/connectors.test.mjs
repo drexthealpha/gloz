@@ -119,6 +119,17 @@ test('AI drafts: when the first provider fails, the next one writes the draft', 
   assert.equal(d.gloss, 'Yes, three works.')
 })
 
+test('AI drafts: up to three replies to pick from; none when the wearer gave an instruction', async () => {
+  process.env.GLOZ_OPENROUTER_KEY = 'a'
+  delete process.env.GLOZ_ANTHROPIC_KEY
+  globalThis.fetch = async () => ({ ok: true, status: 200, json: async () => ({ choices: [{ message: { content: '{"reply":"I will confirm shortly.","gloss":"","alts":[{"reply":"Yes, 3 works.","gloss":""},{"reply":"Can we do 4?","gloss":""},{"reply":"A fourth"}]}' } }] }) })
+  const ai = await import(`../server/ai.mjs?${Math.random()}`)
+  const d = await ai.draft({ chat: 'Board', from: 'Sam', text: 'Can we move the call to 3?' }, [], '', 'en')
+  assert.deepEqual(d.alts.map(a => a.text), ['I will confirm shortly.', 'Yes, 3 works.', 'Can we do 4?'])
+  const told = await ai.draft({ chat: 'Board', from: 'Sam', text: 'Can we move the call to 3?' }, [], 'say yes', 'en')
+  assert.equal(told.alts, undefined)
+})
+
 test('Telegram: the listener asks Telegram to hold the request open and pushes each message as it comes', async () => {
   process.env.GLOZ_TELEGRAM_BOT_TOKEN = 't'
   let n = 0
