@@ -1,6 +1,5 @@
 // Pairing: type the code the Gloz server shows, press Pair.
 import { useState } from 'react'
-import { Link2, Server } from 'lucide-react'
 import { Button } from '@/phone/components/ui/button'
 import { Input } from '@/phone/components/ui/input'
 import { Label } from '@/phone/components/ui/label'
@@ -37,7 +36,7 @@ export function PairScreen({ backend, onPair }: { backend: string; onPair: (base
           <Label htmlFor="server" className="text-base">{t('serverLabel')}</Label>
           <Input id="server" dir="ltr" data-no-mirror className={`${field} w-full`} inputMode="url" autoComplete="off" maxLength={300} value={base} onChange={e => setBase(e.target.value)} placeholder="https://" aria-invalid={badBase || undefined} />
           {badBase && <p role="alert" className="m-0 font-semibold text-destructive">⚠ {t('badServer')}</p>}
-          <Button data-primary className={`${field} w-full`}><Server aria-hidden="true" /> {t('next')}</Button>
+          <Button data-primary className={`${field} w-full`}>{t('next')}</Button>
           <p className="m-0 text-muted-foreground">{t('dataStays')}</p>
           {known && <Button type="button" variant="outline" className={`${field} w-full`} onClick={() => { setBase(known); setBadBase(false); setStep('code') }}>{t('back')}</Button>}
         </form>
@@ -48,7 +47,7 @@ export function PairScreen({ backend, onPair }: { backend: string; onPair: (base
             inputMode="numeric" autoComplete="one-time-code" maxLength={20} value={code} aria-invalid={err ? true : undefined}
             onChange={e => { setCode(westernDigits(e.target.value).slice(0, 6)); setErr('') }} />
           <Button data-primary className={`${field} w-full`} disabled={busy > 0} aria-busy={busy > 0 || undefined}>
-            <Link2 aria-hidden="true" /> {busy ? t('pairing') : t('pair')}
+            {busy ? t('pairing') : t('pair')}
           </Button>
           {busy > 0 && (
             <div role="progressbar" aria-label={t('pairing')} aria-valuemin={0} aria-valuemax={30} aria-valuenow={busy} aria-valuetext={`${busy} s`} className="h-1 w-full overflow-hidden rounded bg-muted">

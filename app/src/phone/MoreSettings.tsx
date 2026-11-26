@@ -89,7 +89,7 @@ export default function MoreSettings({ s, set, l, setL, live, unmute, pick, unpa
             <li key={k} className="flex flex-wrap items-center justify-between gap-3"><span className="min-w-0 flex-1 basis-40">{t(k)}</span><Listen k={k} label={`${t('listen')}: ${t(k)}`} /></li>
           ))}
         </ul>
-        {unpair && <Button variant="outline" className={`${big} max-w-full whitespace-normal`} onClick={() => { if (sure) unpair(); else { setSure(true); setTimeout(() => setSure(false), 4000) } }}>{t(sure ? 'unpairSure' : 'unpair')}</Button>}
+        {unpair && <Button variant="outline" className={`${big} max-w-full whitespace-normal`} onClick={() => { if (sure) unpair(); else { setSure(true); setTimeout(() => setSure(false), 4000) } }}>{sure ? `${t('unpair')}?` : t('unpair')}</Button>}
       </section>
       {fixOpen && (
       <section className="flex flex-col gap-2">

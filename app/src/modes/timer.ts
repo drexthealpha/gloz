@@ -4,7 +4,9 @@ import type { AppEntry, Mode, ModeCtx } from './types.ts'
 import type { Card } from '../core/types.ts'
 
 // "5 minutes", "90 seconds", "1 hour 30 minutes", "2 min", "10" (minutes): seconds, or null.
-const NUM: Record<string, number> = { a: 1, an: 1, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12, fifteen: 15, twenty: 20, thirty: 30, forty: 40, 'forty-five': 45, fifty: 50, sixty: 60, ninety: 90 }
+// Number words Whisper may write: one to twelve by position, then the round ones.
+const NUM: Record<string, number> = Object.fromEntries('one two three four five six seven eight nine ten eleven twelve'.split(' ').map((w, i) => [w, i + 1]))
+Object.assign(NUM, { a: 1, an: 1, fifteen: 15, twenty: 20, thirty: 30, forty: 40, 'forty-five': 45, fifty: 50, sixty: 60, ninety: 90 })
 export function seconds(text: string): number | null {
   const t = text.toLowerCase().replace(/half an hour/g, '30 minutes').replace(/\b(forty-five|[a-z]+)\b(?=\s*(?:h(?:ours?)?|m(?:in(?:ute)?s?)?|s(?:ec(?:ond)?s?)?)\b)/g, w => NUM[w] !== undefined ? String(NUM[w]) : w)
   let s = 0, found = false
