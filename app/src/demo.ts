@@ -21,7 +21,10 @@ import { sampleTerm } from './modes/term.ts'
 import type { Api } from './api.ts'
 import type { Draft, Msg } from './core/types.ts'
 import { HOLDING_REPLIES } from './demo-data.ts'
-import samples from './demo-inbox.json'
+import inbox from './demo-inbox.json'
+// What only this page shows (each message in English, the holding reply) is kept apart, so the glasses app stays small.
+import extra from './demo-extra.json'
+const samples = (inbox as any[]).map(m => ({ ...m, ...(extra as Record<string, object>)[m.id] }))
 // Two more replies per sample, written ahead of time like the drafts: the demo only, to keep the glasses app small.
 import demoAlts from './demo-alts.json'
 

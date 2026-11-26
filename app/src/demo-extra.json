@@ -1,0 +1,52 @@
+{
+ "s1": {
+  "en": "Can we move the board meeting to three o'clock tomorrow?",
+  "holding": "وصلتني، سأرد قريبا.",
+  "draftLang": "ar"
+ },
+ "s2": {
+  "en": "The quarterly report is ready. Do you have time to look at it today?",
+  "holding": "رسید، زود جواب می‌دهم.",
+  "draftLang": "fa"
+ },
+ "s3": {
+  "en": "I have sent the new draft of the contract. Can it be approved by Friday?",
+  "holding": "मिल गया, जल्द जवाब दूँगा।",
+  "draftLang": "hi"
+ },
+ "s4": {
+  "en": "The client asked to move the meeting to Thursday. Does that work for you?",
+  "holding": "ได้รับแล้ว จะตอบเร็ว ๆ นี้",
+  "draftLang": "th"
+ },
+ "s5": {
+  "en": "The new version is ready for testing. Can we release it today?",
+  "holding": "קיבלתי. אענה בקרוב.",
+  "draftLang": "he"
+ },
+ "s6": {
+  "en": "I have shared the papers for tomorrow's meeting. Please take a look.",
+  "holding": "了解、すぐ返信します。",
+  "draftLang": "ja"
+ },
+ "s7": {
+  "en": "The investor meeting is set for next Tuesday. Is that all right with you?",
+  "holding": "받았어요, 곧 답할게요.",
+  "draftLang": "ko"
+ },
+ "s8": {
+  "en": "Next Wednesday's factory visit is arranged. What time will you arrive?",
+  "holding": "收到，稍后回复。",
+  "draftLang": "zh"
+ },
+ "s9": {
+  "en": "The contract is signed. Shall I send you a copy today?",
+  "holding": "Получил, скоро отвечу.",
+  "draftLang": "ru"
+ },
+ "s10": {
+  "en": "Can you join the 4pm call with the auditors? It should take 20 minutes.",
+  "holding": "Got it, replying soon.",
+  "draftLang": "en"
+ }
+}

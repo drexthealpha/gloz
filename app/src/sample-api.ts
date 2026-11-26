@@ -20,7 +20,7 @@ import { handle as weather } from '../../server/modes/weather.mjs'
 // @ts-ignore: plain JS shared with the server
 import { SAMPLE as news } from '../../server/modes/news.mjs'
 
-type Sample = Msg & { holding: string; draft?: string; gloss?: string; lang: string}
+type Sample = Msg & { draft?: string; gloss?: string; lang: string }
 const all = samples as unknown as Sample[]
 const TOOLS: Record<string, (b: any) => any> = {
   dash: sampleDash, tasks: sampleTasks, notes: sampleNotes, ask: sampleAsk, reader: sampleReader, nav: sampleNav,
@@ -38,7 +38,7 @@ export class SampleApi implements Api {
   async draft(id: string, _lang: string, ask?: string): Promise<Draft> {
     const m = all.find(x => x.id === id)!
     if (ask) return { text: ask, by: 'default' }
-    return m.draft ? { text: m.draft, gloss: m.gloss, by: 'ai' } : { text: m.holding, gloss: m.lang === 'en' ? undefined : HOLDING_REPLIES.en, by: 'default' }
+    return m.draft ? { text: m.draft, gloss: m.gloss, by: 'ai' } : { text: HOLDING_REPLIES[m.lang] ?? HOLDING_REPLIES.en, gloss: m.lang === 'en' ? undefined : HOLDING_REPLIES.en, by: 'default' }
   }
   async send() { return 'ok' as const }
   async read() {}
