@@ -4,7 +4,7 @@ Gloz brings your Telegram, Slack, Discord and Gmail messages to Even G2, one lin
 
 Under each message a reply is ready, drafted by AI in the sender's language with its meaning shown to you. Tap to see it, tap again to send it. Hold to say your own words instead. Nothing is sent without your tap or your word, and replies wait through a lost signal.
 
-After your messages comes your day: your next meeting, your tasks, the weather, music, notes and more, each one swipe away. Hold anywhere and say what you need: add a task, take a note, get directions or ask a question.
+After your messages comes your day: your next meeting, your tasks, the weather, music, notes and more, each one swipe away. Hold anywhere and say what you need: add a task, take a note, get directions, set a timer, hear the weather or the news, or ask a question. The timer runs on the glasses with no signal.
 
 Seven text sizes; the largest fills the whole display. Every screen says what a tap, swipe or hold does there.
 
