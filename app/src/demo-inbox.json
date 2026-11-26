@@ -7,7 +7,10 @@
   "lang": "ar",
   "text": "هل يمكننا نقل اجتماع مجلس الإدارة إلى الساعة الثالثة غدا؟",
   "holding": "وصلتني، سأرد قريبا.",
-  "en": "Can we move the board meeting to three o'clock tomorrow?"
+  "en": "Can we move the board meeting to three o'clock tomorrow?",
+  "draft": "سأراجع جدولي وأؤكد لك موعد الثالثة غدا قريبا.",
+  "gloss": "I'll check my schedule and confirm three o'clock tomorrow shortly.",
+  "draftLang": "ar"
  },
  {
   "id": "s2",
@@ -17,7 +20,10 @@
   "lang": "fa",
   "text": "گزارش سه‌ماهه آماده است. امروز وقت دارید نگاهی بیندازید؟",
   "holding": "رسید، زود جواب می‌دهم.",
-  "en": "The quarterly report is ready. Do you have time to look at it today?"
+  "en": "The quarterly report is ready. Do you have time to look at it today?",
+  "draft": "ممنون. امروز خبر می‌دهم چه زمانی می‌توانم نگاهش کنم.",
+  "gloss": "Thanks. I'll let you know today when I can look at it.",
+  "draftLang": "fa"
  },
  {
   "id": "s3",
@@ -27,7 +33,10 @@
   "lang": "hi",
   "text": "अनुबंध का नया मसौदा भेज दिया है। क्या शुक्रवार तक मंज़ूरी मिल सकती है?",
   "holding": "मिल गया, जल्द जवाब दूँगा।",
-  "en": "I have sent the new draft of the contract. Can it be approved by Friday?"
+  "en": "I have sent the new draft of the contract. Can it be approved by Friday?",
+  "draft": "धन्यवाद, मसौदा मिल गया। देखकर शुक्रवार के बारे में जल्द पुष्टि भेजी जाएगी।",
+  "gloss": "Thanks, the draft arrived. I'll review it and confirm about Friday soon.",
+  "draftLang": "hi"
  },
  {
   "id": "s4",
@@ -37,7 +46,10 @@
   "lang": "th",
   "text": "ลูกค้าขอเลื่อนการประชุมเป็นวันพฤหัสบดี สะดวกไหมครับ",
   "holding": "ได้รับแล้ว จะตอบเร็ว ๆ นี้",
-  "en": "The client asked to move the meeting to Thursday. Does that work for you?"
+  "en": "The client asked to move the meeting to Thursday. Does that work for you?",
+  "draft": "ขอบคุณ ขอเช็กตารางก่อน แล้วจะยืนยันเรื่องวันพฤหัสบดีอีกครั้ง",
+  "gloss": "Thanks. Let me check my schedule first, then I'll confirm about Thursday.",
+  "draftLang": "th"
  },
  {
   "id": "s5",
@@ -47,7 +59,10 @@
   "lang": "he",
   "text": "הגרסה החדשה מוכנה לבדיקה. אפשר לשחרר היום?",
   "holding": "קיבלתי. אענה בקרוב.",
-  "en": "The new version is ready for testing. Can we release it today?"
+  "en": "The new version is ready for testing. Can we release it today?",
+  "draft": "תודה. אבדוק ואאשר בהמשך היום אם משחררים.",
+  "gloss": "Thanks. I'll check and confirm later today whether we release.",
+  "draftLang": "he"
  },
  {
   "id": "s6",
@@ -57,7 +72,10 @@
   "lang": "ja",
   "text": "明日の会議の資料を共有しました。ご確認をお願いします。",
   "holding": "了解、すぐ返信します。",
-  "en": "I have shared the papers for tomorrow's meeting. Please take a look."
+  "en": "I have shared the papers for tomorrow's meeting. Please take a look.",
+  "draft": "ありがとうございます。資料を確認して、改めてご連絡します。",
+  "gloss": "Thank you. I'll look at the papers and get back to you.",
+  "draftLang": "ja"
  },
  {
   "id": "s7",
@@ -67,7 +85,10 @@
   "lang": "ko",
   "text": "투자자 미팅이 다음 주 화요일로 확정되었습니다. 괜찮으신가요?",
   "holding": "받았어요, 곧 답할게요.",
-  "en": "The investor meeting is set for next Tuesday. Is that all right with you?"
+  "en": "The investor meeting is set for next Tuesday. Is that all right with you?",
+  "draft": "알려주셔서 감사합니다. 일정 확인 후 화요일 가능 여부를 바로 말씀드리겠습니다.",
+  "gloss": "Thanks for letting me know. I'll check my schedule and tell you about Tuesday right away.",
+  "draftLang": "ko"
  },
  {
   "id": "s8",
@@ -77,7 +98,10 @@
   "lang": "zh",
   "text": "下周三的工厂参观已经安排好了，您几点到？",
   "holding": "收到，稍后回复。",
-  "en": "Next Wednesday's factory visit is arranged. What time will you arrive?"
+  "en": "Next Wednesday's factory visit is arranged. What time will you arrive?",
+  "draft": "谢谢安排！我确认行程后告诉您到达时间。",
+  "gloss": "Thanks for arranging it! I'll tell you my arrival time once my plans are confirmed.",
+  "draftLang": "zh"
  },
  {
   "id": "s9",
@@ -87,7 +111,10 @@
   "lang": "ru",
   "text": "Договор подписан. Отправить вам копию сегодня?",
   "holding": "Получил, скоро отвечу.",
-  "en": "The contract is signed. Shall I send you a copy today?"
+  "en": "The contract is signed. Shall I send you a copy today?",
+  "draft": "Спасибо, отличная новость! Насчёт копии отвечу чуть позже.",
+  "gloss": "Thanks, great news! I'll reply about the copy a little later.",
+  "draftLang": "ru"
  },
  {
   "id": "s10",
@@ -97,6 +124,8 @@
   "lang": "en",
   "text": "Can you join the 4pm call with the auditors? It should take 20 minutes.",
   "holding": "Got it, replying soon.",
-  "en": "Can you join the 4pm call with the auditors? It should take 20 minutes."
+  "en": "Can you join the 4pm call with the auditors? It should take 20 minutes.",
+  "draft": "Thanks, let me check my calendar and confirm the 4pm auditors call shortly.",
+  "draftLang": "en"
  }
 ]

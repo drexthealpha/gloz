@@ -42,7 +42,7 @@ export function mountControls() {
         <Label htmlFor="keyin" className="basis-full justify-center text-center text-base font-normal">Real AI drafts: paste your own OpenRouter key. It stays in this tab and goes only to OpenRouter.</Label>
         <Input id="keyin" type="password" autoComplete="off" dir="ltr" placeholder="sk-or-..." aria-describedby="keynote" className="h-12 min-w-0 flex-1 text-lg text-foreground" />
         <Button className={filled}>Use my key</Button>
-        <p id="keynote" aria-live="polite" className="m-0 basis-full text-center text-base text-muted-foreground">Without a key, replies are a fixed holding reply.</p>
+        <p id="keynote" aria-live="polite" className="m-0 basis-full text-center text-base text-muted-foreground">Without a key, the drafts shown were written ahead of time by an AI model (Claude) under Gloz's own draft rules.</p>
       </form>
     </>,
     document.getElementById('row-slot')!,
