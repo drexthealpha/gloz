@@ -13,7 +13,7 @@ import {
 import type { Card } from './core/types.ts'
 import { dwell } from './core/layout.ts'
 import { pressOf } from './core/press.ts'
-import { layoutCard, drawLine, tiles, blankStrip, drawGrid, tiles4, STRIP, FULL_H, type Lines } from './render.ts'
+import { layoutFor, drawLine, tiles, blankStrip, drawGrid, tiles4, STRIP, FULL_H, type Lines } from './render.ts'
 
 export type Input = 'tap' | 'next' | 'prev' | 'hold' | 'release' | 'exit'
 
@@ -149,14 +149,16 @@ export class Glasses {
   }
 
   show(c: Card, force = false) {
-    // A grid card and a line card need different pages: switch when the kind of card changes.
-    const full = Boolean(c.grid) || this.size === 7
+    // A grid card, the largest size and a long message use the whole display; a line card uses the strip.
+    // Switch pages when that changes.
+    const laid = layoutFor(c, this.size)
+    const full = Boolean(c.grid) || laid.full
     if (full !== this.full) { this.full = full; this.rebuildDue = true; force = true }
     // A new hint ("Checked ✓", no signal) keeps the line the wearer is on; new text starts at line 1.
     const sameText = Boolean(this.card) && this.card!.kind === c.kind && this.card!.text === c.text && this.card!.head === c.head
     if (sameText && this.card!.hint === c.hint && !force) return
     this.card = c
-    this.lay = layoutCard(c, this.size)
+    this.lay = laid.lay
     // New text, or a new size, starts again from the first page.
     if (!sameText || force) { this.line = 0; this.manual = false; this.lineAt = Date.now() }
     this.line = Math.min(this.line, this.lay.lines.length - 1)

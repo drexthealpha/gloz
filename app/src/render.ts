@@ -23,7 +23,16 @@ const HINT_PX = 20
 
 export interface Lines { lines: string[]; px: number; head?: string }
 
-export function layoutCard(c: Card, size: number): Lines {
+// How a card is laid out, and whether it needs the whole display: the largest size, or a message too long
+// for one two-row strip, which then shows four rows a part so most messages fit one screen.
+export function layoutFor(c: Card, size: number): { lay: Lines; full: boolean } {
+  const lay = layoutCard(c, size)
+  if (size === 7) return { lay, full: true }
+  if (c.kind === 'message' && lay.lines.length > 1 && size <= DEFAULT_SETTINGS.size) return { lay: layoutCard(c, size, 4), full: true }
+  return { lay, full: false }
+}
+
+export function layoutCard(c: Card, size: number, rows = 2): Lines {
   const px = fontPx(size)
   const ctx = ctx2d()
   ctx.font = `${px}px ${FONT}`
@@ -52,11 +61,11 @@ export function layoutCard(c: Card, size: number): Lines {
     const one = wrap(text, room, measure)
     if (one.length === 1) return { lines: one, px: fontPx(size - 1), head: c.head }
   }
-  // A longer message shows two rows per part (at the usual size or smaller), so it takes half the parts.
+  // A longer message shows several rows per part (at the usual size or smaller), so it takes fewer parts.
   if (lines.length > 1 && c.kind === 'message' && size <= DEFAULT_SETTINGS.size) {
-    const two: string[] = []
-    for (let k = 0; k < lines.length; k += 2) two.push(lines.slice(k, k + 2).join('\n'))
-    return { lines: two, px, head: c.head }
+    const parts: string[] = []
+    for (let k = 0; k < lines.length; k += rows) parts.push(lines.slice(k, k + rows).join('\n'))
+    return { lines: parts, px, head: c.head }
   }
   return { lines, px, head: c.head }
 }
