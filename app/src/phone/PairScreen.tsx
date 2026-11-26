@@ -67,7 +67,7 @@ export function PairScreen({ backend, onPair }: { backend: string; onPair: (base
             <p className="m-0 font-semibold text-destructive">⚠ {t(err === 'offline' ? 'offline' : err === 'short' ? 'sixDigits' : 'wrong')}</p>
             {err === 'wrong' && (
               <Button type="button" variant="outline" data-next-step className={field} onClick={() => { setErr(''); setStep('server') }}>
-                <Server aria-hidden="true" /> {t('changeServer')}
+                {t('changeServer')}
               </Button>
             )}
           </div>
