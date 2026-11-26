@@ -1,0 +1,7 @@
+{
+ "input": "recorded speech: Microsoft David Desktop (Windows text to speech), 481 words, 169 s",
+ "engine": "Whisper base (onnx-community/whisper-base, q8)",
+ "updates": 112,
+ "exact": 0.7410714285714286,
+ "within1": 0.9196428571428571
+}
