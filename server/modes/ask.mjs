@@ -22,7 +22,7 @@ async function call(p, system, messages) {
     if (!r.ok) throw new Error(`ai ${r.status}`)
     return (await r.json()).content.map(c => c.text || '').join('').trim()
   }
-  const r = await fetch(p.url, { method: 'POST', signal, headers: { authorization: `Bearer ${p.key}`, 'content-type': 'application/json' }, body: JSON.stringify({ model: p.model, max_tokens: 400, messages: [{ role: 'system', content: system }, ...messages] }) })
+  const r = await fetch(p.url, { method: 'POST', signal, headers: { authorization: `Bearer ${p.key}`, 'content-type': 'application/json' }, body: JSON.stringify({ model: p.model, max_tokens: 400, messages: [{ role: 'system', content: system }, ...messages], ...(p.url.includes('openrouter.ai') ? { provider: { data_collection: 'deny' } } : {}) }) })
   if (!r.ok) throw new Error(`ai ${r.status}`)
   return (await r.json()).choices[0].message.content.trim()
 }

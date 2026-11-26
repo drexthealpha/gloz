@@ -73,3 +73,8 @@ Committed before eval/results/heldout.* existed (23 Nov, 11:19 against 14:00). M
 
 6. Line placement. A stranger's walk of the simulator on 24 Nov 2026 found a reply's large text touching its small label at the largest size: the letters were measured on one baseline and drawn on another. Gloz now places each line by the drawn letters' own top and bottom. This moves every line a few pixels up or down, so the second run no longer measures the code that ships. The whole held-out set is run again with the same messages, ladder, reader and scoring (the third run). The third run replaces the second in the README whatever its result; both runs' numbers are kept in eval/results/.
    Third run, 24 Nov 2026: every script as in the second run except Korean shown sharp, 15 of 20 (16 in the second run); the five scripts plain G2 text cannot show stay at 84 of 100 for Gloz and 0 for plain; 10 of 10 scripts won. eval/results/heldout.json is the third run; heldout-run2.json keeps the second.
+
+## Digest of the held-out set (written 26 Nov 2026)
+
+The git history before 24 Nov was squashed, so the commit order alone cannot show the set was fixed before the runs. Its SHA-256 is written here, and CI recomputes it on every push: any change to a held-out message fails CI.
+sha256 eval/set/heldout.json: 328a57dff58286e875df82ca868b3ed49964b252d0039e6a88024eba18e83c00

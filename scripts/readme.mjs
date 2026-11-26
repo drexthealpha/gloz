@@ -25,7 +25,7 @@ if (h) {
   const five = ['Arabic', 'Persian', 'Hindi', 'Thai', 'Hebrew']
   const g = five.reduce((n, k) => n + h.by[k].glozA, 0)
   const p = five.reduce((n, k) => n + h.by[k].plainA, 0)
-  blocks.first = `**Gloz lets the executive who wears Even G2 all day read and answer every message without the phone, in their language, at their size.** In the Even Hub simulator, plain G2 text showed ${p} of 100 held-out messages in Arabic, Persian, Hindi, Thai and Hebrew; Gloz showed ${g}. Gloz won ${h.wins} of 10 scripts, and${t ? ` cut the median time from message seen to reply sent from ${t.plainMedian.toFixed(1)} s to ${t.glozMedian.toFixed(1)} s` : ''}.`
+  blocks.first = `**Gloz lets the executive who wears Even G2 all day read and answer every message without the phone, in their language, at their size.** In the Even Hub simulator, plain G2 text showed ${p} of 100 held-out messages in Arabic, Persian, Hindi, Thai and Hebrew; Gloz showed ${g}. Gloz won ${h.wins} of 10 scripts, and${t ? ` cut the modelled median time from message seen to reply sent (published operator times, not timed people) from ${t.plainMedian.toFixed(1)} s to ${t.glozMedian.toFixed(1)} s` : ''}.`
   blocks.heldout = read('heldout.md').trim()
 }
 if (t) blocks.time = read('time.md').trim()

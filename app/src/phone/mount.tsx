@@ -25,9 +25,9 @@ export async function pairScreen(el: HTMLElement, backend: string, onPair: (base
   rootOf(el).render(<PairScreen backend={backend} onPair={onPair} />)
 }
 
-export async function settingsScreen(el: HTMLElement, s: Settings & { roomLang?: string }, onChange: (n: Partial<Settings> & { roomLang?: string }) => void, status: () => string, said: () => string = () => '', muted: () => number = () => 0, unmute: () => void = () => {}, current?: () => Settings & { roomLang?: string }, chats: () => Chat[] = () => [], pick: (key: string, on: boolean) => void = () => {}) {
+export async function settingsScreen(el: HTMLElement, s: Settings & { roomLang?: string }, onChange: (n: Partial<Settings> & { roomLang?: string }) => void, status: () => string, said: () => string = () => '', muted: () => number = () => 0, unmute: () => void = () => {}, current?: () => Settings & { roomLang?: string }, chats: () => Chat[] = () => [], pick: (key: string, on: boolean) => void = () => {}, unpair?: () => void) {
   const { SettingsScreen } = await import('./SettingsScreen')
   const live = (): Live => ({ status: status(), said: said(), muted: muted(), chats: chats() })
-  const draw = () => rootOf(el).render(<SettingsScreen settings={{ ...s }} current={current} onChange={onChange} live={live} unmute={unmute} pick={pick} theme={theme()} onTheme={v => { applyTheme(v); draw() }} />)
+  const draw = () => rootOf(el).render(<SettingsScreen settings={{ ...s }} current={current} onChange={onChange} live={live} unmute={unmute} pick={pick} unpair={unpair} theme={theme()} onTheme={v => { applyTheme(v); draw() }} />)
   draw()
 }

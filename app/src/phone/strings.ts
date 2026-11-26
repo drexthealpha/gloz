@@ -57,6 +57,8 @@ export const STRINGS = {
   share: s('Share'), // Share the transcript (max 12)
   noCopy: s('Text selected: copy it from here'), // Copying is blocked; the text is selected instead (max 40)
   howTo: s('On the glasses'), // Heading of the gesture help (max 20)
+  unpair: s('Unpair this phone'), // Button: this phone's pairing ends at once; pairing again needs a new code (max 24)
+  unpairSure: s('Tap again to unpair'), // The same button after one tap, asking to be sure (max 24)
   fix: s('Fix my glasses'), // Button that opens the repair, replacement or refund request (max 16)
   fixWhat: s('What is wrong'), // Label of the problem list (max 24)
   fixDrops: s('Drops or will not connect'), // Problem: the connection (max 30)

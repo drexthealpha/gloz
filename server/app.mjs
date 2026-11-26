@@ -6,6 +6,7 @@
 //   POST /draft     {id, ask?, lang?} -> {text, gloss?, by}
 //   POST /send      {key, id, text}   -> {ok} once per key, however often it is retried
 //   POST /read      {id}
+//   POST /unpair                      this phone's pairing ends at once
 //   POST /stt       raw PCM body      -> {text, ms, engine}
 import { createServer } from 'node:http'
 import { randomBytes, createHash, randomInt, timingSafeEqual } from 'node:crypto'
@@ -116,7 +117,20 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
     if (!mine) return false
     // Written at most once a day, so a busy device does not rewrite the file on every request.
     if (now() - mine.used > DAY) { mine.used = now(); save() }
-    return true
+    seen.set(h, now())
+    return mine
+  }
+
+  // Use counts for the server owner, with no message text: devices seen in the last day and month.
+  const seen = new Map()   // token hash -> last request, in memory
+  const active = ms => state.tokens.filter(x => now() - Math.max(x.used, seen.get(x.h) || 0) < ms).length
+  // AI drafts per device per day: a cap the owner sets (GLOZ_DRAFTS_PER_DAY, default 300), so no device runs up the AI bill.
+  const drafts = new Map()   // token hash -> { day, n }
+  function meter(dev) {
+    const day = Math.floor(now() / DAY), d = drafts.get(dev.h)
+    const n = d && d.day === day ? d.n + 1 : 1
+    drafts.set(dev.h, { day, n })
+    return n <= Number(process.env.GLOZ_DRAFTS_PER_DAY || 300)
   }
 
   // Each route answers [status, json]. /health and /pair are open; every other route needs a paired device.
@@ -165,8 +179,9 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
     return [200, { msgs: out, after: seq }]
   }
 
-  async function draftReply({ req }) {
+  async function draftReply({ req, dev }) {
     const { id, ask, lang } = await body(req)
+    if (!meter(dev)) return [429, { error: 'daily draft limit reached on this server' }]
     const m = msgs.get(id)
     if (!m) return [410, { error: 'message gone' }]
     const thread = (threads.get(`${m.source}:${m.chat}`) || []).slice(0, -1)
@@ -177,12 +192,14 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
   async function sendReply({ req }) {
     const { key, id, text } = await body(req)
     if (!key || !id || !text) return [400, { error: 'key, id and text are needed' }]
-    if (state.sent[key]) return [200, { ok: true, again: true }]
+    // A retry of the same reply is answered as sent; the same key with other text is refused, never sent.
+    const was = state.sent[key]
+    if (was) return was.h && was.h !== sha(text) ? [409, { error: 'this key already sent a different reply' }] : [200, { ok: true, again: true }]
     const r = state.refs[id]
     const c = r && byName[r.source]
     if (!c) return [410, { error: 'message unknown', drop: true }]
     try { await c.send({ id, ref: r.ref }, text) } catch (e) { return [503, { error: String(e.message || e), retry: true }] }
-    state.sent[key] = Date.now()
+    state.sent[key] = { at: Date.now(), h: sha(text) }
     r.done = true
     drop(id)
     save()
@@ -224,9 +241,17 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
     try { return [200, await h(await body(req), { ai, env: process.env })] } catch (e) { return [502, { error: String(e.message || e).slice(0, 200) }] }
   }
 
-  const health_ = async () => [200, { ok: true, connectors: health.connectors, errors: health.errors, ai: ai.ready(), stt: await stt.ready(), paired: state.tokens.length }]
+  const health_ = async () => [200, { ok: true, connectors: health.connectors, errors: health.errors, ai: ai.ready(), stt: await stt.ready(), paired: state.tokens.length, activeDay: active(DAY), activeMonth: active(30 * DAY) }]
+
+  // A phone ends its own pairing at once (lost phone, new phone): its token stops working.
+  async function unpair({ dev }) {
+    state.tokens = state.tokens.filter(x => x !== dev)
+    seen.delete(dev.h)
+    save()
+    return [200, { ok: true }]
+  }
   const OPEN = { 'GET /health': health_, 'POST /health': health_, 'POST /pair': pair }
-  const PAIRED = { 'GET /inbox': inboxSince, 'POST /draft': draftReply, 'POST /send': sendReply, 'POST /read': markRead, 'POST /stt': speech, 'POST /listen': listen }
+  const PAIRED = { 'GET /inbox': inboxSince, 'POST /draft': draftReply, 'POST /send': sendReply, 'POST /read': markRead, 'POST /stt': speech, 'POST /listen': listen, 'POST /unpair': unpair }
 
   async function handle(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*')
@@ -235,8 +260,9 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
     if (req.method === 'OPTIONS') { res.writeHead(204); return res.end() }
     const url = new URL(req.url, 'http://x')
     const key = `${req.method} ${url.pathname}`
-    const route = OPEN[key] || (authed(req) ? PAIRED[key] || (req.method === 'POST' && url.pathname.startsWith('/mode/') ? tool : null) : 'unpaired')
-    const [code, obj] = route === 'unpaired' ? [401, { error: 'pair first' }] : route ? await route({ req, url }) : [404, { error: 'not found' }]
+    const dev = OPEN[key] ? null : authed(req)
+    const route = OPEN[key] || (dev ? PAIRED[key] || (req.method === 'POST' && url.pathname.startsWith('/mode/') ? tool : null) : 'unpaired')
+    const [code, obj] = route === 'unpaired' ? [401, { error: 'pair first' }] : route ? await route({ req, url, dev }) : [404, { error: 'not found' }]
     res.writeHead(code, { 'content-type': 'application/json' })
     res.end(JSON.stringify(obj))
   }

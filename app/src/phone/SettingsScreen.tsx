@@ -15,9 +15,9 @@ export type Live = { status: string; said: string; muted: number; chats: Chat[] 
 export type Theme = 'device' | 'light' | 'dark'
 export type Set = (n: Partial<Settings> & { roomLang?: string }) => void
 
-export function SettingsScreen({ settings, current, onChange, live, unmute, pick, theme, onTheme }: {
+export function SettingsScreen({ settings, current, onChange, live, unmute, pick, unpair, theme, onTheme }: {
   settings: Settings & { roomLang?: string }; current?: () => Settings & { roomLang?: string }; onChange: (n: Partial<Settings> & { roomLang?: string }) => void
-  live: () => Live; unmute: () => void; pick: (key: string, on: boolean) => void; theme: Theme; onTheme: (v: Theme) => void
+  live: () => Live; unmute: () => void; pick: (key: string, on: boolean) => void; unpair?: () => void; theme: Theme; onTheme: (v: Theme) => void
 }) {
   const [s, setS] = useState(settings)
   const [l, setL] = useState(live)
@@ -53,7 +53,7 @@ export function SettingsScreen({ settings, current, onChange, live, unmute, pick
         {open && (
           <div id="more" className="flex flex-col gap-2">
             <Suspense fallback={<p className="m-0 text-muted-foreground">{t('loading')}</p>}>
-              <More s={s} set={set} l={l} setL={setL} live={live} unmute={unmute} pick={pick} theme={theme} onTheme={onTheme} />
+              <More s={s} set={set} l={l} setL={setL} live={live} unmute={unmute} pick={pick} unpair={unpair} theme={theme} onTheme={onTheme} />
             </Suspense>
           </div>
         )}

@@ -113,7 +113,7 @@ async function liveDraft(from: string, chat: string, text: string, ask = '') {
   const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
     headers: { authorization: `Bearer ${aiKey}`, 'content-type': 'application/json', 'x-title': 'Gloz demo' },
-    body: JSON.stringify({ model: 'openrouter/auto', messages: [
+    body: JSON.stringify({ model: 'openrouter/auto', provider: { data_collection: 'deny' }, messages: [
       { role: 'system', content: DRAFT_SYSTEM.replace('WEARER_LANG', 'English') },
       { role: 'user', content: [`Chat: ${chat}`, `${from}: ${text}`, ask ? `Wearer's instruction: ${ask}` : 'Wearer gave no instruction.'].join('\n') },
     ] }),

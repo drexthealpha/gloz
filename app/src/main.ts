@@ -23,7 +23,16 @@ const gloz = await runGloz(bridge, token ? new HttpApi(base, token) : null, (s) 
   status = !s.online ? `No signal${s.queued ? ` · ${s.queued} reply waiting` : ''}` : phoneStatus(Math.max(0, s.queue.length - (s.view === 'empty' ? 0 : s.at)), s.skippedMsgs?.length ?? 0, s.mutedMsgs?.length ?? 0, s.queued)
 })
 
-function showSettings() { settingsScreen(root, gloz.settings(), n => gloz.update(n), () => status, () => gloz.transcript(), () => gloz.muted(), () => gloz.unmuteAll(), () => gloz.settings(), () => gloz.chats(), (k, on) => gloz.pick(k, on)) }
+function showSettings() { settingsScreen(root, gloz.settings(), n => gloz.update(n), () => status, () => gloz.transcript(), () => gloz.muted(), () => gloz.unmuteAll(), () => gloz.settings(), () => gloz.chats(), (k, on) => gloz.pick(k, on), unpair) }
+
+// This phone's pairing ends at once on the server; pairing again needs a new code.
+async function unpair() {
+  const t = get('gloz.token')
+  if (t) await fetch(`${base}/unpair`, { method: 'POST', headers: { authorization: `Bearer ${t}` } }).catch(() => {})
+  for (const k of ['gloz.token', 'gloz.outbox', 'gloz.seen', 'gloz.skipped', 'gloz.after']) put(k, '')
+  // Starting again with no token shows pairing on the phone and on the glasses.
+  location.reload()
+}
 
 async function pair(b: string, code: string) {
   const api = new HttpApi(b, '')

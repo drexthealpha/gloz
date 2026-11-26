@@ -12,10 +12,11 @@ import { big, field, LANGS, Listen } from './shared'
 import type { Live, Set, Theme } from './SettingsScreen'
 import type { Settings } from '../core/types'
 
-export default function MoreSettings({ s, set, l, setL, live, unmute, pick, theme, onTheme }: {
-  s: Settings & { roomLang?: string }; set: Set; l: Live; setL: (l: Live) => void; live: () => Live; unmute: () => void; pick: (key: string, on: boolean) => void; theme: Theme; onTheme: (v: Theme) => void
+export default function MoreSettings({ s, set, l, setL, live, unmute, pick, unpair, theme, onTheme }: {
+  s: Settings & { roomLang?: string }; set: Set; l: Live; setL: (l: Live) => void; live: () => Live; unmute: () => void; pick: (key: string, on: boolean) => void; unpair?: () => void; theme: Theme; onTheme: (v: Theme) => void
 }) {
   const [copied, setCopied] = useState('')
+  const [sure, setSure] = useState(false)
   const [unmutedNote, setUnmutedNote] = useState(false)
   const [chatsOpen, setChatsOpen] = useState(false)
   const [fixOpen, setFixOpen] = useState(false)
@@ -88,6 +89,7 @@ export default function MoreSettings({ s, set, l, setL, live, unmute, pick, them
             <li key={k} className="flex flex-wrap items-center justify-between gap-3"><span className="min-w-0 flex-1 basis-40">{t(k)}</span><Listen k={k} label={`${t('listen')}: ${t(k)}`} /></li>
           ))}
         </ul>
+        {unpair && <Button variant="outline" className={`${big} max-w-full whitespace-normal`} onClick={() => { if (sure) unpair(); else { setSure(true); setTimeout(() => setSure(false), 4000) } }}>{t(sure ? 'unpairSure' : 'unpair')}</Button>}
       </section>
       {fixOpen && (
       <section className="flex flex-col gap-2">

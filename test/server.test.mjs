@@ -80,6 +80,8 @@ test('end to end: message in, draft, one send, retried send is not sent twice', 
   assert.equal((await call('/send', { key: 'k1', id, text: d.text }, token)).json.ok, true)
   // The app retries the same key after a drop: still one message at the service.
   assert.equal((await call('/send', { key: 'k1', id, text: d.text }, token)).json.again, true)
+  // The same key with other text is refused, and nothing more goes out.
+  assert.equal((await call('/send', { key: 'k1', id, text: 'something else' }, token)).status, 409)
   assert.equal(svc.sent.length, 1)
   // The text is gone from the backend once the reply is sent.
   assert.equal((await call('/inbox?after=0', null, token)).json.msgs.length, 0)
@@ -154,6 +156,27 @@ test('five wrong pairing codes stop pairing for a minute, so the code cannot be 
   // Only for that client: another one pairs with the new code, so one guesser cannot lock everyone out.
   const other = await fetch(`http://[::1]:${app.server.address().port}/pair`, { method: 'POST', body: JSON.stringify({ code: app.pairCode() }) })
   assert.equal(other.status, 200)
+  app.server.close()
+})
+
+test('a phone ends its own pairing at once; the owner sees use counts with no text; drafts have a daily cap', async () => {
+  const svc = fakeService()
+  const { app, call } = await boot(svc)
+  process.env.GLOZ_DRAFTS_PER_DAY = '2'
+  const { json: { token } } = await call('/pair', { code: app.pairCode() })
+  svc.push(msg(5, 'hello'))
+  await app.pollOnce()
+  const id = (await call('/inbox?after=0', null, token)).json.msgs[0].id
+  assert.equal((await call('/draft', { id }, token)).status, 200)
+  assert.equal((await call('/draft', { id }, token)).status, 200)
+  assert.equal((await call('/draft', { id }, token)).status, 429)
+  const h = (await call('/health')).json
+  assert.deepEqual([h.paired, h.activeDay, h.activeMonth], [1, 1, 1])
+  assert.equal(JSON.stringify(h).includes('hello'), false)
+  assert.equal((await call('/unpair', {}, token)).status, 200)
+  assert.equal((await call('/inbox', null, token)).status, 401)
+  assert.equal((await call('/health')).json.paired, 0)
+  delete process.env.GLOZ_DRAFTS_PER_DAY
   app.server.close()
 })
 

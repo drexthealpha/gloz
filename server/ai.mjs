@@ -24,7 +24,7 @@ async function call(p, system, user, timeoutMs = 15000) {
       const j = await r.json()
       return j.content.map(c => c.text || '').join('')
     }
-    const r = await fetch(p.url, { method: 'POST', signal: ctl.signal, headers: { authorization: `Bearer ${p.key}`, 'content-type': 'application/json' }, body: JSON.stringify({ model: p.model, max_tokens: 400, messages: [{ role: 'system', content: system }, { role: 'user', content: user }] }) })
+    const r = await fetch(p.url, { method: 'POST', signal: ctl.signal, headers: { authorization: `Bearer ${p.key}`, 'content-type': 'application/json' }, body: JSON.stringify({ model: p.model, max_tokens: 400, messages: [{ role: 'system', content: system }, { role: 'user', content: user }], ...(p.name === 'openrouter' ? { provider: { data_collection: 'deny' } } : {}) }) })
     if (!r.ok) throw new Error(`${p.name} ${r.status}`)
     const j = await r.json()
     return j.choices[0].message.content
