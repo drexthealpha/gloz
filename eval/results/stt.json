@@ -1,8 +1,8 @@
 {
- "engine": "whisper-local (onnx-community/whisper-base, q8)",
+ "engine": "whisper-local (onnx-community/whisper-base_timestamped, q8)",
  "pieceS": 4,
- "transcribeMs": 3182,
- "delayS": 7.2,
- "text": "Tell her four o'clock works better for me, and send the contract to none.",
+ "transcribeMs": 2839,
+ "delayS": 6.8,
+ "text": "He hoped there would be stew for dinner, turnips and carrots and",
  "machine": "the build PC (8 GB laptop, CPU only)"
 }
