@@ -27,7 +27,11 @@ jobs:
           npx vite build --mode demo
           npx evenhub pack app.json dist -o gloz.ehpk --sdk-ver 0.0.16
       - name: Results and README numbers match the committed run
-        run: node eval/score.mjs --check && node scripts/readme.mjs --check && grep -q "sha256 eval/set/heldout.json: $(sha256sum eval/set/heldout.json | cut -d" " -f1)" eval/PROTOCOL.md
+        run: |
+          node eval/score.mjs --check
+          node scripts/readme.mjs --check
+          # The held-out set is the one whose digest the protocol records.
+          grep -q "sha256 eval/set/heldout.json: $(sha256sum eval/set/heldout.json | cut -d' ' -f1)" eval/PROTOCOL.md
   setup:
     # The README setup steps, run the way a judge would: install, build, pack, start, pair.
     runs-on: ubuntu-24.04
