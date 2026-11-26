@@ -49,6 +49,11 @@ test('a swipe on a reply shows the next of three, wraps round, and tap sends the
   assert.equal(one.view, 'skipped')
 })
 
+test('up on the start of a message says so in words true for a message of any length', () => {
+  const s = run(start(true), { t: 'inbox', msgs: [m('a')] }, { t: 'prev' }).s
+  assert.equal(card(s).hint, 'Ana · Start of this message')
+})
+
 test('pairing clears the sample messages shown before it, so none shows twice', () => {
   const before = run(start(true), { t: 'inbox', msgs: [m('s1'), m('s2')] }).s
   const after = run(before, { t: 'paired' }).s

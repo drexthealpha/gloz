@@ -15,3 +15,13 @@ test('your day: one item per source, each with its tool; samples marked; a faile
   assert.ok(items.every(i => i.text.length <= 30), 'each item fits one line')
   assert.deepEqual(dayItems({ dash: null }).map(i => i.tool), ['nav'])
 })
+
+test('each day item says what it is in its first word (a stranger read "12°C" and "uptime" as riddles)', () => {
+  const items = dayItems({ dash: sampleDash({}), stocks: sampleStocks({}), prompter: { notes: [{ title: 'team talk' }] }, term: { on: true, allow: ['uptime'] } })
+  const by = (t: string) => items.filter(i => i.tool === t).map(i => i.text)
+  assert.ok(by('dash').some(t => /^Weather \d/.test(t)), by('dash').join(' | '))
+  assert.match(by('stocks')[0], /^Stock AAPL/)
+  assert.match(by('prompter')[0], /^Teleprompter: team talk$/)
+  assert.equal(by('nav')[0], 'Directions: say where')
+  assert.equal(by('term')[0], 'Run on server: uptime')
+})

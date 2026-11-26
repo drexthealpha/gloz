@@ -28,16 +28,16 @@ export function dayItems(d: DayData, lang = 'en', now = new Date()): DayItem[] {
     if (d.dash.events !== undefined) { const e = panelText('event', d.dash, lang, now, '', true); out.push({ tool: 'dash', text: /^\d/.test(e) ? `Next: ${e}` : e, sample: s }) }
     if (d.tasks?.tasks) out.push({ tool: 'tasks', text: `${d.tasks.tasks.length} tasks due`, sample: d.tasks.source === 'sample' })
     else if (d.dash.tasks) out.push({ tool: 'tasks', text: panelText('tasks', d.dash, lang, now, '', true), sample: s })
-    if (d.dash.weather) out.push({ tool: 'dash', text: `${panelText('temp', d.dash, lang, now, '', true)} · ${panelText('range', d.dash, lang, now, '', true)}`, sample: s })
+    if (d.dash.weather) out.push({ tool: 'dash', text: `Weather ${panelText('temp', d.dash, lang, now, '', true)} · ${panelText('range', d.dash, lang, now, '', true)}`, sample: s })
   }
   if (d.music?.track) out.push({ tool: 'music', text: `${d.music.playing ? 'Playing' : 'Paused'}: ${d.music.track}`, sample: d.music.sample })
   const q = d.stocks?.quotes?.[0]
-  if (q) out.push({ tool: 'stocks', text: line(q), sample: d.stocks?.sample })
+  if (q) out.push({ tool: 'stocks', text: `Stock ${line(q)}`, sample: d.stocks?.sample })
   if (title(d.notes ?? null)) out.push({ tool: 'notes', text: `Note: ${title(d.notes ?? null)}`, sample: fromSample(d.notes ?? null) })
   if (title(d.reader ?? null)) out.push({ tool: 'reader', text: `Reading: ${title(d.reader ?? null)}`, sample: fromSample(d.reader ?? null) })
-  if (title(d.prompter ?? null)) out.push({ tool: 'prompter', text: `Script: ${title(d.prompter ?? null)}`, sample: fromSample(d.prompter ?? null) })
-  out.push({ tool: 'nav', text: 'Directions', sample: d.dash?.sample })   // sample routes come only from a sample server, as the sample day does
-  if (d.term?.on && d.term.allow?.length) out.push({ tool: 'term', text: `Server command: ${d.term.allow[0]}`, sample: d.term.sample })
+  if (title(d.prompter ?? null)) out.push({ tool: 'prompter', text: `Teleprompter: ${title(d.prompter ?? null)}`, sample: fromSample(d.prompter ?? null) })
+  out.push({ tool: 'nav', text: 'Directions: say where', sample: d.dash?.sample })   // sample routes come only from a sample server, as the sample day does
+  if (d.term?.on && d.term.allow?.length) out.push({ tool: 'term', text: `Run on server: ${d.term.allow[0]}`, sample: d.term.sample })
   // One line: long titles are cut at a word.
   return out.map(i => ({ ...i, text: i.text.length > 30 ? i.text.slice(0, 29).replace(/\s+\S*$/, '') + '…' : i.text }))
 }

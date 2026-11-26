@@ -82,7 +82,7 @@ export default function MoreSettings({ s, set, l, setL, live, unmute, pick, unpa
       <section className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="m-0 text-xl font-semibold">{t('howTo')}</h2>
-          <Button variant="outline" className={`${big} max-w-full whitespace-normal`} aria-expanded={fixOpen} aria-controls="fixform" onClick={() => setFixOpen(!fixOpen)}>{t('fix')}</Button>
+          <Button variant="outline" className={`${big} max-w-full whitespace-normal`} aria-expanded={fixOpen} aria-controls="fixform" onClick={() => { setFixOpen(!fixOpen); if (!fixOpen) setTimeout(() => document.getElementById('fixform')?.scrollIntoView({ block: 'start' })) }}>{t('fix')}</Button>
         </div>
         <ul className="m-0 flex list-none flex-col gap-2 p-0">
           {(['help1', 'help2', 'help3', 'help4'] as const).map(k => (

@@ -29,6 +29,8 @@ export function layoutFor(c: Card, size: number): { lay: Lines; full: boolean } 
   const lay = layoutCard(c, size)
   if (size === 7) return { lay, full: true }
   if (c.kind === 'message' && lay.lines.length > 1 && size <= DEFAULT_SETTINGS.size) return { lay: layoutCard(c, size, 4), full: true }
+  // A longer reply too, three rows under its label, so the whole reply is read before the tap that sends it.
+  if (c.kind === 'draft' && lay.lines.length > 1 && size <= DEFAULT_SETTINGS.size) return { lay: layoutCard(c, size, 3), full: true }
   return { lay, full: false }
 }
 
@@ -62,7 +64,7 @@ export function layoutCard(c: Card, size: number, rows = 2): Lines {
     if (one.length === 1) return { lines: one, px: fontPx(size - 1), head: c.head }
   }
   // A longer message shows several rows per part (at the usual size or smaller), so it takes fewer parts.
-  if (lines.length > 1 && c.kind === 'message' && size <= DEFAULT_SETTINGS.size) {
+  if (lines.length > 1 && (c.kind === 'message' || (c.kind === 'draft' && rows > 2)) && size <= DEFAULT_SETTINGS.size) {
     const parts: string[] = []
     for (let k = 0; k < lines.length; k += rows) parts.push(lines.slice(k, k + rows).join('\n'))
     return { lines: parts, px, head: c.head }
