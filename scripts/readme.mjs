@@ -2,7 +2,7 @@
 // on the page comes from a command anyone can run.
 //   node scripts/readme.mjs          rewrite the blocks
 //   node scripts/readme.mjs --check  fail if README.md differs from what the results say
-import { readFileSync, writeFileSync, existsSync } from 'node:fs'
+import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs'
 import { complaintRows } from '../eval/rows.mjs'
 
 const R = n => new URL(`../eval/results/${n}`, import.meta.url)
@@ -39,8 +39,13 @@ blocks.wins = [
   ...rows.map(r => `| "${r.q}" (${r.d}) | ${r.fix} | ${r.gloz} | ${r.best} | ${r.v === 'beaten' ? 'Gloz ahead' : r.v} |`),
 ].join('\n')
 
+// The tests, counted as the runner counts them (each test( call in test/), with the log of every run.
+const testFiles = readdirSync(new URL('../test/', import.meta.url)).filter(n => /\.test\.(m?js|ts)$/.test(n))
+const testCount = testFiles.reduce((n, f) => n + (readFileSync(new URL(`../test/${f}`, import.meta.url), 'utf8').match(/^\s*test\(/gm) || []).length, 0)
+blocks.tests = `${testCount} tests in ${testFiles.length} files, all run on every push: [pass log](https://github.com/drexthealpha/gloz/actions/workflows/ci.yml)`
+
 // Each page and the blocks it must hold; a block written inline (gen-i) stays on its line.
-const PAGES = { 'README.md': ['first', 'heldout', 'time', 'wins', 'video', 'cost'], 'SUBMISSION-CHECK.md': ['video'] }
+const PAGES = { 'README.md': ['first', 'heldout', 'time', 'wins', 'video', 'cost', 'tests'], 'SUBMISSION-CHECK.md': ['video'] }
 let stale = false
 for (const [file, want] of Object.entries(PAGES)) {
   const path = new URL(`../${file}`, import.meta.url)
@@ -51,7 +56,7 @@ for (const [file, want] of Object.entries(PAGES)) {
     if (!block.test(md)) { console.log(`${file}: the gen:${k} marker is missing`); process.exit(1) }
     // A function, so a "$" in the text (prices) is never read as a pattern; a short value stays inline.
     const val = blocks[k]
-    md = md.replace(new RegExp(`(<!-- gen:${k} -->)[\\s\\S]*?(<!-- /gen -->)`, 'g'), (_, a, b) => k !== 'first' && (val.includes('\n') || val.length > 40) ? `${a}\n${val}\n${b}` : `${a}${val}${b}`)   // the README's first line stays one line
+    md = md.replace(new RegExp(`(<!-- gen:${k} -->)[\\s\\S]*?(<!-- /gen -->)`, 'g'), (_, a, b) => k !== 'first' && k !== 'tests' && (val.includes('\n') || val.length > 40) ? `${a}\n${val}\n${b}` : `${a}${val}${b}`)   // the README's first line stays one line
   }
   if (md !== before) { stale = true; if (!process.argv.includes('--check')) writeFileSync(path, md) }
 }
