@@ -42,7 +42,7 @@ blocks.wins = [
 // The tests, counted as the runner counts them (each test( call in test/), with the log of every run.
 const testFiles = readdirSync(new URL('../test/', import.meta.url)).filter(n => /\.test\.(m?js|ts)$/.test(n))
 const testCount = testFiles.reduce((n, f) => n + (readFileSync(new URL(`../test/${f}`, import.meta.url), 'utf8').match(/^\s*test\(/gm) || []).length, 0)
-blocks.tests = `${testCount} tests in ${testFiles.length} files, all run on every push: [pass log](https://github.com/drexthealpha/gloz/actions/workflows/ci.yml)`
+blocks.tests = `${testCount} tests in ${testFiles.length} files, all run on every push, with line coverage in the log: [pass log](https://github.com/drexthealpha/gloz/actions/workflows/ci.yml)`
 
 // Each page and the blocks it must hold; a block written inline (gen-i) stays on its line.
 const PAGES = { 'README.md': ['first', 'heldout', 'time', 'wins', 'video', 'cost', 'tests'], 'SUBMISSION-CHECK.md': ['video'] }

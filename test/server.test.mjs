@@ -108,6 +108,8 @@ test('the sent list survives a backend restart', async () => {
   const a = mk()
   a.state.sent.k9 = 1
   a.state.tokens.push('x')
+  // A new message changes the state, so the poll writes it.
+  svc.push(msg(3, 'x'))
   await a.pollOnce()
   const b = mk()
   assert.equal(b.state.sent.k9, 1)
@@ -149,6 +151,32 @@ test('five wrong pairing codes stop pairing for a minute, so the code cannot be 
   for (let i = 0; i < 5; i++) assert.equal((await call('/pair', { code: 'nope' + i })).status, 403)
   // Even the right code waits now.
   assert.equal((await call('/pair', { code: app.pairCode() })).status, 429)
+  // Only for that client: another one pairs with the new code, so one guesser cannot lock everyone out.
+  const other = await fetch(`http://[::1]:${app.server.address().port}/pair`, { method: 'POST', body: JSON.stringify({ code: app.pairCode() }) })
+  assert.equal(other.status, 200)
+  app.server.close()
+})
+
+test('once a reply is sent, its message leaves the chat context the next draft sees', async () => {
+  const svc = fakeService()
+  const seen = []
+  for (const k of Object.keys(process.env)) if (k.startsWith('GLOZ_')) delete process.env[k]
+  const app = createApp({
+    connectors: [svc.conn],
+    ai: { ready: () => true, draft: async (m, thread) => { seen.push(thread.map(t => t.text)); return { text: 'ok', by: 'test' } }, translate: async t => t },
+    stt: { ready: async () => false, transcribe: async () => ({}) },
+    dataDir: mkdtempSync(join(tmpdir(), 'gloz-')),
+  })
+  await new Promise(r => app.server.listen(0, r))
+  const base = `http://127.0.0.1:${app.server.address().port}`
+  const call = async (path, body, token) => (await fetch(base + path, { method: 'POST', headers: { authorization: `Bearer ${token}` }, body: JSON.stringify(body) })).json()
+  const { token } = await call('/pair', { code: app.pairCode() })
+  svc.push(msg(1, 'secret one'))
+  svc.push(msg(2, 'second'))
+  await app.pollOnce()
+  await call('/send', { key: 'a', id: msg(1).id, text: 'ok' }, token)
+  await call('/draft', { id: msg(2).id }, token)
+  assert.deepEqual(seen.at(-1), [])   // "secret one" is gone, not kept as context
   app.server.close()
 })
 

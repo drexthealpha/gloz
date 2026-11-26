@@ -8,12 +8,14 @@
 //   POST /read      {id}
 //   POST /stt       raw PCM body      -> {text, ms, engine}
 import { createServer } from 'node:http'
-import { randomBytes, createHash, randomInt } from 'node:crypto'
+import { randomBytes, createHash, randomInt, timingSafeEqual } from 'node:crypto'
 import { readFileSync, writeFileSync, mkdirSync, renameSync } from 'node:fs'
 import { join } from 'node:path'
 import { MODES } from './modes/index.mjs'
 
 const sha = s => createHash('sha256').update(s).digest('hex')
+// Compared in constant time (as hashes of equal length), so the time taken says nothing about the code.
+const same = (a, b) => timingSafeEqual(Buffer.from(sha(String(a))), Buffer.from(sha(String(b))))
 
 // A pairing in use never ends; one unused for 90 days ends, so a lost or retired device stops working.
 export const IDLE_MS = 90 * 24 * 3600 * 1000
@@ -34,30 +36,46 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
   const save = () => { writeFileSync(file + '.tmp', JSON.stringify(state)); renameSync(file + '.tmp', file) }
   save()
 
-  // Message text lives in memory only, and is dropped once the reply is sent.
+  // Message text lives in memory only, and is dropped once the reply is sent: the message, its
+  // translations and summary, and its line in the chat's recent messages all go (drop below).
   const msgs = new Map()
   const inbox = []          // [{seq, id}]
-  const pairLock = { wrong: 0, until: 0 }   // wrong pairing codes in a row, and when pairing opens again
+  // Wrong pairing codes, per client address: a client with five wrong codes in a row waits a minute;
+  // five wrong codes from anyone retire the code, so it cannot be guessed (5 tries against 900,000).
+  const pairLocks = new Map()   // address -> { wrong, until }
+  let wrongTotal = 0
   const threads = new Map() // chat id -> last messages, for draft context
   let seq = 0
-  const translations = new Map()
+  const translations = new Map()   // `${id}|...` -> translation or summary
+  let dirty = false   // state changed since it was last written
 
   function add(m) {
     if (msgs.has(m.id) || state.refs[m.id]?.done) return
     msgs.set(m.id, m)
     state.refs[m.id] = { source: m.source, ref: m.ref, at: m.at }
+    dirty = true
     inbox.push({ seq: ++seq, id: m.id })
     const key = `${m.source}:${m.chat}`
     const t = threads.get(key) || []
-    t.push({ from: m.from, text: m.text })
+    t.push({ id: m.id, from: m.from, text: m.text })
     threads.set(key, t.slice(-10))
   }
 
-  // Refs older than 7 days are forgotten.
+  function drop(id) {
+    const m = msgs.get(id)
+    msgs.delete(id)
+    for (const k of translations.keys()) if (k.startsWith(`${id}|`)) translations.delete(k)
+    if (m) { const key = `${m.source}:${m.chat}`; const t = (threads.get(key) || []).filter(x => x.id !== id); if (t.length) threads.set(key, t); else threads.delete(key) }
+    const i = inbox.findIndex(e => e.id === id)
+    if (i >= 0) inbox.splice(i, 1)
+  }
+
+  // Refs older than 7 days are forgotten, and any message still unanswered by then is dropped.
   function prune() {
     const old = Date.now() - 7 * 864e5
-    for (const [id, r] of Object.entries(state.refs)) if ((r.at || 0) < old) delete state.refs[id]
+    for (const [id, r] of Object.entries(state.refs)) if ((r.at || 0) < old) { delete state.refs[id]; drop(id); dirty = true }
   }
+  const saveIfChanged = () => { if (dirty) { dirty = false; save() } }
 
   const health = { connectors: connectors.map(c => c.name), errors: {} }
   async function pollOnce() {
@@ -66,7 +84,7 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
       try { for (const m of await c.poll()) add(m); delete health.errors[c.name] } catch (e) { health.errors[c.name] = String(e.message || e) }
     }
     prune()
-    save()
+    saveIfChanged()
   }
   let timer = null
   const startPolling = () => {
@@ -74,7 +92,7 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
     pollOnce()
     timer = setInterval(pollOnce, pollMs)
     // A service that can push (Telegram long polling) delivers each message as it arrives.
-    for (const c of connectors) if (c.listen) void c.listen(ms => { for (const m of ms) add(m); prune(); save() }, () => !timer).catch(e => { health.errors[c.name] = String(e.message || e) })
+    for (const c of connectors) if (c.listen) void c.listen(ms => { for (const m of ms) add(m); prune(); saveIfChanged() }, () => !timer).catch(e => { health.errors[c.name] = String(e.message || e) })
   }
   const stop = () => { clearInterval(timer); timer = null }
 
@@ -115,16 +133,20 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
       const { code } = await body(req)
       // Five wrong codes retire the code and stop pairing for a minute, so it cannot be guessed:
       // 5 tries against 900,000 codes.
-      if (Date.now() < pairLock.until) return send(429, { error: 'too many wrong codes, try again in a minute' })
-      if (String(code || '').trim() !== state.pairCode) {
-        if (++pairLock.wrong >= 5) {
-          pairLock.wrong = 0
-          pairLock.until = Date.now() + 60_000
+      const who = req.socket.remoteAddress || '?'
+      const lock = pairLocks.get(who) || { wrong: 0, until: 0 }
+      if (Date.now() < lock.until) return send(429, { error: 'too many wrong codes, try again in a minute' })
+      if (!same(String(code || '').trim(), state.pairCode)) {
+        if (++lock.wrong >= 5) { lock.wrong = 0; lock.until = Date.now() + 60_000 }
+        pairLocks.set(who, lock)
+        if (++wrongTotal >= 5) {
+          wrongTotal = 0
           if (!process.env.GLOZ_PAIR_CODE) { state.pairCode = String(randomInt(100000, 1000000)); save(); log(`Five wrong codes: new pairing code ${state.pairCode}`) }
         }
         return send(403, { error: 'wrong code' })
       }
-      pairLock.wrong = 0
+      pairLocks.delete(who)
+      wrongTotal = 0
       const token = randomBytes(24).toString('base64url')
       state.tokens.push({ h: sha(token), used: now() })
       // Each code pairs once; a new one is printed for the next device.
@@ -176,7 +198,7 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
       try { await c.send({ id, ref: r.ref }, text) } catch (e) { return send(503, { error: String(e.message || e), retry: true }) }
       state.sent[key] = Date.now()
       r.done = true
-      msgs.delete(id)
+      drop(id)
       save()
       c.read?.({ id, ref: r.ref }).catch(() => {})
       return send(200, { ok: true })

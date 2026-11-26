@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node --env-file-if-exists=.env server/index.mjs",
     "test": "node --test \"test/*.test.*\"",
+    "test:coverage": "node --test --experimental-test-coverage \"test/*.test.*\"",
     "eval": "node eval/run.mjs heldout",
     "eval:time": "node eval/time.mjs",
     "check:text": "node scripts/check-text.mjs",
