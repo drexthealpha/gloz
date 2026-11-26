@@ -101,7 +101,7 @@ export function step(s: State, ev: Event): { s: State; fx: Effect[] } {
   const msg = current(s)
   switch (ev.t) {
     case 'paired':
-      return { s: { ...s, paired: true, view: 'empty' }, fx: [{ e: 'refresh' }] }
+      return { s: { ...s, paired: true, view: 'empty', queue: [], at: 0, drafts: {}, skippedMsgs: [], mutedMsgs: [] }, fx: [{ e: 'refresh' }] }
     case 'inbox': {
       const known = new Set([...s.queue.map(m => m.id), ...s.seen])
       const fresh = ev.msgs.filter(m => !known.has(m.id))

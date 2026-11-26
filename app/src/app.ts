@@ -299,7 +299,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
     if (dayAt === 0) return { kind: 'status', text: homeNote || base.text, hint: ['tap: check now', day.length && 'down: your day', skipped && w.showSkipped(skipped), 'hold: ask, or add a task'].filter(Boolean).join(' · '), progress: day.length ? [1, n] : undefined }
     const it = day[dayAt - 1]
     if (homeNote) return { kind: 'status', text: homeNote, hint: 'down: next · hold: ask, or add a task', progress: [dayAt + 1, n] }
-    return { kind: 'status', text: it.text, hint: [it.sample && 'sample', it.tool === 'dash' ? 'tap: today at a glance' : 'tap: open', 'down: next', 'up: earlier'].filter(Boolean).join(' · '), progress: [dayAt + 1, n] }
+    return { kind: 'status', text: it.text, hint: [it.sample && 'sample', it.tool === 'dash' ? 'tap: your day at a glance' : 'tap: open', 'down: next', 'up: earlier', 'double tap: close'].filter(Boolean).join(' · '), progress: [dayAt + 1, n] }
   }
   function flash(text: string) {
     homeNote = text

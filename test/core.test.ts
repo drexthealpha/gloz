@@ -49,6 +49,13 @@ test('a swipe on a reply shows the next of three, wraps round, and tap sends the
   assert.equal(one.view, 'skipped')
 })
 
+test('pairing clears the sample messages shown before it, so none shows twice', () => {
+  const before = run(start(true), { t: 'inbox', msgs: [m('s1'), m('s2')] }).s
+  const after = run(before, { t: 'paired' }).s
+  assert.equal(after.queue.length, 0)
+  assert.equal(run(after, { t: 'inbox', msgs: [m('real1')] }).s.queue.length, 1)
+})
+
 test('a tap before the draft arrives waits, then shows the draft', () => {
   let r = run(start(true), { t: 'inbox', msgs: [m('a')] }, { t: 'tap' })
   assert.equal(r.s.view, 'thinking')
@@ -381,7 +388,7 @@ test('Unmute all chats is in the glasses menu only while a chat is muted', async
   assert.ok(menuItems('en', false, 'Stop listening', false, null, true).some(x => x.itemID === 8))
   assert.ok(!menuItems('en', false, 'Stop listening', false, null, false).some(x => x.itemID === 8))
   assert.ok(!menuItems('en', true, 'Stop listening', false, null, false).some(x => x.itemID === 8))
-  assert.ok(menuItems('en', false, 'Stop listening', false, null, false).some(x => x.itemName === 'Translate (needs AI key)'))
+  assert.ok(menuItems('en', false, 'Stop listening', false, null, false).some(x => x.itemName === 'Translate: needs AI'))
 })
 
 test('a press from the R1 ring means the same as the same press on the glasses touchpad', async () => {
