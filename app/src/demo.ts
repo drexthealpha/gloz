@@ -349,7 +349,7 @@ api.onChange()
 fetch('./proof/proof.json').then(r => r.ok ? r.json() : []).then((list: { lang: string; script: string; text: string; pages?: number }[]) => {
   if (!list.length) return
   document.getElementById('pairs')!.innerHTML = list.map(p => `
-    <p class="said"><b>${p.script}</b>: <span lang="${p.lang}" dir="auto">${p.text.replace(/</g, '&lt;')}</span></p>
+    <p class="said"><b>${p.script}</b>: <span lang="${({ tha: 'th', ara: 'ar', hin: 'hi', heb: 'he', fas: 'fa' } as Record<string, string>)[p.lang] ?? p.lang}" dir="auto">${p.text.replace(/</g, '&lt;')}</span></p>
     <div class="pair">
       <figure><img src="./proof/${p.lang}-plain.png" alt="Plain G2 text: what the glasses font draws"><figcaption>Plain G2 text: the words do not show</figcaption></figure>
       <div class="gloz">${Array.from({ length: p.pages ?? 1 }, (_, i) => `<figure><img src="./proof/${p.lang}-gloz${i ? '-' + (i + 1) : ''}.png" alt="Gloz: the same message drawn as an image"><figcaption>Gloz${(p.pages ?? 1) > 1 ? ` page ${i + 1} of ${p.pages}` : ''}</figcaption></figure>`).join('')}</div>

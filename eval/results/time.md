@@ -1,4 +1,4 @@
-| Arm | Median seconds, message seen to reply sent |
+| Arm | Modelled median seconds, message seen to reply sent |
 |---|---|
 | Plain G2 text, reply spoken in full | 2.6 |
 | Gloz, draft read, one tap | 2.1 |

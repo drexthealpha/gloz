@@ -194,12 +194,14 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
     if (!key || !id || !text) return [400, { error: 'key, id and text are needed' }]
     // A retry of the same reply is answered as sent; the same key with other text is refused, never sent.
     const was = state.sent[key]
-    if (was) return was.h && was.h !== sha(text) ? [409, { error: 'this key already sent a different reply' }] : [200, { ok: true, again: true }]
+    if (was) return was.h && was.h !== sha(`${id}
+${text}`) ? [409, { error: 'this key already sent a different reply' }] : [200, { ok: true, again: true }]
     const r = state.refs[id]
     const c = r && byName[r.source]
     if (!c) return [410, { error: 'message unknown', drop: true }]
     try { await c.send({ id, ref: r.ref }, text) } catch (e) { return [503, { error: String(e.message || e), retry: true }] }
-    state.sent[key] = { at: Date.now(), h: sha(text) }
+    state.sent[key] = { at: Date.now(), h: sha(`${id}
+${text}`) }
     r.done = true
     drop(id)
     save()

@@ -45,6 +45,6 @@ const by = [...new Set(rows.map(r => r.by))].join(', ')
 const out = { drafter: by, wpmMedian: med(rows.map(r => r.wpm)), plainMedian: med(rows.map(r => r.plain)), glozMedian: med(rows.map(r => r.gloz)), glozFaster: rows.filter(r => r.gloz < r.plain).length, n: rows.length, rows }
 mkdirSync(new URL('./results/', import.meta.url), { recursive: true })
 writeFileSync(new URL('./results/time.json', import.meta.url), JSON.stringify(out, null, 1) + '\n')
-const md = `| Arm | Median seconds, message seen to reply sent |\n|---|---|\n| Plain G2 text, reply spoken in full | ${out.plainMedian.toFixed(1)} |\n| Gloz, draft read, one tap | ${out.glozMedian.toFixed(1)} |\n\nGloz faster on ${out.glozFaster} of ${out.n} messages. Silent reply rate with Gloz: ${out.wpmMedian.toFixed(0)} words a minute (median). Drafts by: ${by}. Protocol: eval/PROTOCOL.md (Time, amendment 3).\n`
+const md = `| Arm | Modelled median seconds, message seen to reply sent |\n|---|---|\n| Plain G2 text, reply spoken in full | ${out.plainMedian.toFixed(1)} |\n| Gloz, draft read, one tap | ${out.glozMedian.toFixed(1)} |\n\nGloz faster on ${out.glozFaster} of ${out.n} messages. Silent reply rate with Gloz: ${out.wpmMedian.toFixed(0)} words a minute (median). Drafts by: ${by}. Protocol: eval/PROTOCOL.md (Time, amendment 3).\n`
 writeFileSync(new URL('./results/time.md', import.meta.url), md)
 console.log(md)

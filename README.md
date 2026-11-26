@@ -63,10 +63,10 @@ Locked evaluation: the protocol and the 200 held-out messages were committed bef
 Scripts won: 10 of 10. Shown means a character error rate of at most 0.1. Blur ladder: 0, 1, 1.5, 2, 3, 4, 5, 6, 8 px. Protocol: eval/PROTOCOL.md.
 <!-- /gen -->
 
-Time from message seen to reply sent, 200 held-out messages:
+Time from message seen to reply sent, 200 held-out messages, from a timing model (published operator times for reading, tapping and speaking; no people were timed):
 
 <!-- gen:time -->
-| Arm | Median seconds, message seen to reply sent |
+| Arm | Modelled median seconds, message seen to reply sent |
 |---|---|
 | Plain G2 text, reply spoken in full | 2.6 |
 | Gloz, draft read, one tap | 2.1 |
