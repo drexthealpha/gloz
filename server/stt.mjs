@@ -12,7 +12,8 @@ async function loadLocal() {
   localTried = true
   try {
     const { pipeline } = await import('@huggingface/transformers')
-    local = await pipeline('automatic-speech-recognition', env.GLOZ_WHISPER_MODEL || 'onnx-community/whisper-base', { dtype: 'q8' })
+    // The _timestamped build is Whisper base with word times, so the teleprompter knows when the last word ended.
+    local = await pipeline('automatic-speech-recognition', env.GLOZ_WHISPER_MODEL || 'onnx-community/whisper-base_timestamped', { dtype: 'q8' })
   } catch { local = null }
   return local
 }
@@ -39,13 +40,22 @@ export async function sttReady() {
 // The wearer speaks their own language (set on the phone), so it is passed in:
 // the local Whisper pipeline falls back to English when no language is given.
 // Returns { text, ms, engine } or throws when no engine is set up.
-export async function transcribe(pcm, lang = 'en') {
+// With { words: true }, local Whisper also returns `tail`: seconds of audio after the last word it heard.
+export async function transcribe(pcm, lang = 'en', { words = false } = {}) {
   const t0 = performance.now()
   if (pcm.length < 3200) return { text: '', ms: 0, engine: 'none' }   // under 0.1 s: nothing said
   const w = await loadLocal()
   if (w) {
-    const r = await w(pcmToFloat(pcm), { language: lang || 'en', task: 'transcribe' })
-    return { text: (r.text || '').trim(), ms: Math.round(performance.now() - t0), engine: 'whisper-local' }
+    const f = pcmToFloat(pcm), opts = { language: lang || 'en', task: 'transcribe' }
+    let r, tail
+    try {
+      if (!words) throw 0
+      r = await w(f, { ...opts, return_timestamps: 'word' })
+      // Seconds of audio after the last word heard: the speaker has moved on to a word not yet heard.
+      const last = (r.chunks || []).filter(c => /[\p{L}\p{N}]/u.test(c.text)).at(-1)
+      if (last && typeof last.timestamp?.[1] === 'number') tail = f.length / 16000 - last.timestamp[1]
+    } catch { r = await w(f, opts) }   // word times not asked for, or a model without them
+    return { text: (r.text || '').trim(), ms: Math.round(performance.now() - t0), engine: 'whisper-local', tail }
   }
   if (env.GLOZ_OPENAI_KEY) {
     const form = new FormData()

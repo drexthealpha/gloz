@@ -1,0 +1,7 @@
+{
+ "input": "recorded speech: LibriSpeech test-clean, reader 1089 (a person reading a book aloud), 721 words, 276 s",
+ "engine": "Whisper base with word times (onnx-community/whisper-base_timestamped, q8)",
+ "updates": 184,
+ "exact": 0.6032608695652174,
+ "within1": 0.9456521739130435
+}

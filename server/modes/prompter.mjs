@@ -57,11 +57,13 @@ export async function handle(body, { env = process.env, stt = transcribe } = {})
   if (a === 'follow') {
     if (!body.pcm) return { at: null }
     let r
-    try { r = await stt(Buffer.from(String(body.pcm), 'base64'), body.lang || 'en') } catch { return { error: 'No speech engine on the server' } }
+    try { r = await stt(Buffer.from(String(body.pcm), 'base64'), body.lang || 'en', { words: true }) } catch { return { error: 'No speech engine on the server' } }
     const words = String(body.words ?? '').split(/\s+/).filter(Boolean)
     const heardWords = String(r.text ?? '').split(/\s+/).filter(Boolean)
     const k = align(words, heardWords, Number(body.at) || 0)
-    return { at: k === null ? null : (Number(body.from) || 0) + k, heard: r.text ?? '', ms: r.ms }
+    // Speech after the last word heard means the reader is already on the next word: show that one.
+    const lead = k !== null && r.tail > 0.05 ? 1 : 0
+    return { at: k === null ? null : (Number(body.from) || 0) + Math.min(words.length, k + lead), heard: r.text ?? '', ms: r.ms }
   }
   if (docsSource(env) === 'sample') return samplePrompter(body)
   try {

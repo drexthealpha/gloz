@@ -39,6 +39,9 @@ test('handler: follow turns speech into words and returns the place in the whole
   const words = 'alpha beta gamma delta epsilon zeta eta theta'
   const r = await handle({ action: 'follow', pcm: Buffer.from(loud(9600)).toString('base64'), from: 100, at: 0, words, lang: 'en' }, { env: {}, stt: async (b, lang) => { assert.equal(b.length, 9600); assert.equal(lang, 'en'); return { text: 'Gamma, delta epsilon.', ms: 40 } } })
   assert.deepEqual(r, { at: 105, heard: 'Gamma, delta epsilon.', ms: 40 })
+  // Speech after the last word heard: the reader is on the next word already, so the place moves one on.
+  const on = await handle({ action: 'follow', pcm: Buffer.from(loud(9600)).toString('base64'), from: 100, at: 0, words, lang: 'en' }, { env: {}, stt: async (b, lang, o) => { assert.deepEqual(o, { words: true }); return { text: 'Gamma, delta epsilon.', ms: 40, tail: 0.3 } } })
+  assert.equal(on.at, 106)
   assert.deepEqual(await handle({ action: 'follow', pcm: 'AAAA', words }, { env: {}, stt: async () => { throw new Error('none') } }), { error: 'No speech engine on the server' })
   assert.deepEqual(await handle({ action: 'list' }, { env: {} }), samplePrompter({ action: 'list' }))
 })

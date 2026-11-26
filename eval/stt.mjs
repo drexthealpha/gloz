@@ -12,6 +12,6 @@ let text = ''
 for (let i = 0; i < 4; i++) { const r = await transcribe(Buffer.from(piece), 'en'); if (i) runs.push(r.ms); text = r.text }
 runs.sort((a, b) => a - b)
 const ms = runs[1]
-const out = { engine: 'whisper-local (onnx-community/whisper-base, q8)', pieceS: 4, transcribeMs: ms, delayS: Number((4 + ms / 1000).toFixed(1)), text, machine: 'the build PC (8 GB laptop, CPU only)' }
+const out = { engine: 'whisper-local (onnx-community/whisper-base_timestamped, q8)', pieceS: 4, transcribeMs: ms, delayS: Number((4 + ms / 1000).toFixed(1)), text, machine: 'the build PC (8 GB laptop, CPU only)' }
 writeFileSync(new URL('./results/stt.json', import.meta.url), JSON.stringify(out, null, 1) + '\n')
 console.log(out)
