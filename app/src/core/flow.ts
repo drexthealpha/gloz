@@ -270,8 +270,8 @@ function cardOf(s: State, lang: string): Card {
     const pos = d.alts && d.alts.length > 1 ? ` ${(d.pick ?? 0) + 1}/${d.alts.length}` : ''
     const ai = d.by === 'ai' ? `AI draft${pos} · ` : pos ? `${pos.trim()} · ` : ''
     const hint = s.online ? (pos ? w.draftHintAlts : w.draftHint) : w.draftOffline
-    if (d.gloss) return { kind: 'draft', head: name ? `↩ ${ai}${w.means(name, msg.from)}` : `↩ ${ai}`, text: d.gloss, hint, progress }
-    return { kind: 'draft', head: name ? `↩ ${ai}${w.inLang(name, msg.from)}` : `↩ ${ai}`, text: d.text, hint, progress }
+    if (d.gloss) return { kind: 'draft', head: name ? `↩ ${ai}${w.means(name, msg.from)}` : `↩ ${ai.replace(/ · $/, '')}`, text: d.gloss, hint, progress }
+    return { kind: 'draft', head: name ? `↩ ${ai}${w.inLang(name, msg.from)}` : `↩ ${ai.replace(/ · $/, '')}`, text: d.text, hint, progress }
   }
   // A long message starts with one sentence saying what it wants, then the full text.
   const brief = (msg as Msg & { brief?: string }).brief

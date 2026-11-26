@@ -273,7 +273,7 @@ keyForm.onsubmit = e => {
   e.preventDefault()
   aiKey = keyIn.value.trim(); keyIn.value = ''
   try { if (aiKey) sessionStorage.setItem('gloz.demo.key', aiKey); else sessionStorage.removeItem('gloz.demo.key') } catch {}
-  keyNote(aiKey ? 'Key kept in this tab. The next reply you open is written by OpenRouter.' : 'Without a key, replies are a fixed holding reply.')
+  keyNote(aiKey ? 'Key kept in this tab. The next reply you open is written by OpenRouter.' : "Without a key, the drafts shown were written ahead of time by an AI model (Claude) under Gloz's own draft rules.")
 }
 
 // Speak: where the browser has speech recognition, the words can be said instead of typed.

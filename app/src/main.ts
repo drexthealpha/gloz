@@ -14,6 +14,8 @@ const put = (k: string, v: string) => { try { localStorage.setItem(k, v) } catch
 // A pairing link starts a fresh pairing: what was kept for an old one goes, before anything reads it.
 const q = new URLSearchParams(location.search)
 const link = q.get('backend') && q.get('code') ? { backend: q.get('backend')!, code: q.get('code')! } : null
+// fresh=1 (recordings and test walks) also starts from the usual settings.
+if (link && q.get('fresh')) put('gloz.settings', '')
 if (link) { for (const k of ['gloz.token', 'gloz.outbox', 'gloz.seen', 'gloz.skipped', 'gloz.after', 'gloz.backend']) put(k, ''); history.replaceState(null, '', location.pathname) }
 
 const bridge = await waitForEvenAppBridge()

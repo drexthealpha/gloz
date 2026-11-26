@@ -25,16 +25,18 @@ export interface Lines { lines: string[]; px: number; head?: string }
 
 // How a card is laid out, and whether it needs the whole display: the largest size, or a message too long
 // for one two-row strip, which then shows four rows a part so most messages fit one screen.
+// Rows a part holds on the whole display, by text size (1 to 6): as many as fit 288 px, under the label for a reply.
+const FULL_ROWS = { message: [4, 4, 4, 3, 2, 2], draft: [3, 3, 3, 3, 2, 1] } as const
 export function layoutFor(c: Card, size: number): { lay: Lines; full: boolean } {
   const lay = layoutCard(c, size)
   if (size === 7) return { lay, full: true }
-  if (c.kind === 'message' && lay.lines.length > 1 && size <= DEFAULT_SETTINGS.size) return { lay: layoutCard(c, size, 4), full: true }
-  // A longer reply too, three rows under its label, so the whole reply is read before the tap that sends it.
-  if (c.kind === 'draft' && lay.lines.length > 1 && size <= DEFAULT_SETTINGS.size) return { lay: layoutCard(c, size, 3), full: true }
+  // A longer message or reply uses the whole display at every size, so a reply is read whole before the tap that sends it.
+  const rows = c.kind === 'message' || c.kind === 'draft' ? FULL_ROWS[c.kind][size - 1] : 1
+  if (lay.lines.length > 1 && rows > 1) return { lay: layoutCard(c, size, rows), full: true }
   return { lay, full: false }
 }
 
-export function layoutCard(c: Card, size: number, rows = 2): Lines {
+export function layoutCard(c: Card, size: number, rows?: number): Lines {
   const px = fontPx(size)
   const ctx = ctx2d()
   ctx.font = `${px}px ${FONT}`
@@ -63,10 +65,11 @@ export function layoutCard(c: Card, size: number, rows = 2): Lines {
     const one = wrap(text, room, measure)
     if (one.length === 1) return { lines: one, px: fontPx(size - 1), head: c.head }
   }
-  // A longer message shows several rows per part (at the usual size or smaller), so it takes fewer parts.
-  if (lines.length > 1 && (c.kind === 'message' || (c.kind === 'draft' && rows > 2)) && size <= DEFAULT_SETTINGS.size) {
+  // On the strip a longer message shows two rows a part at the usual size or smaller; on the whole display, as many as fit.
+  const n = rows ?? (c.kind === 'message' && size <= DEFAULT_SETTINGS.size ? 2 : 1)
+  if (lines.length > 1 && n > 1) {
     const parts: string[] = []
-    for (let k = 0; k < lines.length; k += rows) parts.push(lines.slice(k, k + rows).join('\n'))
+    for (let k = 0; k < lines.length; k += n) parts.push(lines.slice(k, k + n).join('\n'))
     return { lines: parts, px, head: c.head }
   }
   return { lines, px, head: c.head }

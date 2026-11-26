@@ -35,7 +35,8 @@ test('a swipe on a reply shows the next of three, wraps round, and tap sends the
   const alts = [{ text: 'Yes, 3 works.' }, { text: 'Not today, tomorrow?' }, { text: 'Which 3, am or pm?' }]
   let { s } = run(start(true), { t: 'inbox', msgs: [m('a')] }, { t: 'draft', id: 'a', draft: { text: alts[0].text, by: 'ai', alts } }, { t: 'tap' })
   assert.match(card(s).head!, /AI draft 1\/3/)
-  assert.match(card(s).hint!, /down: another reply/)
+  assert.match(card(s).hint!, /^tap: send · down: another · hold: speak$/)
+  assert.equal(card(s).head, '↩ AI draft 1/3')   // no dangling separator when no language is named
   s = run(s, { t: 'next' }).s
   assert.equal(s.view, 'draft')
   assert.match(card(s).text, /Not today/)

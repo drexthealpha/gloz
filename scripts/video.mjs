@@ -44,7 +44,7 @@ let be = backend()
 await waitUp('http://127.0.0.1:8787/health')
 const vite = spawn(process.execPath, ['node_modules/vite/bin/vite.js', '--port', '5173', '--strictPort'], { cwd: join(ROOT, 'app'), stdio: 'ignore' })
 await waitUp('http://localhost:5173/')
-const sim = startSim(`http://localhost:5173/?backend=http://127.0.0.1:8787&code=${CODE}`)
+const sim = startSim(`http://localhost:5173/?backend=http://127.0.0.1:8787&code=${CODE}&fresh=1`)
 try {
   await waitUp(`${SIM}/api/ping`)
   await waitLog('[gloz] ready', 60000)
