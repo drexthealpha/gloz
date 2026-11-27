@@ -12,9 +12,7 @@ import { sampleReader } from './modes/reader.ts'
 import { samplePrompter } from './modes/prompter.ts'
 import { sampleNav } from './modes/nav.ts'
 import { sampleStocks } from './modes/stocks.ts'
-// @ts-ignore: plain JS shared with the server
 import { handle as weatherNow } from '../../server/modes/weather.mjs'
-// @ts-ignore: plain JS shared with the server
 import { SAMPLE as sampleNews } from '../../server/modes/news.mjs'
 import { sampleMusic } from './modes/music.ts'
 import { sampleTerm } from './modes/term.ts'

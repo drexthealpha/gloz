@@ -22,7 +22,9 @@ export async function handle(body, { env, fetch: get = globalThis.fetch }) {
   if (!Number.isFinite(lat) || !Number.isFinite(lon)) return { error: 'Location off on the phone' }
   const q = `latitude=${lat.toFixed(3)}&longitude=${lon.toFixed(3)}&current=temperature_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code&timezone=auto&forecast_days=2`
   try {
-    const r = await get(`https://api.open-meteo.com/v1/forecast?${q}`, { signal: AbortSignal.timeout(8000) })
+    // A controller and a timer, not AbortSignal.timeout: this also runs in the glasses WebView, and older ones lack it.
+    const c = new AbortController(), timer = setTimeout(() => c.abort(), 8000)
+    const r = await get(`https://api.open-meteo.com/v1/forecast?${q}`, { signal: c.signal }).finally(() => clearTimeout(timer))
     if (!r.ok) return { error: `No forecast: ${r.status}` }
     const j = await r.json()
     return { lines: lines(j), t: Date.now() }

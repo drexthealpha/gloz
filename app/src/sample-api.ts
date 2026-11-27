@@ -5,7 +5,6 @@ import type { Api } from './api.ts'
 import type { Draft, Msg } from './core/types.ts'
 import { HOLDING_REPLIES } from './demo-data.ts'
 import samples from './demo-inbox.json'
-// @ts-ignore: plain JS shared with the server
 import { handle as weather } from '../../server/modes/weather.mjs'
 
 type Sample = Msg & { draft?: string; gloss?: string; lang: string }

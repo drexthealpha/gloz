@@ -10,6 +10,7 @@ const EXT = /\.(md|html|ts|mjs|json|txt|yml)$/
 
 import { createHash } from 'node:crypto'
 import { NAME_HASHES, NAME_WORDS, SALES } from './banned.mjs'
+import { ignored } from './ignore.mjs'
 const sha = s => createHash('sha256').update(s).digest('hex')
 
 function* files(dir) {
@@ -21,7 +22,7 @@ function* files(dir) {
   }
 }
 
-let bad = 0
+let bad = 0, letThrough = 0
 for (const p of files(ROOT)) {
   const rel = relative(ROOT, p).replace(/\\/g, '/')
   if (rel === 'scripts/check-text.mjs' || rel === 'scripts/banned.mjs' || rel.endsWith('package-lock.json')) continue
@@ -29,6 +30,8 @@ for (const p of files(ROOT)) {
   let fenced = false
   text.split('\n').forEach((line, i) => {
     if (line.trim().startsWith('```')) fenced = !fenced
+    // <!-- check-text: ignore-line --> on a line lets that one line through, and is counted below.
+    if (ignored(line, 'text')) { letThrough++; return }
     if (line.includes('—')) { console.log(`${rel}:${i + 1}: em dash`); bad++ }
     // The official page copied word for word in PLAN.md sits in a fenced block;
     // its words are the organisers', so only the dash rule applies there.
@@ -46,4 +49,4 @@ for (const p of files(ROOT)) {
   })
 }
 if (bad) { console.log(`${bad} problem(s) in public text`); process.exit(1) }
-console.log('public text: no em dashes, no banned words')
+console.log(`public text: no em dashes, no banned words${letThrough ? ` (${letThrough} line(s) marked ignore-line)` : ''}`)

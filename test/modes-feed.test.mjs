@@ -19,6 +19,18 @@ test('weather: the phone position goes to Open-Meteo; now, today and tomorrow co
   assert.deepEqual(await weather({ lat: 1, lon: 1 }, { env: {}, fetch: async () => { throw new Error('down') } }), { error: 'No forecast: no connection' })
 })
 
+test('weather works in a WebView without AbortSignal.timeout, the only tool that runs before pairing', async () => {
+  const j = { current: { temperature_2m: 20, weather_code: 0, wind_speed_10m: 5 }, daily: { temperature_2m_min: [15, 14], temperature_2m_max: [25, 24], precipitation_probability_max: [0, 10], weather_code: [0, 1] } }
+  const had = AbortSignal.timeout
+  AbortSignal.timeout = undefined
+  try {
+    let signal
+    const r = await weather({ lat: 1, lon: 1 }, { env: {}, fetch: async (u, o) => { signal = o.signal; return reply(j)() } })
+    assert.equal(r.lines.length, 3)
+    assert.ok(signal instanceof AbortSignal && !signal.aborted)
+  } finally { AbortSignal.timeout = had }
+})
+
 test('news: headlines from an RSS feed, in order, decoded, without repeats', async () => {
   const xml = '<rss><channel><title>Feed name</title><item><title><![CDATA[Rates held at 4%]]></title></item><item><title>Storm &amp; floods</title></item><item><title>Storm &amp; floods</title></item></channel></rss>'
   assert.deepEqual(headlines(xml), ['Rates held at 4%', 'Storm & floods'])
