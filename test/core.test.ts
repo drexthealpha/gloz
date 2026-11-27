@@ -221,7 +221,7 @@ test('a long message starts with one sentence saying what it wants', () => {
   assert.match(card(r.s, 'ja').text, /^要点:/)
 })
 
-import { room, roomStep, roomCard, transcript } from '../app/src/core/room.ts'
+import { room, roomStep, roomCard, transcript, edgeNote } from '../app/src/core/room.ts'
 
 test('listen: captions are added, never rewritten; one tap pauses; swipe reaches any earlier line', () => {
   let r = roomStep(room(), { t: 'start' })
@@ -440,4 +440,12 @@ test('a press from the R1 ring means the same as the same press on the glasses t
     assert.ok(glasses !== null)
     assert.equal(ring, glasses)
   }
+})
+
+test('room: a swipe past the end while paused says "Paused", never "Nothing heard yet" (a stranger read it as listening)', () => {
+  const on = roomStep(room(), { t: 'start' })
+  assert.equal(edgeNote(on, 'next'), 'Nothing heard yet')
+  const paused = roomStep(on, { t: 'tap' })
+  assert.equal(edgeNote(paused, 'next'), 'Paused')
+  assert.equal(edgeNote(paused, 'prev'), 'Nothing earlier')
 })

@@ -46,6 +46,14 @@ export function roomCard(r: Room, lang = 'en'): Card {
 }
 
 // The transcript for the phone screen: copy, share, keep.
+// What a swipe past either end of the captions says: paused stays "Paused", so it never reads as listening.
+export function edgeNote(r: Room, dir: 'next' | 'prev', lang = 'en'): string {
+  const w = words(lang)
+  if (dir === 'prev') return w.nothingEarlier
+  if (r.paused) return w.roomPaused
+  return r.lines.length - (r.since ?? 0) === 0 ? w.nothingHeardYet : w.latestLine
+}
+
 export function transcript(r: Room): string {
   return r.lines.map(l => `${new Date(l.at).toTimeString().slice(0, 5)}  ${l.text}`).join('\n')
 }

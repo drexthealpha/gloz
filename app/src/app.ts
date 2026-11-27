@@ -13,7 +13,7 @@ import { dayItems, type DayItem } from './core/day.ts'
 import { said, type Said } from './core/say.ts'
 import { words } from './core/words.ts'
 import { holdingReply } from './core/holding.ts'
-import { room, roomStep, roomCard, transcript, type Room, type RoomEvent } from './core/room.ts'
+import { room, roomStep, roomCard, transcript, edgeNote, type Room, type RoomEvent } from './core/room.ts'
 import type { Api } from './api.ts'
 
 const store: Store = {
@@ -220,7 +220,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
       if (i === 'tap') roomDo({ t: 'tap' })
       const few = r.lines.length - (r.since ?? 0) < 2
       const edge = i === 'prev' ? few || r.at === (r.since ?? 0) : i === 'next' ? few || r.at < 0 : false
-      if (edge) { roomNote = r.lines.length - (r.since ?? 0) === 0 && i === 'next' ? words(settings.myLang).nothingHeardYet : i === 'prev' ? words(settings.myLang).nothingEarlier : words(settings.myLang).latestLine; render(); setTimeout(() => { roomNote = ''; render() }, 3000); return }
+      if (edge) { roomNote = edgeNote(r, i === 'prev' ? 'prev' : 'next', settings.myLang); render(); setTimeout(() => { roomNote = ''; render() }, 3000); return }
       if (i === 'prev') roomDo({ t: 'up' })
       if (i === 'next') roomDo({ t: 'down' })
       return
