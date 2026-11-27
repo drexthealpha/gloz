@@ -1,0 +1,24 @@
+name: Delivery numbers
+on:
+  schedule:
+    # Mondays: change failure rate and rework rate for the last 7 days, in the run's summary.
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  weekly:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Change failure rate and rework rate, last 7 days
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/delivery.mjs 7
