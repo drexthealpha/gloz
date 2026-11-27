@@ -2,6 +2,9 @@ name: CI
 on:
   push:
   pull_request:
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   test:
     runs-on: ubuntu-24.04
@@ -10,6 +13,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            app/package-lock.json
+      - run: echo "T0=$(date +%s)" >> "$GITHUB_ENV"
       - run: npm ci
       - run: npm ci
         working-directory: app
@@ -17,6 +25,26 @@ jobs:
         run: |
           set -o pipefail
           npm run test:coverage | tee coverage.log
+      - name: Coverage shown in the README, within 1 point of this run
+        run: node scripts/coverage.mjs --check coverage.log
+      - name: Time for this job
+        if: always()
+        run: echo "tests took $(( $(date +%s) - T0 )) s"
+  checks:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            app/package-lock.json
+      - run: echo "T0=$(date +%s)" >> "$GITHUB_ENV"
+      - run: npm ci
+      - run: npm ci
+        working-directory: app
       - name: Every link, path and npm script the docs name exists
         run: npm run check:docs
       - name: Docs reviewed in the last 90 days (warning only)
@@ -25,6 +53,26 @@ jobs:
         run: npm run check:text
       - name: No keys or tokens in tracked files
         run: npm run check:secrets
+      - name: Numbers written by hand (eval/claims.json) still match the code they describe
+        run: node scripts/claims.mjs
+      - name: Time for this job
+        if: always()
+        run: echo "checks took $(( $(date +%s) - T0 )) s"
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            app/package-lock.json
+      - run: echo "T0=$(date +%s)" >> "$GITHUB_ENV"
+      - run: npm ci
+      - run: npm ci
+        working-directory: app
       - name: Type check, app build, demo build, .ehpk
         working-directory: app
         run: |
@@ -32,18 +80,35 @@ jobs:
           npx vite build
           npx vite build --mode demo
           npx evenhub pack app.json dist -o gloz.ehpk --sdk-ver "$(node -p "require('./package.json').dependencies['@evenrealities/even_hub_sdk']")"
+      - name: Time for this job
+        if: always()
+        run: echo "build took $(( $(date +%s) - T0 )) s"
+  results:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            app/package-lock.json
+      - run: echo "T0=$(date +%s)" >> "$GITHUB_ENV"
+      - run: npm ci
+      - run: npm ci
+        working-directory: app
       - name: Results and README numbers match the committed run
         run: |
           node eval/score.mjs --check
           node scripts/readme.mjs --check
           # Speed and data budget: over 10% slower or heavier than eval/results/time.json fails.
           node eval/time.mjs --check
-          # Coverage shown in the README: this run's, within 1 point.
-          node scripts/coverage.mjs --check coverage.log
-          # Numbers written by hand (eval/claims.json) still match the code they describe.
-          node scripts/claims.mjs
           # The held-out set is the one whose digest the protocol records.
           grep -q "sha256 eval/set/heldout.json: $(sha256sum eval/set/heldout.json | cut -d' ' -f1)" eval/PROTOCOL.md
+      - name: Time for this job
+        if: always()
+        run: echo "results took $(( $(date +%s) - T0 )) s"
   setup:
     # The README setup steps, run the way a judge would: install, build, pack, start, pair.
     runs-on: ubuntu-24.04
@@ -52,6 +117,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            app/package-lock.json
       - run: npm ci
       - run: npm ci
         working-directory: app
