@@ -13,6 +13,8 @@ import { randomBytes, createHash, randomInt, timingSafeEqual } from 'node:crypto
 import { readFileSync, writeFileSync, mkdirSync, renameSync } from 'node:fs'
 import { join } from 'node:path'
 import { MODES } from './modes/index.mjs'
+import { nextMeeting, lastChatOf, meetingMsg } from './meeting.mjs'
+import { googleToken } from './modes/dash.mjs'
 
 const sha = s => createHash('sha256').update(s).digest('hex')
 // Compared in constant time (as hashes of equal length), so the time taken says nothing about the code.
@@ -22,7 +24,7 @@ const same = (a, b) => timingSafeEqual(Buffer.from(sha(String(a))), Buffer.from(
 export const IDLE_MS = 90 * 24 * 3600 * 1000
 const DAY = 24 * 3600 * 1000
 
-export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, log = console.log, now = Date.now }) {
+export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, log = console.log, now = Date.now, calendar }) {
   mkdirSync(dataDir, { recursive: true })
   const file = join(dataDir, 'state.json')
   let state
@@ -59,6 +61,7 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
     const thread = (threads.get(`${m.source}:${m.chat}`) || []).filter(t => t.id !== m.id)
     return ai.draft(m, thread, '', lang).then(d => noteAi(m.id, d)).catch(() => null)
   }
+  const lastFrom = new Map()   // sender name -> { source, chat, ref, at }
   function add(m) {
     if (msgs.has(m.id) || state.refs[m.id]?.done) return
     msgs.set(m.id, m)
@@ -72,6 +75,7 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
     t.push({ id: m.id, from: m.from, text: m.text })
     threads.set(key, t.slice(-10))
     if (ai.ready() && !m.pre) early.set(m.id, { lang: wearerLang, draft: draftFor(m, wearerLang) })
+    if (!m.meeting) lastFrom.set(m.from, { source: m.source, chat: m.chat, ref: m.ref, at: m.at })
   }
 
   // Every reply the AI wrote for a message, by hash: a sent text that matches one was written by the AI,
@@ -103,8 +107,27 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
       if (c.listen && timer) continue   // pushed by its own listener while the server runs
       try { for (const m of await c.poll()) add(m); delete health.errors[c.name] } catch (e) { health.errors[c.name] = String(e.message || e) }
     }
+    await meetingCard()
     prune()
     saveIfChanged()
+  }
+  // 10 minutes before a calendar meeting, its card goes in first: who and when, with "On my way." to send in the
+  // chat where that person last wrote. Read only; checked once a minute.
+  const readCalendar = calendar || (process.env.GLOZ_GOOGLE_REFRESH_TOKEN ? async url => { const r = await fetch(url, { headers: { authorization: `Bearer ${await googleToken(process.env)}` }, signal: AbortSignal.timeout(10000) }); if (!r.ok) throw new Error(`calendar ${r.status}`); return r.json() } : null)
+  let meetCheckedAt = 0
+  async function meetingCard() {
+    if (!readCalendar || now() - meetCheckedAt < 60000) return
+    meetCheckedAt = now()
+    try {
+      const ev = await nextMeeting(readCalendar, now())
+      state.meets ??= {}
+      if (!ev || state.meets[ev.id]) return
+      const chat = lastChatOf(ev.who, lastFrom)
+      if (!chat) return
+      state.meets[ev.id] = now()
+      dirty = true
+      add(meetingMsg(ev, chat))
+    } catch (e) { health.errors.calendar = String(e.message || e) }
   }
   let timer = null
   const startPolling = () => {
@@ -199,7 +222,7 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
     }))
     const out = []
     for (let i = 0; i < ready.length; i++) {
-      const m = msgs.get(ready[i].id), d = drafts[i] || undefined
+      const m = msgs.get(ready[i].id), d = drafts[i] || (m.meeting ? { ...m.pre, score: 5 } : undefined)
       // The meaning comes from the same call; a separate translation only when that call gave none.
       const translated = tr ? (d?.meaning ?? await cached(`${m.id}|${lang}`, () => ai.translate(m.text, lang))) : undefined
       out.push({ id: m.id, source: m.source, chat: m.chat, from: m.from, text: m.text, at: m.at, translated, brief: d?.line, score: d?.score, draft: d })
@@ -215,7 +238,7 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
     const m = msgs.get(id)
     if (!m) return [410, { error: 'message gone' }]
     // A sample message with no AI key on the server: the reply written for it ahead of time.
-    if (m.pre && !ask && !ai.ready()) return [200, { ...noteAi(id, m.pre), ms: 0 }]
+    if (m.pre && !ask && (!ai.ready() || m.meeting)) return [200, { ...noteAi(id, m.pre), ms: 0 }]
     const thread = (threads.get(`${m.source}:${m.chat}`) || []).filter(t => t.id !== m.id)
     const t0 = performance.now()
     // A draft asked for again is the one already made on arrival, never a second call.

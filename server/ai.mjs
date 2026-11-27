@@ -12,7 +12,7 @@ function providers() {
   if (env.GLOZ_ANTHROPIC_KEY) list.push({ name: 'claude', url: 'https://api.anthropic.com/v1/messages', key: env.GLOZ_ANTHROPIC_KEY, model: env.GLOZ_ANTHROPIC_MODEL || 'claude-sonnet-5-5', kind: 'anthropic' })
   if (env.GLOZ_OPENAI_KEY) list.push({ name: 'chatgpt', url: 'https://api.openai.com/v1/chat/completions', key: env.GLOZ_OPENAI_KEY, model: env.GLOZ_OPENAI_MODEL || 'gpt-4.1-mini', kind: 'openai' })
   // The public demo's provider: a fixed credit, so one small model, capped answers, and a hard stop (near below).
-  if (env.GLOZ_NEARAI_KEY && !near.out) list.push({ name: 'nearai', url: 'https://cloud-api.near.ai/v1/chat/completions', key: env.GLOZ_NEARAI_KEY, model: env.GLOZ_NEARAI_MODEL || 'anthropic/claude-haiku-5-5', kind: 'openai' })
+  if (env.GLOZ_NEARAI_KEY && !near.out) list.push({ name: 'nearai', url: 'https://cloud-api.near.ai/v1/chat/completions', key: env.GLOZ_NEARAI_KEY, model: env.GLOZ_NEARAI_MODEL || 'Qwen/Qwen3.6-35B-A3B-FP8', kind: 'openai' })
   return list
 }
 export const aiReady = () => providers().length > 0
@@ -23,7 +23,7 @@ export const aiReady = () => providers().length > 0
 export const near = {
   spent: 0, out: false,
   budget: Number(env.GLOZ_NEARAI_BUDGET_USD || 9.5),
-  price: (env.GLOZ_NEARAI_PRICE || '0.10,0.50').split(',').map(Number),
+  price: (env.GLOZ_NEARAI_PRICE || '0.17,1.10').split(',').map(Number),
   add(u) { if (!u) return; this.spent += ((u.prompt_tokens || 0) * this.price[0] + (u.completion_tokens || 0) * this.price[1]) / 1e6; if (this.spent >= this.budget) this.out = true },
 }
 
@@ -68,6 +68,7 @@ async function ask(system, user) {
 }
 
 function json(text) {
+  text = String(text).replace(/<think>[\s\S]*?<\/think>/g, '')
   const m = text.match(/\{[\s\S]*\}/)
   return JSON.parse(m ? m[0] : text)
 }

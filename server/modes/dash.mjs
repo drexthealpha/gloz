@@ -16,7 +16,7 @@ const weatherCache = new Map()   // "lat,lon" -> { at, value }
 let google = { value: null, until: 0 }   // a pending or done access token, shared by parallel panels
 export function resetCache() { weatherCache.clear(); google = { value: null, until: 0 } }
 
-function googleToken(env) {
+export function googleToken(env) {
   if (google.value && Date.now() < google.until) return google.value
   google = { value: fetchToken(env).catch(e => { google = { value: null, until: 0 }; throw e }), until: Date.now() + 3000e3 }
   return google.value

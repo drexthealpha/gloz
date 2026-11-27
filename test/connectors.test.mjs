@@ -157,15 +157,15 @@ test('NEAR AI demo credit: one small model, 400 tokens at most, the same questio
   const sent = []
   globalThis.fetch = async (url, opts) => {
     sent.push(JSON.parse(opts.body))
-    // 4,000 tokens in and 1,000 out: $0.0009 at $0.10 and $0.50 a million.
-    return { ok: true, status: 200, json: async () => ({ choices: [{ message: { content: '{"reply":"Yes.","importance":4,"line":"lunch"}' } }], usage: { prompt_tokens: 4000, completion_tokens: 1000 } }) }
+    // 1,000 tokens in and 500 out: $0.00072 at $0.17 and $1.10 a million; a thinking block before the answer is skipped.
+    return { ok: true, status: 200, json: async () => ({ choices: [{ message: { content: '<think>{maybe}</think>{"reply":"Yes.","importance":4,"line":"lunch"}' } }], usage: { prompt_tokens: 1000, completion_tokens: 500 } }) }
   }
   const ai = await import(`../server/ai.mjs?${Math.random()}`)
   const m = { chat: 'Board', from: 'Sam', text: 'Lunch friday?' }
   const a = await ai.draft(m, [], '', 'en')
   assert.equal(a.text, 'Yes.')
   assert.equal(a.score, 4)
-  assert.equal(sent[0].model, 'anthropic/claude-haiku-5-5')
+  assert.equal(sent[0].model, 'Qwen/Qwen3.6-35B-A3B-FP8')
   assert.equal(sent[0].max_tokens, 400)
   // The same question: answered from the cache, no second call.
   await ai.draft(m, [], '', 'en')
