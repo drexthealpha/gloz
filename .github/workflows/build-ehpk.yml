@@ -1,0 +1,31 @@
+name: Build the .ehpk
+# Reusable: the release calls it, so the package is built by one reviewed workflow (Build L3), with its provenance.
+on:
+  workflow_call:
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Tests, build and .ehpk
+        # Both installs before the tests: some tests check the phone screens against the app's own packages.
+        run: |
+          npm ci && (cd app && npm ci)
+          npm test
+          cd app && npx tsc --noEmit && npx vite build
+          npx evenhub pack app.json dist -o gloz.ehpk --sdk-ver "$(node -p "require('./package.json').dependencies['@evenrealities/even_hub_sdk']")"
+      - name: Signed record of how the package was built (build provenance)
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: app/gloz.ehpk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gloz-ehpk
+          path: app/gloz.ehpk

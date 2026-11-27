@@ -8,34 +8,41 @@ permissions:
   id-token: write
   attestations: write
 jobs:
-  release:
+  new:
     runs-on: ubuntu-24.04
+    outputs:
+      skip: ${{ steps.new.outputs.skip }}
+      last: ${{ steps.new.outputs.last }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
       - name: Anything new since the last release?
         id: new
         run: |
           last=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
           if [ -n "$last" ] && [ -z "$(git log "$last"..HEAD --oneline)" ]; then echo "skip=1" >> "$GITHUB_OUTPUT"; fi
           echo "last=$last" >> "$GITHUB_OUTPUT"
-      - name: Tests, build and .ehpk
-        if: steps.new.outputs.skip != '1'
-        run: |
-          npm ci && npm test
-          cd app && npm ci && npx tsc --noEmit && npx vite build
-          npx evenhub pack app.json dist -o gloz.ehpk --sdk-ver "$(node -p "require('./package.json').dependencies['@evenrealities/even_hub_sdk']")"
-      - name: Signed record of how the package was built (build provenance)
-        if: steps.new.outputs.skip != '1'
-        uses: actions/attest-build-provenance@v2
+  build:
+    needs: new
+    if: needs.new.outputs.skip != '1'
+    uses: ./.github/workflows/build-ehpk.yml
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+  publish:
+    needs: [new, build]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
         with:
-          subject-path: app/gloz.ehpk
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          name: gloz-ehpk
+          path: app
       - name: Publish the release
-        if: steps.new.outputs.skip != '1'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -43,6 +50,6 @@ jobs:
           # A second release on the same day is named by its build.
           if gh release view "$tag" > /dev/null 2>&1; then tag="build-${GITHUB_SHA::7}"; fi
           if gh release view "$tag" > /dev/null 2>&1; then echo "Release $tag already exists"; exit 0; fi
-          range="${{ steps.new.outputs.last }}"; [ -n "$range" ] && range="$range..HEAD" || range="HEAD"
+          range="${{ needs.new.outputs.last }}"; [ -n "$range" ] && range="$range..HEAD" || range="HEAD"
           git log $range --pretty='- %s' > notes.md
           gh release create "$tag" app/gloz.ehpk --title "Gloz $(date -u +%d\ %b\ %Y)" --notes-file notes.md --target "$GITHUB_SHA"
