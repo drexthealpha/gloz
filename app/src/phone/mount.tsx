@@ -4,7 +4,7 @@ import type { Live, Chat } from './SettingsScreen'
 import type { Settings } from '../core/types'
 import './phone.css'
 import { useLang } from './strings'
-import { phoneLang } from '../core/words'
+import { phoneLang } from '../core/phonelang'
 
 type Theme = 'device' | 'light' | 'dark'
 const store = { get: (k: string) => { try { return localStorage.getItem(k) } catch { return null } }, set: (k: string, v: string) => { try { localStorage.setItem(k, v) } catch {} } }

@@ -33,3 +33,10 @@ test("a new wearer starts in the phone's own language when the glasses speak it,
   assert.equal(phoneLang(['pt-BR']), 'en')
   assert.equal(phoneLang([]), 'en')
 })
+
+test('the phone picks from the same languages the glasses speak, without loading the glasses words', async () => {
+  const { GLASS_LANGS } = await import('../app/src/core/phonelang.ts')
+  const words = readFileSync(new URL('../app/src/core/words.ts', import.meta.url), 'utf8')
+  assert.deepEqual([...words.matchAll(/^  ([a-z]{2}): \{/gm)].map(m => m[1]), [...GLASS_LANGS])
+  assert.doesNotMatch(readFileSync(new URL('../app/src/phone/mount.tsx', import.meta.url), 'utf8'), /core\/words/)
+})

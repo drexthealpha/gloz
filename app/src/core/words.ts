@@ -23,11 +23,7 @@ const T: Record<string, Partial<Words>> & { en: Words } = {
   ru: { notSent: 'Не отправлено', undo: 'вверх: отменить', cancelled: 'Отменено', pair: 'Откройте Gloz на телефоне для связи', checkAgain: 'касание: проверить снова', empty: 'Новых сообщений нет', checkNow: 'касание: проверить', noSignal: 'Нет сети', waiting: n => `ответов ждут: ${n}`, listening: 'Слушаю… скажите ответ, или «отправь» или «дальше»', done: 'отпустите или коснитесь: готово · двойное касание: отмена', writing: 'Пишу ответ…', writingHint: 'удержание: сказать · вверх: сообщение', sent: 'Отправлено ✓', saved: 'Сохранено · уйдёт, когда появится сеть', next: 'касание: далее', noReply: 'Ответа пока нет', speakReply: 'удержание: скажите ответ', draftHint: 'касание: отправить · удержание: изменить · свайп: пропустить', draftHintAlts: 'касание: отправить · двойное: другой ответ · свайп: пропустить', msgHint: 'касание: ответ · свайп: далее', inLang: l => `на языке «${l}»:`, inShort: 'Коротко:', roomListening: 'Слушаю разговор…', roomPaused: 'Пауза', roomHint: 'касание: пауза · вверх: раньше', roomPausedHint: 'касание: дальше · вверх: раньше', nextSoon: 'сейчас следующее сообщение', skipped: 'Пропущено' },
 }
 
-// The first of the phone's own languages that the glasses speak, so a new wearer starts in theirs; else English.
-export function phoneLang(langs: readonly string[] = []): string {
-  for (const l of langs) { const c = l.toLowerCase().split('-')[0]; if (T[c]) return c }
-  return 'en'
-}
+export { phoneLang } from './phonelang.ts'
 
 export function words(lang: string): Words { return { ...T.en, ...(T[lang] ?? {}) } }
 
