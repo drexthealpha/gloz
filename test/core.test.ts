@@ -139,7 +139,7 @@ test('undo: a reply is held 5 s and can be taken back; after the hold it goes, e
   assert.match(card(s).hint!, /^up: undo/)
   const u = run(s, { t: 'prev' })
   assert.equal(u.s.view, 'draft')
-  assert.deepEqual(u.fx.map(f => f.e), ['undo'])
+  assert.deepEqual(u.fx.map(f => f.e), ['undo', 'later'])   // the later clears the "Not sent" note
   assert.equal(run(s, { t: 'next' }).s.queue[run(s, { t: 'next' }).s.at]?.id, 'y')
 })
 
@@ -448,4 +448,10 @@ test('room: a swipe past the end while paused says "Paused", never "Nothing hear
   const paused = roomStep(on, { t: 'tap' })
   assert.equal(edgeNote(paused, 'next'), 'Paused')
   assert.equal(edgeNote(paused, 'prev'), 'Nothing earlier')
+})
+
+test('undo says "Not sent" on the reply it brought back', () => {
+  const s = run(start(true), { t: 'inbox', msgs: [m('x')] }, { t: 'draft', id: 'x', draft: { text: 'Sure', by: 'ai' } }, { t: 'tap' }, { t: 'tap' }, { t: 'prev' }).s
+  assert.equal(s.view, 'draft')
+  assert.match(card(s).hint!, /Not sent/)
 })

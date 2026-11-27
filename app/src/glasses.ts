@@ -112,11 +112,8 @@ export class Glasses {
   // A swipe moves one line inside the card; past the last line it moves to the next card.
   private move(d: 1 | -1) {
     if (!this.lay) return
-    // On a reply, a swipe always acts: down skips, up goes back to the message.
-    if (this.card?.kind === 'draft') return this.onInput(d === 1 ? 'next' : 'prev')
-    // On a message, down is always the next message; up goes back a page (pages also move on by themselves).
-    // After going back a page, down walks forward again; otherwise (or on the last page) it skips.
-    if (this.card?.kind === 'message' && d === 1 && !(this.manual && this.line < this.lay.lines.length - 1)) return this.onInput('next')
+    // Down shows the next part of a message or reply, and acts only on the last part (skip, or the next reply);
+    // up goes back a part, and acts on the first. So every part can be read before anything is sent or skipped.
     const n = this.line + d
     // Up on the first page: the pages hold still for a moment, so the "first part" note stays true.
     if (n < 0) { this.pause(); return this.onInput('prev') }

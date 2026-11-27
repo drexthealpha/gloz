@@ -21,7 +21,8 @@ export class HttpApi implements Api {
   constructor(base: string, token: string) { this.base = base.replace(/\/+$/, ''); this.token = token }
   private async call(path: string, body?: unknown, raw = false, timeoutMs?: number): Promise<Response> {
     return fetch(this.base + path, {
-      ...(timeoutMs ? { signal: AbortSignal.timeout(timeoutMs) } : {}),
+      // A controller and a timer, not AbortSignal.timeout: older WebViews lack it, and a throw here read as "No signal".
+      ...(timeoutMs ? { signal: (() => { const c = new AbortController(); setTimeout(() => c.abort(), timeoutMs); return c.signal })() } : {}),
       method: body === undefined ? 'GET' : 'POST',
       headers: { authorization: `Bearer ${this.token}`, ...(raw ? { 'content-type': 'application/octet-stream' } : { 'content-type': 'application/json' }) },
       body: body === undefined ? undefined : raw ? (body as BodyInit) : JSON.stringify(body),

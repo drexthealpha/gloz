@@ -152,7 +152,7 @@ export function step(s: State, ev: Event): { s: State; fx: Effect[] } {
       if (s.view === 'empty') { fx.push({ e: 'later', ms: 3500, ev: { t: 'note', text: '', was: '\u0000nothingEarlier' } }); return { s: { ...s, note: '\u0000nothingEarlier' }, fx } }
       if (!msg) return { s, fx }
       // Undo: while the reply is still held (a few seconds), up takes it back; nothing is sent.
-      if (s.view === 'sent' && !s.sendResult) { fx.push({ e: 'undo', msg }); return { s: { ...s, view: 'draft' }, fx } }
+      if (s.view === 'sent' && !s.sendResult) { fx.push({ e: 'undo', msg }, { e: 'later', ms: 3500, ev: { t: 'note', text: '', was: '\u0000notSent' } }); return { s: { ...s, view: 'draft', note: '\u0000notSent' }, fx } }
       // Back from words being written goes where the hold began: the reply, if there was one.
       if (s.view === 'thinking' && s.heldFrom === 'draft' && typeof s.drafts[msg.id] === 'object') return { s: { ...s, view: 'draft', heldFrom: undefined }, fx }
       if (s.view === 'draft' || s.view === 'thinking') return { s: { ...s, view: 'message', heldFrom: undefined }, fx }
@@ -239,7 +239,7 @@ export function step(s: State, ev: Event): { s: State; fx: Effect[] } {
 // purpose: people read the first two words of a line (NN/g), and the wearer is mid-meeting.
 export function card(s: State, lang = 'en'): Card {
   const c = cardOf(s, lang)
-  const note = s.note === '\u0000notHeard' ? words(lang).notHeard : s.note === '\u0000nothingToReply' ? words(lang).nothingToReply : s.note === '\u0000noMore' ? words(lang).noMore : s.note === '\u0000laterOnline' ? words(lang).laterOnline : s.note === '\u0000firstPart' ? words(lang).firstPart : s.note === '\u0000nothingEarlier' ? words(lang).nothingEarlier : s.note === '\u0000cancelled' ? words(lang).cancelled : s.note
+  const note = s.note === '\u0000notHeard' ? words(lang).notHeard : s.note === '\u0000nothingToReply' ? words(lang).nothingToReply : s.note === '\u0000noMore' ? words(lang).noMore : s.note === '\u0000laterOnline' ? words(lang).laterOnline : s.note === '\u0000firstPart' ? words(lang).firstPart : s.note === '\u0000nothingEarlier' ? words(lang).nothingEarlier : s.note === '\u0000cancelled' ? words(lang).cancelled : s.note === '\u0000notSent' ? words(lang).notSent : s.note
   // On a message, a note keeps the sender's name in front of it.
   const who = c.kind === 'message' ? current(s)?.from : undefined
   return note ? { ...c, hint: who ? `${who} · ${note}` : note } : c
@@ -275,7 +275,7 @@ function cardOf(s: State, lang: string): Card {
     // With alternatives, which one is on screen ("2/3"), and the hint says a swipe shows another.
     const pos = d.alts && d.alts.length > 1 ? ` ${(d.pick ?? 0) + 1}/${d.alts.length}` : ''
     const ai = d.by === 'ai' ? `AI draft${pos} · ` : pos ? `${pos.trim()} · ` : ''
-    const hint = s.online ? (pos ? w.draftHintAlts : w.draftHint) : w.draftOffline
+    const hint = s.online ? (pos ? w.draftHintAlts : w.draftHint) : pos ? `${w.noSignal} · ${w.draftHintAlts}` : w.draftOffline
     if (d.gloss) return { kind: 'draft', head: name ? `↩ ${ai}${w.means(name, msg.from)}` : `↩ ${ai.replace(/ · $/, '')}`, text: d.gloss, hint, progress }
     return { kind: 'draft', head: name ? `↩ ${ai}${w.inLang(name, msg.from)}` : `↩ ${ai.replace(/ · $/, '')}`, text: d.text, hint, progress }
   }
