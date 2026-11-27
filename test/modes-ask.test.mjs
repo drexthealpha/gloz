@@ -97,3 +97,20 @@ test('ask measure: no honest score can be produced here without a key', async ()
   const r = await handle({ q: 'test' }, { env: {} })
   assert.equal(r.a, NO_KEY)
 })
+
+test('ask server: "what did Sam say about Friday?" is answered in one line from the picked chats, on the demo\'s NEAR AI credit', async () => {
+  const env = { GLOZ_NEARAI_KEY: 'k' }
+  let sent
+  const realFetch = globalThis.fetch
+  globalThis.fetch = async (url, opts) => { sent = { url: String(url), body: JSON.parse(opts.body) }; return { ok: true, status: 200, json: async () => ({ choices: [{ message: { content: '<think>hm</think>Sam can do Friday at 3.' } }], usage: { prompt_tokens: 100, completion_tokens: 10 } }) } }
+  try {
+    const chats = [{ chat: 'Board', from: 'Sam', text: 'Friday works, 3pm?' }, { chat: 'Board', from: 'Ana', text: 'ok' }]
+    const r = await handle({ q: 'what did Sam say about Friday?', lang: 'en' }, { env, look: async () => null, chats })
+    assert.equal(r.a, 'Sam can do Friday at 3.')
+    assert.match(sent.url, /cloud-api\.near\.ai/)
+    assert.equal(sent.body.max_tokens, 400)
+    const user = sent.body.messages.at(-1).content
+    assert.match(user, /\[Board\] Sam: Friday works, 3pm\?/)
+    assert.match(sent.body.messages[0].content, /one line of at most 15 words/)
+  } finally { globalThis.fetch = realFetch }
+})

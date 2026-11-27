@@ -301,7 +301,9 @@ ${text}`), by }
   async function tool({ req, url }) {
     const h = MODES[decodeURIComponent(url.pathname.slice(6))]
     if (!h) return [404, { error: 'no such app' }]
-    try { return [200, await h(await body(req), { ai, env: process.env })] } catch (e) { return [502, { error: String(e.message || e).slice(0, 200) }] }
+    // Ask gets the recent messages of the picked chats (in memory, while unanswered), to answer from them.
+    const chats = [...threads.entries()].flatMap(([k, t]) => t.map(x => ({ chat: msgs.get(x.id)?.chat ?? k.split(':').slice(1).join(':'), from: x.from, text: x.text }))).slice(-40)
+    try { return [200, await h(await body(req), { ai, env: process.env, chats })] } catch (e) { return [502, { error: String(e.message || e).slice(0, 200) }] }
   }
 
   const health_ = async () => [200, { ok: true, connectors: health.connectors, errors: health.errors, ai: ai.ready(), aiProvider: ai.provider?.() ?? null, stt: await stt.ready(), paired: state.tokens.length, activeDay: active(DAY), activeMonth: active(30 * DAY) }]
