@@ -88,7 +88,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   const home = () => !active && !r.on && s.paired && s.view === 'empty'
 
   const outbox = new Outbox(store, p => api ? api.send(p.key, p.msgId, p.text, settings.mark) : Promise.resolve('retry'))
-  const UNDO_MS = 5000
+  const UNDO_MS = 2000   // the reply shows with undo for 2 s, then goes
   const held: Record<string, ReturnType<typeof setTimeout>> = {}   // replies in their undo window
 
   function render() {
@@ -219,6 +219,8 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
     if (i === 'exit' && active?.back?.()) return render()
     if (i === 'exit' && saying) { sayGen++; saying = ''; sayTo = null; g.mic(false).catch(() => {}); return render() }
     if (i === 'exit' && !active && (s.view === 'listen' || (s.view === 'thinking' && s.hearing))) return dispatch({ t: 'cancel' })
+    // Double tap on a reply with alternatives: the next one, not closing Gloz.
+    if (i === 'exit' && !active && s.view === 'draft') { const d = s.queue[s.at] && s.drafts[s.queue[s.at].id]; if (typeof d === 'object' && d.alts && d.alts.length > 1) return dispatch({ t: 'alt' }) }
     if (i === 'exit') return doubleTap(active) === 'home' ? closeApp() : g.exit()
     if (saying) return homeInput(i)
     if (active?.say && i === 'hold') { sayTo = active; saying = 'listening'; sayPcm = []; g.mic(true).catch(() => {}); return render() }

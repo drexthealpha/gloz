@@ -36,8 +36,7 @@ const out = {}
     empty: start(true),
     message: step(start(true), { t: 'inbox', msgs: [m] }).s,
   }
-  screens.message = step(screens.message, { t: 'draft', id: 'a', draft }).s
-  screens.draft = step(screens.message, { t: 'tap' }).s
+  screens.draft = step(screens.message, { t: 'draft', id: 'a', draft }).s
   screens.listen = step(screens.draft, { t: 'hold' }).s
   let sendsWithoutReplyShown = 0, presses = 0
   for (const [name, s] of Object.entries(screens)) {
@@ -48,7 +47,10 @@ const out = {}
     }
   }
   out.hints = { screens: Object.keys(screens).length + 3, withoutHint: [...Object.values(screens), step(screens.draft, { t: 'tap' }).s, step(start(true), { t: 'online', online: false, queued: 1 }).s, start(false)].filter(s => !card(s).hint).length }
-  out.strayPress = { screens: Object.keys(screens).length, presses, sendsWithoutReplyShown, pressesToSend: 2 }
+  // Presses from a new message, its reply written, to the reply going out: counted on the flow itself.
+  let at = screens.draft, pressesToSend = 0
+  while (pressesToSend < 5) { pressesToSend++; const r = step(at, { t: 'tap' }); if (r.fx.some(f => f.e === 'send')) break; at = r.s }
+  out.strayPress = { screens: Object.keys(screens).length, presses, sendsWithoutReplyShown, pressesToSend }
 }
 
 // 13 and 81: a pairing in daily use is never signed out (365 days on a test clock); and replies survive an app restart (outbox).

@@ -20,34 +20,39 @@ test('a new message shows at once and its draft is asked for before any press', 
   assert.deepEqual(fx.map(f => f.e), ['draft'])
 })
 
-test('tap, tap sends the draft; nothing is sent before the second tap', () => {
-  let { s } = run(start(true), { t: 'inbox', msgs: [m('a')] }, { t: 'draft', id: 'a', draft: { text: 'Yes, 3 works.', by: 'ai' } })
-  let r = run(s, { t: 'tap' })
-  assert.equal(r.s.view, 'draft')
-  assert.equal(r.fx.length, 0)
-  assert.match(card(r.s).text, /Yes, 3 works/)
-  r = run(r.s, { t: 'tap' })
+test('the reply arrives with the message and one tap sends it; nothing is sent before the tap', () => {
+  let { s } = run(start(true), { t: 'inbox', msgs: [m('a')] })
+  // The message is on the lens while its reply is written; nothing to press yet.
+  assert.equal(s.view, 'message')
+  const r0 = run(s, { t: 'draft', id: 'a', draft: { text: 'Yes, 3 works.', by: 'ai' } })
+  assert.equal(r0.s.view, 'draft')
+  assert.equal(r0.fx.length, 0)
+  // One card: who, one line of what they wrote, and the reply.
+  assert.equal(card(r0.s).head, '↩ AI draft · Ana: Can we move the call to 3?')
+  assert.match(card(r0.s).text, /Yes, 3 works/)
+  const r = run(r0.s, { t: 'tap' })
   assert.deepEqual(r.fx.map(f => f.e), ['send'])
   assert.equal(r.fx[0].text, 'Yes, 3 works.')
 })
 
-test('a swipe on a reply shows the next of three, wraps round, and tap sends the one on screen', () => {
+test('double tap on a reply shows the next of three, wraps round, and tap sends the one on screen; a swipe skips', () => {
   const alts = [{ text: 'Yes, 3 works.' }, { text: 'Not today, tomorrow?' }, { text: 'Which 3, am or pm?' }]
-  let { s } = run(start(true), { t: 'inbox', msgs: [m('a')] }, { t: 'draft', id: 'a', draft: { text: alts[0].text, by: 'ai', alts } }, { t: 'tap' })
-  assert.match(card(s).head!, /AI draft 1\/3/)
-  assert.match(card(s).hint!, /^tap: send · down: another · hold: speak$/)
-  assert.equal(card(s).head, '↩ AI draft 1/3')   // no dangling separator when no language is named
-  s = run(s, { t: 'next' }).s
+  let { s } = run(start(true), { t: 'inbox', msgs: [m('a')] }, { t: 'draft', id: 'a', draft: { text: alts[0].text, by: 'ai', alts } })
+  assert.match(card(s).head!, /^↩ AI draft 1\/3 · Ana: /)
+  assert.equal(card(s).hint, 'tap: send · double tap: another · down: skip')
+  s = run(s, { t: 'alt' }).s
   assert.equal(s.view, 'draft')
   assert.match(card(s).text, /Not today/)
   assert.match(card(s).head!, /2\/3/)
-  s = run(s, { t: 'next' }, { t: 'next' }).s
+  s = run(s, { t: 'alt' }, { t: 'alt' }).s
   assert.match(card(s).text, /Yes, 3 works/)
-  const sent = run(s, { t: 'next' }, { t: 'tap' }).fx.find(f => f.e === 'send')
+  const sent = run(s, { t: 'alt' }, { t: 'tap' }).fx.find(f => f.e === 'send')
   assert.equal(sent.text, 'Not today, tomorrow?')
-  // A reply with no alternatives: a swipe still skips the message.
-  const one = run(start(true), { t: 'inbox', msgs: [m('b')] }, { t: 'draft', id: 'b', draft: { text: 'OK', by: 'ai' } }, { t: 'tap' }, { t: 'next' }).s
-  assert.equal(one.view, 'skipped')
+  // A swipe on a reply skips the message, alternatives or not.
+  assert.equal(run(s, { t: 'next' }).s.view, 'skipped')
+  // A reply with no alternatives: double tap does nothing here (the app closes Gloz instead).
+  const one = run(start(true), { t: 'inbox', msgs: [m('b')] }, { t: 'draft', id: 'b', draft: { text: 'OK', by: 'ai' } }, { t: 'alt' }).s
+  assert.equal(card(one).text, 'OK')
 })
 
 test('a message shown in translation says an AI translated it, beside the sender', () => {
@@ -77,7 +82,7 @@ test('a tap before the draft arrives waits, then shows the draft', () => {
 })
 
 test('spoken words other than one command make a new draft, never a send', () => {
-  let r = run(start(true), { t: 'inbox', msgs: [m('a')] }, { t: 'draft', id: 'a', draft: { text: 'OK', by: 'ai' } }, { t: 'tap' }, { t: 'hold' })
+  let r = run(start(true), { t: 'inbox', msgs: [m('a')] }, { t: 'draft', id: 'a', draft: { text: 'OK', by: 'ai' } }, { t: 'hold' })
   assert.equal(r.s.view, 'listen')
   r = run(r.s, { t: 'release' }, { t: 'heard', text: 'tell her 4 is better' })
   assert.deepEqual(r.fx.map(f => f.e), ['mic', 'draft'])
@@ -99,7 +104,7 @@ test('new messages never push the one on screen away', () => {
 })
 
 test('after "Sent" the next message comes up and the first is marked read', () => {
-  let r = run(start(true), { t: 'inbox', msgs: [m('a', 'x', 2), m('b', 'y', 1)] }, { t: 'draft', id: 'a', draft: { text: 'OK', by: 'ai' } }, { t: 'tap' }, { t: 'tap' }, { t: 'sent', queued: 0 }, { t: 'done' })
+  let r = run(start(true), { t: 'inbox', msgs: [m('a', 'x', 2), m('b', 'y', 1)] }, { t: 'draft', id: 'a', draft: { text: 'OK', by: 'ai' } }, { t: 'tap' }, { t: 'sent', queued: 0 }, { t: 'done' })
   assert.equal(r.s.view, 'message')
   assert.equal(r.s.queue[r.s.at].id, 'b')
   assert.ok(r.fx.some(f => f.e === 'read' && f.msg.id === 'a'))
@@ -134,7 +139,7 @@ test('undo: a reply is held 5 s and can be taken back; after the hold it goes, e
   assert.equal(await again.flush(), 1)
   assert.deepEqual(sent, ['No'])
   // In the flow: up on "Sending…" takes the reply back to the screen; down moves on while it goes.
-  let s = run(start(true), { t: 'inbox', msgs: [m('x'), m('y')] }, { t: 'draft', id: 'x', draft: { text: 'Sure', by: 'ai' } }, { t: 'tap' }, { t: 'tap' }).s
+  let s = run(start(true), { t: 'inbox', msgs: [m('x'), m('y')] }, { t: 'draft', id: 'x', draft: { text: 'Sure', by: 'ai' } }, { t: 'tap' }).s
   assert.equal(s.view, 'sent')
   assert.match(card(s).hint!, /^up: undo/)
   const u = run(s, { t: 'prev' })
@@ -188,9 +193,10 @@ test('lines stay up long enough to read', () => {
 })
 
 test('a reply in another language shows its meaning in the wearer language, and sends the original', () => {
-  let r = run(start(true), { t: 'inbox', msgs: [m('a', 'هل يمكننا؟')] }, { t: 'draft', id: 'a', draft: { text: 'نعم', gloss: 'Yes', by: 'ai', langName: 'Arabic' } as any }, { t: 'tap' })
-  assert.equal(card(r.s).head, '↩ AI draft · Ana gets this in Arabic, meaning:')
+  let r = run(start(true), { t: 'inbox', msgs: [m('a', 'هل يمكننا؟')] }, { t: 'draft', id: 'a', draft: { text: 'نعم', gloss: 'Yes', by: 'ai', langName: 'Arabic' } as any })
+  assert.equal(card(r.s).head, '↩ AI draft · Ana: هل يمكننا؟')
   assert.equal(card(r.s).text, 'Yes')
+  assert.match(card(r.s).hint!, /^Arabic: tap: send/)
   r = run(r.s, { t: 'tap' })
   assert.equal(r.fx[0].text, 'نعم')
 })
@@ -301,7 +307,7 @@ test('listen hint offers "earlier" only when there is an earlier line', () => {
 })
 
 test('the send screen says Sending until the outbox answers, then Sent or Saved', () => {
-  let r = run(start(true), { t: 'inbox', msgs: [m('a', 'x', 2), m('b', 'y', 1)] }, { t: 'draft', id: 'a', draft: { text: 'OK', by: 'ai' } }, { t: 'tap' }, { t: 'tap' })
+  let r = run(start(true), { t: 'inbox', msgs: [m('a', 'x', 2), m('b', 'y', 1)] }, { t: 'draft', id: 'a', draft: { text: 'OK', by: 'ai' } }, { t: 'tap' })
   assert.equal(card(r.s).text, 'Sending…')
   assert.equal(card(run(r.s, { t: 'sent', queued: 0 }).s).text, 'Sent ✓')
   assert.match(card(run(r.s, { t: 'sent', queued: 1 }).s).text, /^Saved/)
@@ -370,7 +376,7 @@ test('a second listen starts fresh on the glasses; the first stays in the transc
 })
 
 test('cancelling spoken words on a reply goes back to that reply', () => {
-  let r = run(start(true), { t: 'inbox', msgs: [m('a', 'x', 2)] }, { t: 'draft', id: 'a', draft: { text: 'ok', by: 'default' } }, { t: 'tap' })
+  let r = run(start(true), { t: 'inbox', msgs: [m('a', 'x', 2)] }, { t: 'draft', id: 'a', draft: { text: 'ok', by: 'default' } })
   assert.equal(r.s.view, 'draft')
   r = run(r.s, { t: 'hold' }, { t: 'release' }, { t: 'prev' })
   assert.equal(r.s.view, 'draft')
@@ -379,7 +385,7 @@ test('cancelling spoken words on a reply goes back to that reply', () => {
 })
 
 test('a hold and release on a reply never sends it', () => {
-  let r = run(start(true), { t: 'inbox', msgs: [m('a', 'x', 2)] }, { t: 'draft', id: 'a', draft: { text: 'ok', by: 'default' } }, { t: 'tap' })
+  let r = run(start(true), { t: 'inbox', msgs: [m('a', 'x', 2)] }, { t: 'draft', id: 'a', draft: { text: 'ok', by: 'default' } })
   r = run(r.s, { t: 'hold' }, { t: 'release' })
   assert.ok(!r.fx.some(f => f.e === 'send'))
   r = run(r.s, { t: 'heard', text: '' })
@@ -388,7 +394,7 @@ test('a hold and release on a reply never sends it', () => {
 })
 
 test('only a reply the AI wrote is labelled as an AI draft', () => {
-  const fixed = run(start(true), { t: 'inbox', msgs: [m('a', 'Hi')] }, { t: 'draft', id: 'a', draft: { text: 'Got it', by: 'default', langName: 'English' } as any }, { t: 'tap' })
+  const fixed = run(start(true), { t: 'inbox', msgs: [m('a', 'Hi')] }, { t: 'draft', id: 'a', draft: { text: 'Got it', by: 'default', langName: 'English' } as any })
   assert.ok(!String(card(fixed.s).head).includes('AI'))
 })
 
@@ -451,17 +457,21 @@ test('room: a swipe past the end while paused says "Paused", never "Nothing hear
 })
 
 test('undo says "Not sent" on the reply it brought back', () => {
-  const s = run(start(true), { t: 'inbox', msgs: [m('x')] }, { t: 'draft', id: 'x', draft: { text: 'Sure', by: 'ai' } }, { t: 'tap' }, { t: 'tap' }, { t: 'prev' }).s
+  const s = run(start(true), { t: 'inbox', msgs: [m('x')] }, { t: 'draft', id: 'x', draft: { text: 'Sure', by: 'ai' } }, { t: 'tap' }, { t: 'prev' }).s
   assert.equal(s.view, 'draft')
   assert.match(card(s).hint!, /Not sent/)
 })
 
-test('up on the third reply goes back to the second; on the first, back to the message', () => {
+test('up on the third reply goes back to the second; on the first, up shows the whole message, and the reply waits under it', () => {
   const alts = [{ text: 'One' }, { text: 'Two' }, { text: 'Three' }]
-  let s = run(start(true), { t: 'inbox', msgs: [m('a')] }, { t: 'draft', id: 'a', draft: { text: 'One', by: 'ai', alts } }, { t: 'tap' }, { t: 'next' }, { t: 'next' }).s
+  let s = run(start(true), { t: 'inbox', msgs: [m('a')] }, { t: 'draft', id: 'a', draft: { text: 'One', by: 'ai', alts } }, { t: 'alt' }, { t: 'alt' }).s
   assert.equal(card(s).text, 'Three')
   s = run(s, { t: 'prev' }).s
   assert.equal(card(s).text, 'Two')
   s = run(s, { t: 'prev' }, { t: 'prev' }).s
   assert.equal(s.view, 'message')
+  // Reading the whole message: a late reply does not jump over it; tap brings the reply back.
+  s = run(s, { t: 'draft', id: 'a', draft: { text: 'One', by: 'ai', alts } }).s
+  assert.equal(s.view, 'message')
+  assert.equal(run(s, { t: 'tap' }).s.view, 'draft')
 })

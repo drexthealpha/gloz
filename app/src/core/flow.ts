@@ -17,6 +17,7 @@ export interface State {
   seen: string[]                    // answered or skipped: never shown again
   checkedAt?: number                // last time the inbox was checked
   mutedMsgs?: Msg[]                 // muted here; back with Unmute
+  reading?: string                 // the message the wearer went up to read whole; its reply waits under it
   heldFrom?: 'draft' | 'message'   // where a hold started, so going back returns there
   skippedMsgs?: Msg[]               // skipped here, still unread at the source; can come back
   note?: string                     // a short word in place of the hint for a moment ("Checked ✓")
@@ -25,7 +26,7 @@ export interface State {
 }
 
 export type Event =
-  | { t: 'tap' } | { t: 'next' } | { t: 'prev' } | { t: 'hold' } | { t: 'release' }
+  | { t: 'tap' } | { t: 'next' } | { t: 'prev' } | { t: 'alt' } | { t: 'hold' } | { t: 'release' }
   | { t: 'inbox'; msgs: Msg[] }
   | { t: 'draft'; id: string; draft: Draft | null }
   | { t: 'heard'; text: string }
@@ -77,7 +78,8 @@ function advance(s: State, fx: Effect[]): State {
   const at = Math.min(s.at, Math.max(0, queue.length - 1))
   const seen = msg ? [...s.seen, msg.id].slice(-500) : s.seen
   const skippedMsgs = msg && s.view === 'skipped' ? [...(s.skippedMsgs ?? []).filter(x => x.id !== msg.id), msg] : (s.skippedMsgs ?? []).filter(x => x.id !== msg?.id)
-  const next = { ...s, queue, at, seen, skippedMsgs, heard: undefined, view: (queue.length ? 'message' : 'empty') as View }
+  const up = queue[at]
+  const next = { ...s, queue, at, seen, skippedMsgs, heard: undefined, view: (!queue.length ? 'empty' : up && typeof s.drafts[up.id] === 'object' ? 'draft' : 'message') as View }
   return prefetch(next, fx)
 }
 
@@ -116,7 +118,7 @@ export function step(s: State, ev: Event): { s: State; fx: Effect[] } {
       return { s: prefetch(n, fx), fx }
     }
     case 'draft':
-      return { s: { ...s, drafts: { ...s.drafts, [ev.id]: ev.draft ?? 'failed' }, view: s.view === 'thinking' && msg?.id === ev.id ? 'draft' : s.view }, fx }
+      return { s: { ...s, drafts: { ...s.drafts, [ev.id]: ev.draft ?? 'failed' }, view: msg?.id === ev.id && (s.view === 'thinking' || (ev.draft && s.view === 'message' && s.reading !== ev.id)) ? 'draft' : s.view }, fx }
     case 'tap':
       if (s.view === 'empty' || s.view === 'pair') return { s, fx: [{ e: 'refresh' }] }
       if (!msg) return { s, fx }
@@ -139,11 +141,15 @@ export function step(s: State, ev: Event): { s: State; fx: Effect[] } {
       // While a reply is going out, a swipe moves on at once; the reply still goes.
       if (msg && s.view === 'sent') return { s: advance(s, fx), fx }
       if (!msg || s.view === 'listen') return { s, fx }
-      // On a reply with alternatives, a swipe (or the ring) shows the next one; tap sends the one on screen.
-      { const d = s.drafts[msg.id]
-        if (s.view === 'draft' && typeof d === 'object' && d.alts && d.alts.length > 1) { const pick = ((d.pick ?? 0) + 1) % d.alts.length; return { s: { ...s, drafts: { ...s.drafts, [msg.id]: { ...d, ...d.alts[pick], pick } } }, fx } } }
       fx.push({ e: 'later', ms: 2000, ev: { t: 'done', id: msg?.id } })
       return { s: { ...s, view: 'skipped' }, fx }  // swipe past a message or its reply: skipped, shown for a moment
+    case 'alt': {
+      // Double tap on a reply: the next of its drafts; tap sends the one on screen.
+      const d = msg && s.drafts[msg.id]
+      if (!msg || s.view !== 'draft' || typeof d !== 'object' || !d.alts || d.alts.length < 2) return { s, fx }
+      const pick = ((d.pick ?? 0) + 1) % d.alts.length
+      return { s: { ...s, drafts: { ...s.drafts, [msg.id]: { ...d, ...d.alts[pick], pick } } }, fx }
+    }
     case 'prev':
       if (s.view === 'empty' && s.skippedMsgs?.length) {
         const back = s.skippedMsgs
@@ -158,7 +164,7 @@ export function step(s: State, ev: Event): { s: State; fx: Effect[] } {
       // Up on the second or third reply goes back one reply; on the first, back to the message.
       { const d = s.drafts[msg.id]
         if (s.view === 'draft' && typeof d === 'object' && d.alts && (d.pick ?? 0) > 0) { const pick = (d.pick ?? 0) - 1; return { s: { ...s, drafts: { ...s.drafts, [msg.id]: { ...d, ...d.alts[pick], pick } } }, fx } } }
-      if (s.view === 'draft' || s.view === 'thinking') return { s: { ...s, view: 'message', heldFrom: undefined }, fx }
+      if (s.view === 'draft' || s.view === 'thinking') return { s: { ...s, view: 'message', heldFrom: undefined, reading: msg.id }, fx }
       if (s.view === 'message') { fx.push({ e: 'later', ms: 3500, ev: { t: 'note', text: '', was: '\u0000firstPart' } }); return { s: { ...s, note: '\u0000firstPart' }, fx } }
       return { s, fx }
     case 'hold':
@@ -278,9 +284,12 @@ function cardOf(s: State, lang: string): Card {
     // With alternatives, which one is on screen ("2/3"), and the hint says a swipe shows another.
     const pos = d.alts && d.alts.length > 1 ? ` ${(d.pick ?? 0) + 1}/${d.alts.length}` : ''
     const ai = d.by === 'ai' ? `AI draft${pos} · ` : pos ? `${pos.trim()} · ` : ''
-    const hint = s.online ? (pos ? w.draftHintAlts : w.draftHint) : pos ? `${w.noSignal} · ${w.draftHintAlts}` : w.draftOffline
-    if (d.gloss) return { kind: 'draft', head: name ? `↩ ${ai}${w.means(name, msg.from)}` : `↩ ${ai.replace(/ · $/, '')}`, text: d.gloss, hint, progress }
-    return { kind: 'draft', head: name ? `↩ ${ai}${w.inLang(name, msg.from)}` : `↩ ${ai.replace(/ · $/, '')}`, text: d.text, hint, progress }
+    const base = s.online ? (pos ? w.draftHintAlts : w.draftHint) : pos ? `${w.noSignal} · ${w.draftHintAlts}` : w.draftOffline
+    const hint = d.gloss && name ? `${w.inLang(name)} ${base}` : base
+    // One line of what they wrote, so the reply is read against it without going back.
+    const said = ((msg as Msg & { brief?: string }).brief ?? msg.translated ?? msg.text).replace(/\s+/g, ' ').trim()
+    const line = [...said].length > 40 ? `${[...said].slice(0, 39).join('').trimEnd()}…` : said
+    return { kind: 'draft', head: `↩ ${ai}${msg.from}: ${line}`, text: d.gloss ?? d.text, hint, progress }
   }
   // A long message starts with one sentence saying what it wants, then the full text.
   const brief = (msg as Msg & { brief?: string }).brief

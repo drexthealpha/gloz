@@ -4,7 +4,7 @@
   "kept": 2000000
  },
  "silentReply": {
-  "wpmMedian": 96,
+  "wpmMedian": 91.4,
   "note": "from eval/results/time.json"
  },
  "hints": {
@@ -15,7 +15,7 @@
   "screens": 4,
   "presses": 20,
   "sendsWithoutReplyShown": 0,
-  "pressesToSend": 2
+  "pressesToSend": 1
  },
  "pairing": {
   "days": 365,
