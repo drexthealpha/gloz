@@ -320,7 +320,10 @@ test('delete everything: every pairing, message reference, sent record and messa
   assert.equal((await call('/inbox?after=0', null, token)).status, 401)
   const { json: { token: again } } = await call('/pair', { code: app.pairCode() })
   assert.deepEqual((await call('/inbox?after=0', null, again)).json.msgs, [])
-  // The reply already sent is forgotten too: its key no longer counts as sent.
-  assert.equal((await call('/send', { key: 'k', id: msg(1).id, text: 'ok' }, again)).status, 410)
-  app.server.close()
+  // A reply's send key outlives Delete everything for 24 h (a hash, never the text): a retry is answered, never sent twice.
+  try {
+    const before = svc.sent.length
+    assert.equal((await call('/send', { key: 'k', id: msg(1).id, text: 'ok' }, again)).json.again, true)
+    assert.equal(svc.sent.length, before)
+  } finally { app.server.close() }
 })

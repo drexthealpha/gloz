@@ -318,7 +318,8 @@ ${text}`), by }
   async function forget() {
     state.tokens = []
     state.refs = {}
-    state.sent = {}
+    // A reply's send key stays 24 h (a hash, never the text), so a retry still never sends it twice.
+    state.sent = Object.fromEntries(Object.entries(state.sent).filter(([, v]) => now() - (v.at || 0) < DAY))
     state.meets = {}
     seen.clear()
     for (const id of [...msgs.keys()]) drop(id)
