@@ -3,7 +3,7 @@
 //   5. backend starts, answers /health, and pairs with its printed code
 //   node scripts/check-setup.mjs
 import { execSync, spawn } from 'node:child_process'
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 
 const root = new URL('..', import.meta.url).pathname.replace(/^\/(\w:)/, '$1')
 let failed = 0
@@ -24,7 +24,7 @@ try { const out = sh('npm test'); const m = out.match(/# pass (\d+)[\s\S]*# fail
 catch (e) { fail(`tests: ${String(e.stdout || e).slice(-400)}`) }
 
 try { sh('npx tsc --noEmit && npx vite build', `${root}/app`); ok('app builds') } catch (e) { fail(`app build: ${String(e.stdout || e).slice(-300)}`) }
-try { sh('npx evenhub pack app.json dist -o gloz.ehpk --sdk-ver 0.0.16', `${root}/app`); existsSync(`${root}/app/gloz.ehpk`) ? ok('gloz.ehpk packed') : fail('no gloz.ehpk') }
+try { sh(`npx evenhub pack app.json dist -o gloz.ehpk --sdk-ver ${JSON.parse(readFileSync(`${root}/app/package.json`, 'utf8')).dependencies['@evenrealities/even_hub_sdk']}`, `${root}/app`); existsSync(`${root}/app/gloz.ehpk`) ? ok('gloz.ehpk packed') : fail('no gloz.ehpk') }
 catch (e) { fail(`pack: ${String(e.stdout || e).slice(-300)}`) }
 
 // Backend: start it with no keys on a spare port, read the pairing code it prints, pair.

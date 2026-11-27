@@ -15,9 +15,16 @@ jobs:
         run: |
           for round in 1 2 3 4 5 6; do
             code=$(curl -s -o page.html -w '%{http_code}' https://drexthealpha.github.io/gloz/ || echo 000)
-            if [ "$code" = "200" ] && grep -q 'id="g2"' page.html; then msg=up; color=brightgreen; else msg=down; color=red; fi
+            # Everything a judge opens: the demo, the phone page, the video, the app package, and this badge's own file.
+            down=""
+            [ "$code" = "200" ] && grep -q 'id="g2"' page.html || down="$down demo"
+            for u in https://drexthealpha.github.io/gloz/phone/ https://drexthealpha.github.io/gloz/gloz-demo.mp4 https://github.com/drexthealpha/gloz/releases/latest/download/gloz.ehpk https://raw.githubusercontent.com/drexthealpha/gloz/status/status.json; do
+              c=$(curl -sL -o /dev/null -r 0-1023 -w '%{http_code}' "$u" || echo 000)
+              case "$c" in 200|206) ;; *) down="$down $u:$c" ;; esac
+            done
+            if [ -z "$down" ]; then msg=up; color=brightgreen; else msg=down; color=red; fi
             echo "{\"schemaVersion\":1,\"label\":\"live demo\",\"message\":\"$msg\",\"color\":\"$color\"}" > status.json
-            echo "$(date -u +%FT%TZ) $code $msg" > last.txt
+            echo "$(date -u +%FT%TZ) $code $msg$down" > last.txt
             cat status.json last.txt
             rm -rf pub && git init -q pub && cp status.json last.txt pub/ && (cd pub && git config user.name "drexthealpha" && git config user.email "142920951+drexthealpha@users.noreply.github.com" && git add . && git commit -qm "Demo status $(cat last.txt)" && git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:status)
             if [ $round -lt 6 ]; then sleep 3600; fi

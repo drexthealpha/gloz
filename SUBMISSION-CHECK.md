@@ -31,7 +31,7 @@ Every requirement and rule on https://dorahacks.io/hackathon/even-realities/deta
 
 | The page says | Proof |
 |---|---|
-| "a web app (HTML, CSS, JavaScript or TypeScript) running in a WebView inside the Even Realities App ... through the Even Hub SDK" | [app/](app/): Vite and TypeScript, `@evenrealities/even_hub_sdk` 0.0.16. |
+| "a web app (HTML, CSS, JavaScript or TypeScript) running in a WebView inside the Even Realities App ... through the Even Hub SDK" | [app/](app/): Vite and TypeScript, `@evenrealities/even_hub_sdk` <!-- gen:sdk -->0.0.16<!-- /gen -->. |
 | "One app on screen at a time ... When the user switches away, it cannot show anything" | Gloz keeps its state and outbox in local storage and picks up where it was ([app/src/app.ts](app/src/app.ts)). |
 | "No access to other apps' notifications. Talk to the service directly through its API." | [server/connectors.mjs](server/connectors.mjs). |
 | "Bring your own speech-to-text ... send it to your own server" | [server/stt.mjs](server/stt.mjs): Whisper on the backend, or OpenAI transcription. |

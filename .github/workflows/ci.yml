@@ -29,7 +29,7 @@ jobs:
           npx tsc --noEmit
           npx vite build
           npx vite build --mode demo
-          npx evenhub pack app.json dist -o gloz.ehpk --sdk-ver 0.0.16
+          npx evenhub pack app.json dist -o gloz.ehpk --sdk-ver "$(node -p "require('./package.json').dependencies['@evenrealities/even_hub_sdk']")"
       - name: Results and README numbers match the committed run
         run: |
           node eval/score.mjs --check
@@ -38,6 +38,8 @@ jobs:
           node eval/time.mjs --check
           # Coverage shown in the README: this run's, within 1 point.
           node scripts/coverage.mjs --check coverage.log
+          # Numbers written by hand (eval/claims.json) still match the code they describe.
+          node scripts/claims.mjs
           # The held-out set is the one whose digest the protocol records.
           grep -q "sha256 eval/set/heldout.json: $(sha256sum eval/set/heldout.json | cut -d' ' -f1)" eval/PROTOCOL.md
   setup:

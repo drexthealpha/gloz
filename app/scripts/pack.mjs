@@ -13,5 +13,7 @@ if (origin) {
   writeFileSync('app.json', JSON.stringify(app, null, 2) + '\n')
 } else console.log('No GLOZ_BACKEND_ORIGIN: the package whitelists the placeholder address; set it to your server to use the package.')
 try {
-  execSync('npx evenhub pack app.json dist -o gloz.ehpk --sdk-ver 0.0.16', { stdio: 'inherit' })
+  // The SDK version has one source, package.json.
+  const sdk = JSON.parse(readFileSync('package.json', 'utf8')).dependencies['@evenrealities/even_hub_sdk']
+  execSync(`npx evenhub pack app.json dist -o gloz.ehpk --sdk-ver ${sdk}`, { stdio: 'inherit' })
 } finally { writeFileSync('app.json', src) }

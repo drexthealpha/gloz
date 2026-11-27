@@ -1,0 +1,12 @@
+{
+ "why": "Numbers written by hand in the docs that no generator can write. Each is bound to the line of code or file it comes from; node scripts/claims.mjs (in CI) fails if a copy drifts.",
+ "claims": [
+  { "what": "Even Hub SDK version in the app manifest", "in": { "file": "app/app.json", "regex": "\"min_sdk_version\": \"(\\d+\\.\\d+\\.\\d+)\"" }, "from": { "file": "app/package.json", "regex": "\"@evenrealities/even_hub_sdk\": \"\\^?(\\d+\\.\\d+\\.\\d+)\"" } },
+  { "what": "how far off the route before directions are worked out again", "in": { "file": "eval/rows.mjs", "regex": "more than (\\d+) m off it" }, "from": { "file": "app/src/modes/nav.ts", "regex": "OFF_ROUTE_M = (\\d+)" } },
+  { "what": "seconds of sound in each piece Listen sends", "in": { "file": "eval/rows.mjs", "regex": "from (\\d+)-second pieces" }, "from": { "file": "app/src/app.ts", "regex": "const PIECE = (\\d+) \\* 32000" } },
+  { "what": "earlier messages a draft sees (complaint row)", "in": { "file": "eval/rows.mjs", "regex": "Drafts see the last (\\d+) messages" }, "from": { "file": "server/ai.mjs", "regex": "thread\\.slice\\(-(\\d+)\\)" } },
+  { "what": "earlier messages a draft sees (data policy)", "in": { "file": "README.md", "regex": "up to (\\d+) earlier messages of that chat" }, "from": { "file": "server/ai.mjs", "regex": "thread\\.slice\\(-(\\d+)\\)" } },
+  { "what": "days unused before a pairing ends", "in": { "file": "eval/rows.mjs", "regex": "unused for (\\d+) days" }, "from": { "file": "server/app.mjs", "regex": "IDLE_MS = (\\d+) \\* 24" } },
+  { "what": "wrong pairing codes before pairing stops for a minute", "in": { "file": "README.md", "regex": "(\\w+) wrong codes retire it" }, "from": { "file": "server/app.mjs", "regex": "\\+\\+wrongTotal >= (\\d+)" } }
+ ]
+}

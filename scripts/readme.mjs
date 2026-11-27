@@ -70,9 +70,11 @@ blocks.Lconn = at('server/connectors.mjs', 'export function connectors')
 blocks.Lmove = at('app/src/glasses.ts', 'private move(d')
 blocks.Lphone = at('app/src/phone/PairScreen.tsx', 'export function PairScreen')
 blocks.Ltime = at('eval/time.mjs', 'const CPS')
+// The Even Hub SDK version has one source: app/package.json.
+blocks.sdk = JSON.parse(readFileSync(new URL('../app/package.json', import.meta.url), 'utf8')).dependencies['@evenrealities/even_hub_sdk'].replace(/^[~^]/, '')
 blocks.Lwho = at('server/app.mjs', 'const by = aiWrote')
 
-const PAGES = { 'README.md': ['first', 'heldout', 'time', 'wins', 'video', 'cost', 'tests', 'Lsend', 'Ldraft', 'Lonce', 'Loutbox', 'Llayout', 'Ldrop', 'Ldraw', 'Ltap', 'Lconn', 'Lmove', 'Lphone', 'Ltime', 'Lwho', 'firstline'], 'SUBMISSION-CHECK.md': ['video'] }
+const PAGES = { 'README.md': ['first', 'heldout', 'time', 'wins', 'video', 'cost', 'tests', 'Lsend', 'Ldraft', 'Lonce', 'Loutbox', 'Llayout', 'Ldrop', 'Ldraw', 'Ltap', 'Lconn', 'Lmove', 'Lphone', 'Ltime', 'Lwho', 'firstline', 'sdk'], 'SUBMISSION-CHECK.md': ['video', 'sdk'] }
 let stale = false
 for (const [file, want] of Object.entries(PAGES)) {
   const path = new URL(`../${file}`, import.meta.url)

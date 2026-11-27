@@ -28,7 +28,7 @@ jobs:
         run: |
           npm ci && npm test
           cd app && npm ci && npx tsc --noEmit && npx vite build
-          npx evenhub pack app.json dist -o gloz.ehpk --sdk-ver 0.0.16
+          npx evenhub pack app.json dist -o gloz.ehpk --sdk-ver "$(node -p "require('./package.json').dependencies['@evenrealities/even_hub_sdk']")"
       - name: Signed record of how the package was built (build provenance)
         if: steps.new.outputs.skip != '1'
         uses: actions/attest-build-provenance@v2
