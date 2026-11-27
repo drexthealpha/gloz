@@ -12,7 +12,7 @@ import { APPS } from './modes/index.ts'
 import type { Mode, ModeCtx } from './modes/types.ts'
 import { dayItems, type DayItem } from './core/day.ts'
 import { said, type Said } from './core/say.ts'
-import { words } from './core/words.ts'
+import { words, phoneLang } from './core/words.ts'
 import { holdingReply } from './core/holding.ts'
 import { room, roomStep, roomCard, transcript, edgeNote, type Room, type RoomEvent } from './core/room.ts'
 import type { Api } from './api.ts'
@@ -23,7 +23,9 @@ const store: Store = {
 }
 
 export function loadSettings(): Settings {
-  try { return { ...DEFAULT_SETTINGS, ...JSON.parse(store.get('gloz.settings') || '{}') } } catch { return { ...DEFAULT_SETTINGS } }
+  // Nothing chosen yet: the phone's own language (navigator.languages), when the glasses speak it.
+  const first = { ...DEFAULT_SETTINGS, myLang: phoneLang(typeof navigator === 'undefined' ? [] : navigator.languages) }
+  try { return { ...first, ...JSON.parse(store.get('gloz.settings') || '{}') } } catch { return first }
 }
 export function saveSettings(s: Settings) { store.set('gloz.settings', JSON.stringify(s)) }
 

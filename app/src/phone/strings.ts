@@ -1,5 +1,5 @@
 // Every phone-page string, with what it is for and its longest allowed length.
-// English is the source language; no other phone-page language ships yet.
+// English is the source language; the nine glasses languages load from app/public/lang when picked.
 export const META = { lang: 'en', translated_by: 'source text, written in English', reviewed_by: 'source text, no translation to review' }
 
 // Each entry: the text, then (in a comment) what it is for and its longest allowed length, for translators.
@@ -79,6 +79,12 @@ export const STRINGS = {
   listen: s('Hear this'), // Plays the instruction beside it out loud (max 12)
   stop: s('Stop'), // Stops the instruction that is playing (max 12)
   noScript: s('Gloz needs JavaScript to run. Open it in the Even Realities app.'), // Shown when scripts are off (max 80)
+  onGlasses: s('On the glasses:'), // Start of the status line, before the counts (max 24)
+  toRead: s('{n} to read'), // Status count: messages still to read; {n} is a number (max 20)
+  skipped: s('{n} skipped'), // Status count: messages skipped; {n} is a number (max 20)
+  fromMuted: s('{n} from muted chats'), // Status count: messages held in muted chats; {n} is a number (max 30)
+  waitingSignal: s('{n} waiting for signal'), // Status count: replies saved until the phone has signal; {n} is a number (max 32)
+  noSignal: s('No signal'), // Status line when the phone has no connection (max 20)
 } satisfies Record<string, S>
 
 export type Key = keyof typeof STRINGS
@@ -86,7 +92,20 @@ export type Key = keyof typeof STRINGS
 // The status line on the settings screen: messages still to read on the glasses, skipped ones,
 // ones from muted chats, and replies still waiting for the signal.
 export function phoneStatus(toRead: number, skipped: number, muted: number, waiting: number) {
-  const n = (k: number, one: string, many: string) => `${k} ${k === 1 ? one : many}`
-  return `On the glasses: ${[`${toRead} to read`, `${skipped} skipped`, `${muted} from muted chats`, ...(waiting ? [n(waiting, 'reply waiting for signal', 'replies waiting for signal')] : [])].join(' · ')}`
+  return `${t('onGlasses')} ${[t('toRead', toRead), t('skipped', skipped), t('fromMuted', muted), ...(waiting ? [t('waitingSignal', waiting)] : [])].join(' · ')}`
 }
-export const t = (k: Key, n?: number) => STRINGS[k].text.replace('{n}', String(n ?? ''))
+// The wearer's language: English is built in; another loads only when picked (app/src/phone/lang/<code>.json),
+// and Arabic, Persian and Hebrew turn the whole page to read from the other side. Translations: Claude (AI), not yet reviewed by native speakers.
+let OVER: Record<string, string> = {}
+let LANG = 'en'
+const RTL = new Set(['ar', 'fa', 'he'])
+export async function useLang(code: string): Promise<boolean> {
+  if (!code || code === LANG) return false
+  let next: Record<string, string> = {}
+  // Plain data next to the page (app/public/lang), fetched only for the language picked.
+  if (code !== 'en') { try { const r = await fetch(new URL(`lang/${code}.json`, document.baseURI)); if (!r.ok) throw 0; next = await r.json() } catch { next = {}; code = 'en' } }
+  OVER = next; LANG = code
+  if (typeof document !== 'undefined') { document.documentElement.lang = code; document.documentElement.dir = RTL.has(code) ? 'rtl' : 'ltr' }
+  return true
+}
+export const t = (k: Key, n?: number) => (OVER[k] ?? STRINGS[k].text).replace('{n}', String(n ?? ''))

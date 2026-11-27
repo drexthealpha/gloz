@@ -4,7 +4,7 @@ import { HttpApi } from './api.ts'
 import { SampleApi } from './sample-api.ts'
 import { runGloz } from './app.ts'
 import { pairScreen, settingsScreen } from './phone/mount.tsx'
-import { phoneStatus } from './phone/strings.ts'
+import { phoneStatus, t } from './phone/strings.ts'
 
 const BACKEND = (import.meta.env.VITE_GLOZ_BACKEND as string) || ''
 const root = document.getElementById('phone')!
@@ -24,7 +24,7 @@ const token = get('gloz.token')
 let status = 'Paired'
 // Until the phone pairs, the glasses show sample messages (marked "Sample:") so the wearer sees Gloz work at once.
 const gloz = await runGloz(bridge, token ? new HttpApi(base, token) : link ? null : new SampleApi(), (s) => {
-  status = !s.online ? `No signal${s.queued ? ` · ${s.queued} reply waiting` : ''}` : phoneStatus(Math.max(0, s.queue.length - (s.view === 'empty' ? 0 : s.at)), s.skippedMsgs?.length ?? 0, s.mutedMsgs?.length ?? 0, s.queued)
+  status = !s.online ? `${t('noSignal')}${s.queued ? ` · ${t('waitingSignal', s.queued)}` : ''}` : phoneStatus(Math.max(0, s.queue.length - (s.view === 'empty' ? 0 : s.at)), s.skippedMsgs?.length ?? 0, s.mutedMsgs?.length ?? 0, s.queued)
 })
 
 function showSettings() { settingsScreen(root, gloz.settings(), n => gloz.update(n), () => status, () => gloz.transcript(), () => gloz.muted(), () => gloz.unmuteAll(), () => gloz.settings(), () => gloz.chats(), (k, on) => gloz.pick(k, on), unpair) }
