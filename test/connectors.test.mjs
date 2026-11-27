@@ -150,3 +150,42 @@ test('Telegram: the listener asks Telegram to hold the request open and pushes e
   assert.equal(pushed[0].text, 'now?')
   assert.match(calls[0].url, /timeout=25/)
 })
+
+test('NEAR AI demo credit: one small model, 400 tokens at most, the same question never paid twice, and a hard stop at the budget', async () => {
+  process.env.GLOZ_NEARAI_KEY = 'k'
+  process.env.GLOZ_NEARAI_BUDGET_USD = '0.001'
+  const sent = []
+  globalThis.fetch = async (url, opts) => {
+    sent.push(JSON.parse(opts.body))
+    // 4,000 tokens in and 1,000 out: $0.0009 at $0.10 and $0.50 a million.
+    return { ok: true, status: 200, json: async () => ({ choices: [{ message: { content: '{"reply":"Yes.","importance":4,"line":"lunch"}' } }], usage: { prompt_tokens: 4000, completion_tokens: 1000 } }) }
+  }
+  const ai = await import(`../server/ai.mjs?${Math.random()}`)
+  const m = { chat: 'Board', from: 'Sam', text: 'Lunch friday?' }
+  const a = await ai.draft(m, [], '', 'en')
+  assert.equal(a.text, 'Yes.')
+  assert.equal(a.score, 4)
+  assert.equal(sent[0].model, 'anthropic/claude-haiku-5-5')
+  assert.equal(sent[0].max_tokens, 400)
+  // The same question: answered from the cache, no second call.
+  await ai.draft(m, [], '', 'en')
+  assert.equal(sent.length, 1)
+  // A second paid call goes over the budget: after it, NEAR is never called again; drafts are the holding reply.
+  await ai.draft({ ...m, text: 'Dinner then?' }, [], '', 'en')
+  assert.equal(sent.length, 2)
+  assert.equal(ai.near.out, true)
+  const after = await ai.draft({ ...m, text: 'Breakfast?' }, [], '', 'en')
+  assert.equal(sent.length, 2)
+  assert.equal(after.by, 'default')
+})
+
+test('NEAR AI says the credit is gone (402): no more calls', async () => {
+  process.env.GLOZ_NEARAI_KEY = 'k'
+  let n = 0
+  globalThis.fetch = async () => { n++; return { ok: false, status: 402, json: async () => ({}) } }
+  const ai = await import(`../server/ai.mjs?${Math.random()}`)
+  assert.equal((await ai.draft({ chat: 'c', from: 'a', text: 'hi' }, [], '', 'en')).by, 'default')
+  assert.equal(ai.near.out, true)
+  await ai.draft({ chat: 'c', from: 'a', text: 'again' }, [], '', 'en')
+  assert.equal(n, 1)
+})

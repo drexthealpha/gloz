@@ -475,3 +475,8 @@ test('up on the third reply goes back to the second; on the first, up shows the 
   assert.equal(s.view, 'message')
   assert.equal(run(s, { t: 'tap' }).s.view, 'draft')
 })
+
+test('new messages queue most pressing first (the AI score on arrival), then newest', () => {
+  const s = run(start(true), { t: 'inbox', msgs: [{ ...m('a', 'lunch?', 3), score: 2 }, { ...m('b', 'sign today', 1), score: 5 }, { ...m('c', 'fyi', 2) }] }).s
+  assert.deepEqual(s.queue.map(q => q.id), ['b', 'a', 'c'])
+})

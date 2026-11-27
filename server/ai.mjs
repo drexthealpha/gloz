@@ -3,6 +3,7 @@
 // does not stop drafts (complaint: "AI stops responding", server errors).
 import { DRAFT_SYSTEM } from '../app/src/core/prompt.ts'
 import { guessLang, NAMES, HOLDING } from './lang.mjs'
+import { createHash } from 'node:crypto'
 
 const env = process.env
 function providers() {
@@ -10,9 +11,26 @@ function providers() {
   if (env.GLOZ_OPENROUTER_KEY) list.push({ name: 'openrouter', url: 'https://openrouter.ai/api/v1/chat/completions', key: env.GLOZ_OPENROUTER_KEY, model: env.GLOZ_OPENROUTER_MODEL || 'openrouter/auto', kind: 'openai' })
   if (env.GLOZ_ANTHROPIC_KEY) list.push({ name: 'claude', url: 'https://api.anthropic.com/v1/messages', key: env.GLOZ_ANTHROPIC_KEY, model: env.GLOZ_ANTHROPIC_MODEL || 'claude-sonnet-5-5', kind: 'anthropic' })
   if (env.GLOZ_OPENAI_KEY) list.push({ name: 'chatgpt', url: 'https://api.openai.com/v1/chat/completions', key: env.GLOZ_OPENAI_KEY, model: env.GLOZ_OPENAI_MODEL || 'gpt-4.1-mini', kind: 'openai' })
+  // The public demo's provider: a fixed credit, so one small model, capped answers, and a hard stop (near below).
+  if (env.GLOZ_NEARAI_KEY && !near.out) list.push({ name: 'nearai', url: 'https://cloud-api.near.ai/v1/chat/completions', key: env.GLOZ_NEARAI_KEY, model: env.GLOZ_NEARAI_MODEL || 'anthropic/claude-haiku-5-5', kind: 'openai' })
   return list
 }
 export const aiReady = () => providers().length > 0
+
+// NEAR AI credit cannot be topped up: spend is counted from the tokens each answer reports, at the model's list
+// price (USD per million tokens, input and output), and calls stop before the budget is gone, or at once when
+// NEAR says the credit is used up. Then drafts are the holding reply.
+export const near = {
+  spent: 0, out: false,
+  budget: Number(env.GLOZ_NEARAI_BUDGET_USD || 9.5),
+  price: (env.GLOZ_NEARAI_PRICE || '0.10,0.50').split(',').map(Number),
+  add(u) { if (!u) return; this.spent += ((u.prompt_tokens || 0) * this.price[0] + (u.completion_tokens || 0) * this.price[1]) / 1e6; if (this.spent >= this.budget) this.out = true },
+}
+
+// The same question gets the same answer without a second call: answers cached by a hash of what was asked.
+const answers = new Map()
+const MAX_ANSWERS = 5000
+const keyOf = (p, system, user) => createHash('sha256').update(`${p.model}\n${system}\n${user}`).digest('hex')
 
 async function call(p, system, user, timeoutMs = 15000) {
   const ctl = new AbortController()
@@ -25,8 +43,11 @@ async function call(p, system, user, timeoutMs = 15000) {
       return j.content.map(c => c.text || '').join('')
     }
     const r = await fetch(p.url, { method: 'POST', signal: ctl.signal, headers: { authorization: `Bearer ${p.key}`, 'content-type': 'application/json' }, body: JSON.stringify({ model: p.model, max_tokens: 400, messages: [{ role: 'system', content: system }, { role: 'user', content: user }], ...(p.name === 'openrouter' ? { provider: { data_collection: 'deny' } } : {}) }) })
+    // NEAR answers 402 when the credit is gone: never call it again.
+    if (p.name === 'nearai' && r.status === 402) near.out = true
     if (!r.ok) throw new Error(`${p.name} ${r.status}`)
     const j = await r.json()
+    if (p.name === 'nearai') near.add(j.usage)
     return j.choices[0].message.content
   } finally { clearTimeout(t) }
 }
@@ -34,7 +55,14 @@ async function call(p, system, user, timeoutMs = 15000) {
 async function ask(system, user) {
   let last
   for (const p of providers()) {
-    try { return { text: await call(p, system, user), by: p.name } } catch (e) { last = e }
+    const k = keyOf(p, system, user)
+    if (answers.has(k)) return { text: answers.get(k), by: p.name }
+    try {
+      const text = await call(p, system, user)
+      answers.set(k, text)
+      if (answers.size > MAX_ANSWERS) answers.delete(answers.keys().next().value)
+      return { text, by: p.name }
+    } catch (e) { last = e }
   }
   throw last || new Error('no AI provider')
 }
@@ -72,7 +100,10 @@ export async function draft(msg, thread = [], askText = '', myLang = 'en') {
   // Up to three replies to pick from with a swipe or the ring: the first, then the AI's alternatives.
   const alts = [{ text, gloss }, ...(Array.isArray(j.alts) ? j.alts : []).filter(a => a && String(a.reply || '').trim()).slice(0, 2)
     .map(a => ({ text: String(a.reply).trim(), gloss: a.gloss && guessLang(String(a.reply)) !== myLang ? String(a.gloss).trim() : undefined }))]
-  return { text, gloss, lang: rl, langName: NAMES[rl], by: 'ai', ...(alts.length > 1 && !askText ? { alts } : {}) }
+  const score = Math.max(1, Math.min(5, Math.round(Number(j.importance)) || 3))
+  const line = j.line ? String(j.line).trim() : undefined
+  const meaning = j.meaning && guessLang(msg.text) !== myLang ? String(j.meaning).trim() : undefined
+  return { text, gloss, lang: rl, langName: NAMES[rl], by: 'ai', score, line, meaning, ...(alts.length > 1 && !askText ? { alts } : {}) }
 }
 
 export async function translate(text, myLang = 'en') {

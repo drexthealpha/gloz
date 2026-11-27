@@ -112,7 +112,8 @@ export function step(s: State, ev: Event): { s: State; fx: Effect[] } {
       // New messages go in after the one on screen, so the line never jumps away under the wearer.
       const queue = [...s.queue]
       const head = s.view === 'empty' || s.view === 'pair' ? 0 : s.at + 1
-      queue.splice(head, 0, ...fresh.sort((a, b) => b.at - a.at))
+      // The most pressing first (the AI's score on arrival), then the newest.
+      queue.splice(head, 0, ...fresh.sort((a, b) => (b.score ?? 0) - (a.score ?? 0) || b.at - a.at))
       let n: State = { ...s, queue, at: s.view === 'empty' ? 0 : s.at }
       if (n.view === 'empty') n = { ...n, view: 'message' }
       return { s: prefetch(n, fx), fx }

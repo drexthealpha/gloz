@@ -51,6 +51,14 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
   let dirty = false   // state changed since it was last written
   const waiters = new Set()   // /inbox requests waiting for a message (long polling)
 
+  // The one model call each message gets, started when it arrives (in the language the wearer last asked in),
+  // so its reply is ready with it and the inbox can put the most pressing first.
+  const early = new Map()   // id -> { lang, draft: Promise }
+  let wearerLang = 'en'
+  const draftFor = (m, lang) => {
+    const thread = (threads.get(`${m.source}:${m.chat}`) || []).filter(t => t.id !== m.id)
+    return ai.draft(m, thread, '', lang).then(d => noteAi(m.id, d)).catch(() => null)
+  }
   function add(m) {
     if (msgs.has(m.id) || state.refs[m.id]?.done) return
     msgs.set(m.id, m)
@@ -63,6 +71,7 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
     const t = threads.get(key) || []
     t.push({ id: m.id, from: m.from, text: m.text })
     threads.set(key, t.slice(-10))
+    if (ai.ready() && !m.pre) early.set(m.id, { lang: wearerLang, draft: draftFor(m, wearerLang) })
   }
 
   // Every reply the AI wrote for a message, by hash: a sent text that matches one was written by the AI,
@@ -73,6 +82,7 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
   function drop(id) {
     const m = msgs.get(id)
     msgs.delete(id)
+    early.delete(id)
     aiWrote.delete(id)
     for (const k of translations.keys()) if (k.startsWith(`${id}|`)) translations.delete(k)
     if (m) { const key = `${m.source}:${m.chat}`; const t = (threads.get(key) || []).filter(x => x.id !== id); if (t.length) threads.set(key, t); else threads.delete(key) }
@@ -179,15 +189,23 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
     const wait = Math.min(25, Number(url.searchParams.get('wait') || 0))
     if (wait > 0 && !inbox.some(e => e.seq > after)) await new Promise(done => { const t = setTimeout(() => { waiters.delete(go); done() }, wait * 1000); const go = () => { clearTimeout(t); done() }; waiters.add(go) })
     const lang = url.searchParams.get('lang') || 'en'
+    wearerLang = lang
     const tr = url.searchParams.get('translate') === '1'
+    const ready = inbox.filter(e => e.seq > after && msgs.get(e.id))
+    // A slow model never holds a message back more than 3 s; its reply then comes when the glasses ask for it.
+    const drafts = await Promise.all(ready.map(({ id }) => {
+      const e = early.get(id)
+      return e && e.lang === lang ? Promise.race([e.draft, new Promise(r => setTimeout(() => r(undefined), 3000))]) : undefined
+    }))
     const out = []
-    for (const { seq: s, id } of inbox) {
-      const m = s > after && msgs.get(id)
-      if (!m) continue
-      const translated = tr ? await cached(`${id}|${lang}`, () => ai.translate(m.text, lang)) : undefined
-      const brief = ai.brief ? await cached(`${id}|brief|${lang}`, () => ai.brief(m.text, lang)) : undefined
-      out.push({ id: m.id, source: m.source, chat: m.chat, from: m.from, text: m.text, at: m.at, translated, brief })
+    for (let i = 0; i < ready.length; i++) {
+      const m = msgs.get(ready[i].id), d = drafts[i] || undefined
+      // The meaning comes from the same call; a separate translation only when that call gave none.
+      const translated = tr ? (d?.meaning ?? await cached(`${m.id}|${lang}`, () => ai.translate(m.text, lang))) : undefined
+      out.push({ id: m.id, source: m.source, chat: m.chat, from: m.from, text: m.text, at: m.at, translated, brief: d?.line, score: d?.score, draft: d })
     }
+    // Most pressing first, then newest.
+    out.sort((a, b) => (b.score ?? 0) - (a.score ?? 0) || b.at - a.at)
     return [200, { msgs: out, after: seq }]
   }
 
@@ -198,8 +216,11 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
     if (!m) return [410, { error: 'message gone' }]
     // A sample message with no AI key on the server: the reply written for it ahead of time.
     if (m.pre && !ask && !ai.ready()) return [200, { ...noteAi(id, m.pre), ms: 0 }]
-    const thread = (threads.get(`${m.source}:${m.chat}`) || []).slice(0, -1)
+    const thread = (threads.get(`${m.source}:${m.chat}`) || []).filter(t => t.id !== m.id)
     const t0 = performance.now()
+    // A draft asked for again is the one already made on arrival, never a second call.
+    const e = !ask && early.get(id)
+    if (e && e.lang === (lang || 'en')) { const d = await e.draft; if (d) return [200, { ...d, ms: Math.round(performance.now() - t0) }] }
     try { return [200, { ...noteAi(id, await ai.draft(m, thread, ask || '', lang || 'en')), ms: Math.round(performance.now() - t0) }] } catch (e) { return [503, { error: String(e.message || e) }] }
   }
 

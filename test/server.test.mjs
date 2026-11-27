@@ -235,9 +235,13 @@ test('once a reply is sent, its message leaves the chat context the next draft s
   svc.push(msg(2, 'second'))
   await app.pollOnce()
   await call('/send', { key: 'a', id: msg(1).id, text: 'ok' }, token)
-  await call('/draft', { id: msg(2).id }, token)
-  assert.deepEqual(seen.at(-1), [])   // "secret one" is gone, not kept as context
+  // A message that comes after the reply went: its draft (written on arrival) never sees "secret one".
+  svc.push(msg(3, 'third'))
+  await app.pollOnce()
+  await call('/draft', { id: msg(3).id }, token)
   app.server.close()
+  assert.ok(!seen.at(-1).includes('secret one'), JSON.stringify(seen.at(-1)))
+  assert.deepEqual(seen.at(-1), ['second'])
 })
 
 test('a pairing in daily use never ends; one unused for 90 days ends', async () => {
@@ -280,5 +284,24 @@ test(`each sent reply records who wrote it, AI draft or the wearer, as the serve
     { id: b, text: 'Can we do 4 pm?\n\nvia Gloz · AI draft', by: 'ai' },
     { id: c, text: 'Call me at 3\n\nvia Gloz', by: 'wearer' },
   ])
+  app.server.close()
+})
+
+test('each message gets one model call on arrival; the inbox puts the most pressing first, with its reply; asking again makes no second call', async () => {
+  const svc = fakeService()
+  let calls = 0
+  const draft = async (m) => { calls++; return { text: `re: ${m.text}`, by: 'ai', score: m.text.includes('urgent') ? 5 : 2, line: m.text.slice(0, 10) } }
+  const { app, call } = await boot(svc, { draft, ready: () => true })
+  const { json: { token } } = await call('/pair', { code: app.pairCode() })
+  svc.push(msg(1, 'lunch on friday?'))
+  svc.push(msg(2, 'urgent: sign the contract today'))
+  await app.pollOnce()
+  const r = (await call('/inbox?after=0&lang=en', null, token)).json
+  assert.deepEqual(r.msgs.map(m => m.text), ['urgent: sign the contract today', 'lunch on friday?'])
+  assert.equal(r.msgs[0].draft.text, 're: urgent: sign the contract today')
+  assert.equal(r.msgs[0].brief, 'urgent: si')
+  assert.equal(calls, 2)
+  assert.equal((await call('/draft', { id: r.msgs[0].id, lang: 'en' }, token)).json.text, 're: urgent: sign the contract today')
+  assert.equal(calls, 2)
   app.server.close()
 })

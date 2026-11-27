@@ -9,6 +9,9 @@ export interface Msg {
   at: number            // unix ms
   lang?: string         // detected language code of the text
   translated?: string   // text in the wearer's language, when translation is on
+  score?: number        // how much it needs an answer, 1 to 5, from the AI on arrival; most pressing shows first
+  brief?: string        // what it wants, in a few words, from the same call
+  draft?: Draft         // the reply written on arrival, when the server had it ready
 }
 
 export interface Draft {

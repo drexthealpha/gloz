@@ -204,6 +204,8 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
       if (r.msgs.length) store.set('gloz.chats', JSON.stringify([...chats]))
       const msgs = r.msgs.filter(m => shows(`${m.source}:${m.chat}`, muted, only))
       if (msgs.length) dispatch({ t: 'inbox', msgs })
+      // A reply written on arrival goes straight onto its card: nothing to ask the server for.
+      for (const m of msgs) if (m.draft) dispatch({ t: 'draft', id: m.id, draft: m.draft })
       dispatch({ t: 'checked', at: Date.now() })
       return msgs.length
     } catch (e) {
