@@ -45,7 +45,29 @@ const testCount = testFiles.reduce((n, f) => n + (readFileSync(new URL(`../test/
 blocks.tests = `${testCount} tests in ${testFiles.length} files, all run on every push, with line coverage in the log: [pass log](https://github.com/drexthealpha/gloz/actions/workflows/ci.yml)`
 
 // Each page and the blocks it must hold; a block written inline (gen-i) stays on its line.
-const PAGES = { 'README.md': ['first', 'heldout', 'time', 'wins', 'video', 'cost', 'tests'], 'SUBMISSION-CHECK.md': ['video'] }
+// Links to the exact line that does each job, found by what the line says, so they never point at a stale line.
+// A file that is not there (a partial copy of the repository) gets a plain link to the file instead.
+const at = (file, needle) => {
+  let text
+  try { text = readFileSync(new URL(`../${file}`, import.meta.url), 'utf8') } catch { return `[${file}](${file})` }
+  const i = text.split('\n').findIndex(l => l.includes(needle))
+  if (i < 0) { console.log(`${file}: no line with "${needle}": run node scripts/readme.mjs after naming the new line`); process.exit(1) }
+  return `[${file}#L${i + 1}](${file}#L${i + 1})`
+}
+blocks.Lsend = at('app/src/core/flow.ts', 'function send(s: State')
+blocks.Ldraft = at('server/ai.mjs', 'export async function draft')
+blocks.Lonce = at('server/app.mjs', 'async function sendReply')
+blocks.Loutbox = at('app/src/core/outbox.ts', 'add(msgId: string, text: string')
+blocks.Llayout = at('app/src/render.ts', 'export function layoutFor')
+blocks.Ldrop = at('server/app.mjs', '  function drop(id)')
+blocks.Ldraw = at('app/src/render.ts', 'export function drawLine')
+blocks.Ltap = at('test/core.test.ts', "test('tap, tap sends the draft")
+blocks.Lconn = at('server/connectors.mjs', 'export function connectors')
+blocks.Lmove = at('app/src/glasses.ts', 'private move(d')
+blocks.Lphone = at('app/src/phone/PairScreen.tsx', 'export function PairScreen')
+blocks.Ltime = at('eval/time.mjs', 'const CPS')
+
+const PAGES = { 'README.md': ['first', 'heldout', 'time', 'wins', 'video', 'cost', 'tests', 'Lsend', 'Ldraft', 'Lonce', 'Loutbox', 'Llayout', 'Ldrop', 'Ldraw', 'Ltap', 'Lconn', 'Lmove', 'Lphone', 'Ltime'], 'SUBMISSION-CHECK.md': ['video'] }
 let stale = false
 for (const [file, want] of Object.entries(PAGES)) {
   const path = new URL(`../${file}`, import.meta.url)
@@ -56,7 +78,7 @@ for (const [file, want] of Object.entries(PAGES)) {
     if (!block.test(md)) { console.log(`${file}: the gen:${k} marker is missing`); process.exit(1) }
     // A function, so a "$" in the text (prices) is never read as a pattern; a short value stays inline.
     const val = blocks[k]
-    md = md.replace(new RegExp(`(<!-- gen:${k} -->)[\\s\\S]*?(<!-- /gen -->)`, 'g'), (_, a, b) => k !== 'first' && k !== 'tests' && (val.includes('\n') || val.length > 40) ? `${a}\n${val}\n${b}` : `${a}${val}${b}`)   // the README's first line stays one line
+    md = md.replace(new RegExp(`(<!-- gen:${k} -->)[\\s\\S]*?(<!-- /gen -->)`, 'g'), (_, a, b) => k !== 'first' && k !== 'tests' && !k.startsWith('L') && (val.includes('\n') || val.length > 40) ? `${a}\n${val}\n${b}` : `${a}${val}${b}`)   // the README's first line stays one line
   }
   if (md !== before) { stale = true; if (!process.argv.includes('--check')) writeFileSync(path, md) }
 }
