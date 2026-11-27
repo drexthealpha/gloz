@@ -241,7 +241,7 @@ const sayBox = document.getElementById('say') as HTMLFormElement
 const sayIn = document.getElementById('sayin') as HTMLInputElement
 const sayLabel = sayBox.querySelector('label')!
 // Where the browser can listen, the label offers it.
-if ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition) sayLabel.textContent = 'Say it with Speak, or type what you would say.'
+if ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition) sayLabel.textContent = 'Say it with Speak, or type it. With your OpenRouter key below, it becomes a reply in their language.'
 const sayText = sayLabel.textContent
 api.heard = () => new Promise(res => {
   sayBox.hidden = false

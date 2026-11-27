@@ -26,12 +26,12 @@ export interface Lines { lines: string[]; px: number; head?: string }
 // How a card is laid out, and whether it needs the whole display: the largest size, or a message too long
 // for one two-row strip, which then shows four rows a part so most messages fit one screen.
 // Rows a part holds on the whole display, by text size (1 to 6): as many as fit 288 px, under the label for a reply.
-const FULL_ROWS = { message: [4, 4, 4, 3, 2, 2], draft: [3, 3, 3, 3, 2, 1] } as const
+const FULL_ROWS = { message: [4, 4, 4, 3, 2, 2], draft: [3, 3, 3, 3, 2, 1], status: [4, 4, 4, 3, 2, 2] } as const
 export function layoutFor(c: Card, size: number): { lay: Lines; full: boolean } {
   const lay = layoutCard(c, size)
   if (size === 7) return { lay, full: true }
   // A longer message or reply uses the whole display at every size, so a reply is read whole before the tap that sends it.
-  const rows = c.kind === 'message' || c.kind === 'draft' ? FULL_ROWS[c.kind][size - 1] : 1
+  const rows = c.kind === 'message' || c.kind === 'draft' || (c.kind === 'status' && !c.grid) ? FULL_ROWS[c.kind][size - 1] : 1
   if (lay.lines.length > 1 && rows > 1) return { lay: layoutCard(c, size, rows), full: true }
   return { lay, full: false }
 }
@@ -48,6 +48,12 @@ export function layoutCard(c: Card, size: number, rows?: number): Lines {
   // A status line is read whole: shrink it to one line when it fits at any size, else draw it
   // at the size that needs the fewest lines. Messages and replies keep the wearer's size.
   if (c.kind === 'status') {
+    // On the whole display, a status too long for one line keeps the wearer's size, all its rows on one screen.
+    if (rows && rows > 1) {
+      const ls = wrap(text, room, measure), parts: string[] = []
+      for (let k = 0; k < ls.length; k += rows) parts.push(ls.slice(k, k + rows).join('\n'))
+      return { lines: parts, px, head: c.head }
+    }
     let best: Lines | null = null
     for (let k = size; k >= 1; k--) {
       ctx.font = `${fontPx(k)}px ${FONT}`

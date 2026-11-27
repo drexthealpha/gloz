@@ -14,7 +14,7 @@ const toggle = `${big} aria-pressed:border-destructive aria-pressed:bg-destructi
 export function mountControls() {
   render(
     <form id="say" hidden className="mt-2.5 flex flex-wrap items-center gap-2">
-      <Label htmlFor="sayin" className="basis-full text-base font-normal text-muted-foreground">No microphone in this demo: type what you would say.</Label>
+      <Label htmlFor="sayin" className="basis-full text-base font-normal text-muted-foreground">Type what you would say. With your OpenRouter key below, it becomes a reply in their language.</Label>
       <Input id="sayin" placeholder="Type your words" aria-label="What you would say" className="h-12 min-w-0 flex-1 text-lg text-foreground" />
       <Button className={filled}>Done</Button>
       <Button type="button" id="saymic" variant="outline" className={big} hidden>Speak</Button>
