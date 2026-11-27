@@ -23,13 +23,7 @@ export default function MoreSettings({ s, set, l, setL, live, unmute, pick, unpa
   const [fix, setFix] = useState({ what: 'fixDrops' as FixKey, order: '', serial: '', since: '' })
   return (
     <>
-      <div className="flex flex-col gap-2">
-        <Label id="linel" className="text-base">{t('line')}</Label>
-        <ToggleGroup type="single" variant="outline" spacing={2} aria-labelledby="linel" value={s.low ? 'low' : 'middle'} onValueChange={v => v && set({ low: v === 'low' })} className="w-full flex-wrap gap-2">
-          <ToggleGroupItem value="middle" className={`${big} flex-1 data-[state=on]:font-semibold data-[state=on]:ring-2 data-[state=on]:ring-primary`}>{t('middle')}</ToggleGroupItem>
-          <ToggleGroupItem value="low" className={`${big} flex-1 data-[state=on]:font-semibold data-[state=on]:ring-2 data-[state=on]:ring-primary`}>{t('low')}</ToggleGroupItem>
-        </ToggleGroup>
-      </div>
+      {/* Where the text sits is moved on the glasses themselves (menu: Move text up/down), so it is not here twice. */}
       <div className="flex min-h-12 flex-wrap items-center justify-between gap-3">
         <Label htmlFor="tr" className="min-w-0 flex-1 basis-40 text-base">{t('translate')}</Label>
         <Switch id="tr" aria-label={t('translate')} checked={s.translate} onCheckedChange={v => set({ translate: v })} />
