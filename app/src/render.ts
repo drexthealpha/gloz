@@ -16,6 +16,8 @@ function ctx2d(): CanvasRenderingContext2D {
   return measureCtx
 }
 
+// The hint row's size for a given text size: larger text gets a larger hint (sizes 6 and 7).
+export const hintPx = (textPx: number) => textPx >= 200 ? 30 : textPx >= 110 ? 26 : HINT_PX
 function fontPx(size: number) { return SIZES[Math.min(7, Math.max(1, size)) - 1] }
 
 // Hint text sits under the line, small, only where a press needs saying.
@@ -99,20 +101,22 @@ export function drawLine(c: Card, l: Lines, i: number, opts: { pages?: boolean }
   g.textBaseline = 'middle'
   g.font = `${l.px}px ${FONT}`
   const hint = (c.hint ?? '').replace(c.kind === 'message' && i === 0 ? / · up: earlier part/ : /$^/, '')
+  // The hint grows with the wearer's text size, so whoever needs large text can also read what a press does.
+  const HP = hintPx(l.px)
   const label = c.kind === 'draft' && c.head ? c.head.replace(/^↩\s*/, '') : ''
   if (label) {
     g.save()
-    g.font = `${HINT_PX}px ${FONT}`
+    g.font = `${HP}px ${FONT}`
     g.fillStyle = '#bbb'
     g.direction = direction(label)
     g.textAlign = g.direction === 'rtl' ? 'right' : 'left'
-    g.fillText(label, g.direction === 'rtl' ? W - PAD : PAD, 4 + HINT_PX / 2)
+    g.fillText(label, g.direction === 'rtl' ? W - PAD : PAD, 4 + HP / 2)
     g.restore()
   }
   // Text that is too tall for the room above the hint is drawn smaller, never over it.
   // The label's letters reach below its middle line by about half its size; the line starts under them.
-  const top = label ? Math.ceil(4 + HINT_PX * 1.35) + 6 : 0
-  const room = (hint ? H - HINT_PX - 14 : H - 8) - top
+  const top = label ? Math.ceil(4 + HP * 1.35) + 6 : 0
+  const room = (hint ? H - HP - 14 : H - 8) - top
   let px = l.px
   g.font = `${px}px ${FONT}`
   // Measured on the letters' own baseline, the one they are drawn on.
@@ -136,8 +140,8 @@ export function drawLine(c: Card, l: Lines, i: number, opts: { pages?: boolean }
   const pages = opts.pages !== false && l.lines.length > 1 ? `part ${i + 1}/${l.lines.length}${i === l.lines.length - 1 ? ' · end' : ''}`
     : c.kind === 'status' && c.progress && c.progress[1] > 1 ? `${c.progress[0]}/${c.progress[1]}` : ''
   if (hint || pages) {
-    const y = H - HINT_PX / 2 - 6
-    g.font = `${HINT_PX}px ${FONT}`
+    const y = H - HP / 2 - 6
+    g.font = `${HP}px ${FONT}`
     g.fillStyle = '#aaa'
     g.direction = direction(hint)
     g.textAlign = g.direction === 'rtl' ? 'right' : 'left'
@@ -145,8 +149,8 @@ export function drawLine(c: Card, l: Lines, i: number, opts: { pages?: boolean }
     // A long hint is drawn a little smaller first (down to 80%), and cut only if it still does not fit.
     const fits = () => g.measureText(h).width <= W - PAD * 2 - (pages ? g.measureText(pages).width + 16 : 0)
     // The way back is added when the whole line still fits at 80%.
-    if (c.back && h) { const save = g.font; g.font = `${HINT_PX * 0.8}px ${FONT}`; let rest = hint; h = `${rest} · ${c.back}`; while (!fits() && rest.includes(' · ')) { rest = rest.slice(0, rest.lastIndexOf(' · ')); h = `${rest} · ${c.back}` } g.font = save }
-    for (let px = HINT_PX; h && !fits() && px > HINT_PX * 0.8; px--) g.font = `${px - 1}px ${FONT}`
+    if (c.back && h) { const save = g.font; g.font = `${HP * 0.8}px ${FONT}`; let rest = hint; h = `${rest} · ${c.back}`; while (!fits() && rest.includes(' · ')) { rest = rest.slice(0, rest.lastIndexOf(' · ')); h = `${rest} · ${c.back}` } g.font = save }
+    for (let px = HP; h && !fits() && px > HINT_PX * 0.8; px--) g.font = `${px - 1}px ${FONT}`
     while (h && !fits() && h.includes(' · ')) h = h.slice(0, h.lastIndexOf(' · '))
     while (h && !fits()) h = h.slice(0, -2).trimEnd() + '…'
     if (h) g.fillText(h, g.direction === 'rtl' ? W - PAD : PAD, y)

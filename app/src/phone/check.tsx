@@ -13,7 +13,8 @@ const slow = Number(q.get('slow') ?? 300)
 const s = { myLang: 'en', size: 3, low: false, translate: false, autoPace: true, roomLang: '' } as Settings & { roomLang?: string }
 let said = q.get('said') || !q.get('screen') ? '14:02  We can ship on Friday.\n14:02  The price stays the same.\n14:03  Legal needs one more day.' : ''
 let status = ''
-let muted = Number(q.get('muted') ?? (q.get('screen') ? 0 : 2))
+// No chat is muted unless a check asks (?muted=2): the public page matches the glasses demo, where none is.
+let muted = Number(q.get('muted') ?? 0)
 let toRead = 3
 // The check changes these to see live updates arrive without moving focus.
 Object.assign(window, { __gloz: { setStatus: (v: string) => { status = v }, addSaid: (v: string) => { said += '\n' + v } } })

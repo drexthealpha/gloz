@@ -4,7 +4,8 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
 
-const ROOT = new URL('..', import.meta.url).pathname.replace(/^\/(\w:)/, '$1')
+// node scripts/check-text.mjs [folder]: the repository, or another folder (the tests use one with only a fixture).
+const ROOT = process.argv[2] || new URL('..', import.meta.url).pathname.replace(/^\/(\w:)/, '$1')
 const SKIP = new Set(['node_modules', '.git', 'dist', 'dist-demo', 'out', 'results', 'set', 'data', '.claude'])
 const EXT = /\.(md|html|ts|mjs|json|txt|yml)$/
 
