@@ -75,7 +75,9 @@ export default function MoreSettings({ s, set, l, setL, live, unmute, pick, unpa
           <pre role="log" data-user-content dir="auto" className="m-0 max-h-60 overflow-auto rounded-lg border p-3 font-sans text-base whitespace-pre-wrap">{l.said}</pre>
           <div className="flex gap-2">
             <Button variant="outline" className={`${big} flex-1`} onClick={async () => { try { await navigator.clipboard.writeText(l.said); setCopied(t('copied')) } catch { const log = document.querySelector('[role=log]'); if (log) getSelection()?.selectAllChildren(log); setCopied(t('noCopy')) } setTimeout(() => setCopied(''), 3000) }}><Copy aria-hidden="true" /> {copied || t('copy')}</Button>
-            {typeof navigator.share === 'function' && <Button variant="outline" className={`${big} flex-1`} onClick={() => { void navigator.share({ title: t('lastTalk'), text: l.said }).catch(() => {}) }}><Share2 aria-hidden="true" /> {t('share')}</Button>}
+            {typeof navigator.share === 'function' && <Button variant="outline" className={`${big} flex-1`} onClick={() => { void navigator.share({ title: t('lastTalk'), text: `${l.said}
+
+Captioned on Even G2 by Gloz: https://drexthealpha.github.io/gloz/` }).catch(() => {}) }}><Share2 aria-hidden="true" /> {t('share')}</Button>}
           </div>
         </section>
       )}

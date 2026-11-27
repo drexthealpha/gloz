@@ -219,9 +219,10 @@ These 69 complaints are about the hardware, the Even app, the store or the compa
 
 - **Who pays.** Even's CEO says one third of users are company executives and that users wear G2 8 to 10 hours a day (interview, Silicon Valley Investclub, 31 Aug 2026). An executive's day is meetings; messages wait on the phone. Gloz answers them from the glasses.
 - **Demand.** 115 public complaints from G2 owners (App Store, Google Play, Trustpilot, X and the press, read 23 Nov 2026). 44 are ones a glasses app can act on; 69 are about the hardware, delivery or the company (Gloz also helps with one of them, 13, in the app); 2 are about the company's posts. The 45 Gloz acts on are in [Complaints Gloz fixes](#complaints-gloz-fixes) with Gloz's measured result; the 69 have the "Fix my glasses" request. Owners ask to reply from the glasses, for bigger text and for a silent way to answer.
-- **Launch in Even Hub.** The store listing is ready in [app/listing](app/listing): name, a 45-character tagline, the description and a 24 x 24 icon, for one `evenhub create` command. The app is a standard Even Hub package ([app/app.json](app/app.json), `gloz.ehpk` built in CI): name without "Even", system exit dialog on double tap at the root, setup message on the glasses before pairing, setup remembered, only the permissions it uses (network to its own backend, glasses microphone, and location only while Navigation or the Dashboard is open).
-- **What it costs the wearer.** At 100 replies a working day, the AI drafts cost at most about $0.28 a day with gpt-4.1-mini (100 times the most one draft can cost, below). The server runs on any Node 24 host.
+- **Launch in Even Hub.** Gloz is uploaded to Even Hub as `com.drexthealpha.gloz` (build 0.1.1, private until the store review). The listing is in [app/listing](app/listing): name, a 45-character tagline, the description and a 24 x 24 icon, for one `evenhub create` command. The app is a standard Even Hub package ([app/app.json](app/app.json), `gloz.ehpk` built in CI): name without "Even", system exit dialog on double tap at the root, setup message on the glasses before pairing, setup remembered, only the permissions it uses (network to its own backend, glasses microphone, and location only while Navigation or the Dashboard is open).
+- **What it costs the wearer today.** Without Gloz, each message means taking out the phone: at 63.5 notifications a day (Pielot et al., MobileHCI 2014) and a median 6.7 s per glance at a watch (wearable-camera study, 2017), about 7 minutes a day of looking down, before replying. With Gloz on your own server: at 100 replies a working day, the AI drafts cost at most about $0.28 a day with gpt-4.1-mini (100 times the most one draft can cost, below). The server runs on any Node 24 host.
 - **Plan (not yet built).** Gloz stays free in Even Hub; the business is a hosted Gloz server for people who do not run their own: **$12 a month** (planned). Its cost at the heaviest use, 100 replies every working day: AI drafts at most $0.28 a day, so $5.92 over 21 working days, plus about $0.10 of a small shared server per person, so about $6 a month and a margin of about 50%; lighter use costs less and the margin is higher.
+- **Message text and the AI.** Gloz's server keeps no message text after the reply is sent ([server/app.mjs](server/app.mjs) `drop`, tested in [test/server.test.mjs](test/server.test.mjs)). Its requests to OpenRouter ask only for providers that keep no prompt data (`provider.data_collection: deny`, [server/ai.mjs](server/ai.mjs)); with Anthropic or OpenAI keys, their own API data terms apply.
 - **Cost.** Gloz is free and MIT licensed. The backend's cost is the AI provider's price per draft: <!-- gen:cost -->
 at most $0.00282 with gpt-4.1-mini (at least 354 drafts for $1) or $0.0235 with Claude Sonnet 4.5, at OpenRouter's list prices of 2026-11-25 (`node eval/cost.mjs`).
 <!-- /gen --> With no key, Gloz still works with fixed holding replies.
@@ -251,6 +252,20 @@ No analytics, no logs of message text. Nothing is sent to any address not listed
 5. `cd app && npm run dev`, then `evenhub-simulator http://localhost:5173` (or `npx evenhub qr --url http://<your-LAN-IP>:5173` for real glasses). On the phone screen, enter the server address and the code, or open the app address with `?backend=<server>&code=<code>` to pair in one step (one QR scan on real glasses).
 
 Check every step at once: `npm run check:setup`. Package for Even Hub: `cd app && GLOZ_BACKEND_ORIGIN=https://<your Gloz server> npm run pack` (writes `gloz.ehpk` with your server in its network whitelist).
+
+## Server API
+
+Every route answers JSON. Pair once, then send the token as `Authorization: Bearer <token>` on every other route.
+
+| Route | Does |
+|---|---|
+| `POST /pair {code}` | the 6-digit code the server prints gives a token |
+| `GET /inbox?after=N&lang=en` | messages after N, with their translation and summary when AI is on |
+| `POST /draft {id, ask?, lang?}` | a reply in the sender's language, its meaning in yours, and up to three to pick from |
+| `POST /send {key, id, text}` | sends once per key, however often it is retried; the same key with other text is refused |
+| `POST /read {id}` | marks the message read at its service |
+| `POST /unpair` | this phone's pairing ends at once |
+| `GET /health` | what is set up, and daily and monthly active devices; no message text |
 
 ## What existed before Nov 23
 

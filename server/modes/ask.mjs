@@ -46,7 +46,7 @@ export async function handle(body, { env, look = evidence }) {
   const system = `Answer the question for someone reading one line at a time on smart glasses. Answer in ${NAMES[lang] || lang}. Plain text, no lists or markdown, at most 60 words. If you do not know, say so.${ev ? ' Explain how the feature works from the evidence given, naming what in the code shows it; if the evidence does not show it, say so.' : ''}`
   let last
   for (const p of list) {
-    try { return { q, a: await call(p, system, messages) } } catch (e) { last = e }
+    try { return { q, a: await call(p, system, messages), by: p.model } } catch (e) { last = e }
   }
   return { q, error: `No answer: ${String(last?.message || 'AI unreachable').slice(0, 60)}` }
 }

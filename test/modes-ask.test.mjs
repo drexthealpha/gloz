@@ -30,7 +30,7 @@ test('ask: words said are sent, the answer shows paged with a hint', async () =>
   const c = m.card()
   assert.equal(c.kind, 'message')
   assert.match(c.text, /8849 Meter/)
-  assert.match(c.hint, /^(down: next answer · )?hold: ask again · up: earlier part$/)
+  assert.match(c.hint, /^AI answer( \([^)]+\))? · (down: next answer · )?hold: ask again · up: earlier part$/)
   // A follow-up carries the earlier question and answer.
   m.say('Und der K2?'); await tick()
   assert.equal(ctx.calls[1].history.length, 1)
@@ -76,7 +76,7 @@ test('ask server: answers in the wearer language with history, falls through pro
   }
   try {
     const r = await handle({ q: 'Und der K2?', lang: 'de', history: [{ q: 'Everest?', a: '8849 m' }, { q: '', a: 'skip me' }] }, { env: { GLOZ_OPENROUTER_KEY: 'x', GLOZ_ANTHROPIC_KEY: 'y' } })
-    assert.deepEqual(r, { q: 'Und der K2?', a: 'Achttausend Meter.' })
+    assert.deepEqual(r, { q: 'Und der K2?', a: 'Achttausend Meter.', by: 'claude-sonnet-5-5' })   // the answer names the model that wrote it
     assert.equal(seen.length, 2)
     const b = seen[1].body
     assert.match(b.system, /German/)

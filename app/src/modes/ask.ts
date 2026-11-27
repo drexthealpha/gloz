@@ -3,7 +3,7 @@
 import type { AppEntry, Mode, ModeCtx } from './types.ts'
 import type { Card } from '../core/types.ts'
 
-export interface QA { q: string; a: string }
+export interface QA { q: string; a: string; by?: string }   // by: the AI model that answered
 const KEY = 'ask.log'
 
 export function sampleAsk(body: any): QA {
@@ -41,7 +41,7 @@ function make(ctx: ModeCtx): Mode {
       if (state === 'thinking') return { kind: 'status', text: 'Thinking', hint: 'wait a moment' }
       const qa = state === 'answer' ? log[at] : undefined
       if (!qa) return { kind: 'status', text: note || 'Hold and ask', hint: 'hold: ask' }
-      return { kind: 'message', head: qa.q ? `${qa.q} ·` : undefined, text: qa.a, hint: [at < log.length - 1 && 'down: next answer', 'hold: ask again', 'up: earlier part'].filter(Boolean).join(' · '), progress: [at + 1, log.length] }
+      return { kind: 'message', head: qa.q ? `${qa.q} ·` : undefined, text: qa.a, hint: [qa.by ? `AI answer (${qa.by})` : 'AI answer', at < log.length - 1 && 'down: next answer', 'hold: ask again', 'up: earlier part'].filter(Boolean).join(' · '), progress: [at + 1, log.length] }
     },
     input(i) {
       if (state === 'thinking') return
