@@ -17,8 +17,13 @@ const esc = f => f.split(String.fromCharCode(92)).join('/').replace(':', String.
 const CODE = '246810'
 const FONT = process.platform === 'win32' ? 'C\\:/Windows/Fonts/segoeui.ttf' : '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'
 
+// node scripts/video.mjs --live: the server reads .env, so the messages are real ones from the Telegram, Slack and
+// Discord chats set up there and the drafts come from the AI key there; no sample service. Send a few messages to
+// those chats while it records.
+const LIVE = process.argv.includes('--live')
 function backend() {
-  return spawn(process.execPath, ['server/index.mjs'], { cwd: ROOT, env: { ...process.env, PORT: '8787', GLOZ_SAMPLE: '1', GLOZ_PAIR_CODE: CODE, GLOZ_DATA: join(OUT, 'data') }, stdio: 'ignore' })
+  const env = { ...process.env, PORT: '8787', GLOZ_PAIR_CODE: CODE, GLOZ_DATA: join(OUT, 'data'), ...(LIVE ? {} : { GLOZ_SAMPLE: '1' }) }
+  return spawn(process.execPath, [...(LIVE ? ['--env-file-if-exists=.env'] : []), 'server/index.mjs'], { cwd: ROOT, env, stdio: 'ignore' })
 }
 
 const scenes = []
