@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { start, step, card, word, type State, type Event } from '../app/src/core/flow.ts'
+import { start, step, card, word, isDraft, type State, type Event } from '../app/src/core/flow.ts'
 import { Outbox } from '../app/src/core/outbox.ts'
 import { wrap, direction, dwell } from '../app/src/core/layout.ts'
 import type { Msg } from '../app/src/core/types.ts'
@@ -479,4 +479,13 @@ test('up on the third reply goes back to the second; on the first, up shows the 
 test('new messages queue most pressing first (the AI score on arrival), then newest', () => {
   const s = run(start(true), { t: 'inbox', msgs: [{ ...m('a', 'lunch?', 3), score: 2 }, { ...m('b', 'sign today', 1), score: 5 }, { ...m('c', 'fyi', 2) }] }).s
   assert.deepEqual(s.queue.map(q => q.id), ['b', 'a', 'c'])
+})
+
+test('a reply that came with a message is used only when it is a whole draft; plain text (the demo samples) is not', () => {
+  assert.equal(isDraft({ text: 'Yes.', by: 'ai' }), true)
+  assert.equal(isDraft('Yes.'), false)
+  assert.equal(isDraft(undefined), false)
+  // Plain text taken as a draft showed "No reply yet" on the first tap; the real draft then opens with the message.
+  const s = run(start(true), { t: 'inbox', msgs: [m('a')] }, { t: 'draft', id: 'a', draft: { text: 'Yes, 3 works.', by: 'ai' } }).s
+  assert.equal(card(s).text, 'Yes, 3 works.')
 })

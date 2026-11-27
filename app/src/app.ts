@@ -2,7 +2,7 @@
 import { doubleTap } from './core/back.ts'
 import { shows } from './core/chats.ts'
 import type { EvenAppBridge } from '@evenrealities/even_hub_sdk'
-import { start, step, card, type State, type Event, type Effect } from './core/flow.ts'
+import { start, step, card, isDraft, type State, type Event, type Effect } from './core/flow.ts'
 import { Outbox, type Store } from './core/outbox.ts'
 import { quietUntil, quietNote } from './core/quiet.ts'
 import { DEFAULT_SETTINGS, type Settings, type Card } from './core/types.ts'
@@ -205,7 +205,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
       const msgs = r.msgs.filter(m => shows(`${m.source}:${m.chat}`, muted, only))
       if (msgs.length) dispatch({ t: 'inbox', msgs })
       // A reply written on arrival goes straight onto its card: nothing to ask the server for.
-      for (const m of msgs) if (m.draft) dispatch({ t: 'draft', id: m.id, draft: m.draft })
+      for (const m of msgs) if (isDraft(m.draft)) dispatch({ t: 'draft', id: m.id, draft: m.draft })
       dispatch({ t: 'checked', at: Date.now() })
       return msgs.length
     } catch (e) {

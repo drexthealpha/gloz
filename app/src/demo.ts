@@ -104,7 +104,9 @@ class DemoBridge {
 // The controls are shadcn/ui components, drawn first so the code below finds them by id.
 mountControls()
 const heardSample = (f: (b: any) => any, words: string) => (b: any) => b?.action === 'stt' ? { text: words } : f(b)
-const SAMPLES: Record<string, (body: any) => any> = { dash: sampleDash, tasks: heardSample(sampleTasks, 'Sample: call the bank'), notes: heardSample(sampleNotes, 'Sample: call the plumber on Friday'), ask: sampleAsk, reader: sampleReader, prompter: (b: any) => b?.action === 'follow' ? { at: (Number(b.from) || 0) + (Number(b.at) || 0) + 4, heard: '', sample: true } : samplePrompter(b), nav: sampleNav, stocks: sampleStocks, music: sampleMusic, term: sampleTerm,
+// Ask about your chats, with no AI key: a question that names a sender is answered from what they wrote (in English).
+const askChats = (b: any) => { const q = String(b?.q ?? ''); const m = (samples as any[]).find(x => x.en && new RegExp(`\\b${x.from}\\b`, 'i').test(q)); return m ? { q, a: `${m.from} (${m.source}): ${m.en}`, sample: true } : sampleAsk(b) }
+const SAMPLES: Record<string, (body: any) => any> = { dash: sampleDash, tasks: heardSample(sampleTasks, 'Sample: call the bank'), notes: heardSample(sampleNotes, 'Sample: call the plumber on Friday'), ask: askChats, reader: sampleReader, prompter: (b: any) => b?.action === 'follow' ? { at: (Number(b.from) || 0) + (Number(b.at) || 0) + 4, heard: '', sample: true } : samplePrompter(b), nav: sampleNav, stocks: sampleStocks, music: sampleMusic, term: sampleTerm,
   // A real forecast from Open-Meteo (it allows calls from a web page); with no position given, London's, named as such.
   weather: async (b: any) => b?.lat == null ? { ...(await weatherNow({ lat: 51.507, lon: -0.128 }, { env: {} })), source: 'London (no position shared)' } : weatherNow(b, { env: {} }),
   news: () => sampleNews }
@@ -161,7 +163,9 @@ class DemoApi implements Api {
     if (!this.online) { this.waiting[id] = text; this.onChange(); return 'retry' as const }
     delete this.waiting[id]
     const m = (samples as any[]).find(x => x.id === id)
-    this.sent.unshift({ to: `${m.from} · ${m.source}`, text, meaning: this.glosses[id] ?? (text === m.holding && m.lang !== 'en' ? HOLDING_REPLIES.en : undefined) })
+    const alt = (demoAlts as Record<string, { text: string; gloss?: string }[]>)[id]?.find(a => a.text === text)
+    const meaning = alt ? alt.gloss : text === m.draft ? m.gloss : this.glosses[id] ?? (text === m.holding && m.lang !== 'en' ? HOLDING_REPLIES.en : undefined)
+    this.sent.unshift({ to: `${m.from} · ${m.source}`, text, meaning })
     try { sessionStorage.setItem('gloz.demo.sent', JSON.stringify(this.sent)) } catch {}
     this.onChange()
     return 'ok' as const
@@ -312,8 +316,8 @@ const appsLabel = () => {
   // Home shows only while a tool is open; the tools are reached from home itself.
   apps.hidden = !bridge.inApp
   keyScroll.textContent = bridge.inApp ? 'down: next · up: earlier' : 'down: skip or next · up: earlier'
-  keyDouble.textContent = bridge.inApp ? 'back' : 'close'
-  keyHold.textContent = bridge.inApp ? 'where the screen offers it' : 'speak a reply, or after the messages ask or add a task'
+  keyDouble.textContent = bridge.inApp ? 'back' : 'another reply · on a message: close'
+  keyHold.textContent = bridge.inApp ? 'where the screen offers it' : 'speak a reply · on "No new messages": ask about your chats'
   if (bridge.inApp) { meaning.style.visibility = 'hidden'; document.getElementById('mute')!.hidden = true }
 }
 apps.onclick = () => { bridge.menu(10); setTimeout(appsLabel, 50) }

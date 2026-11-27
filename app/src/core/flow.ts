@@ -69,6 +69,9 @@ export function word(text: string): 'send' | 'skip' | 'back' | null {
   return WORDS[w] ?? null
 }
 
+// A reply that came with a message is used only when it is a whole draft (the demo's samples carry plain text).
+export const isDraft = (x: unknown): x is Draft => !!x && typeof x === 'object' && typeof (x as Draft).text === 'string'
+
 function current(s: State): Msg | undefined { return s.queue[s.at] }
 
 function advance(s: State, fx: Effect[]): State {
