@@ -14,7 +14,9 @@ jobs:
       - run: npm ci
         working-directory: app
       - name: Tests (no keys)
-        run: npm run test:coverage
+        run: |
+          set -o pipefail
+          npm run test:coverage | tee coverage.log
       - name: Public text (no em dashes, no banned words)
         run: npm run check:text
       - name: No keys or tokens in tracked files
@@ -32,6 +34,8 @@ jobs:
           node scripts/readme.mjs --check
           # Speed and data budget: over 10% slower or heavier than eval/results/time.json fails.
           node eval/time.mjs --check
+          # Coverage shown in the README: this run's, within 1 point.
+          node scripts/coverage.mjs --check coverage.log
           # The held-out set is the one whose digest the protocol records.
           grep -q "sha256 eval/set/heldout.json: $(sha256sum eval/set/heldout.json | cut -d' ' -f1)" eval/PROTOCOL.md
   setup:

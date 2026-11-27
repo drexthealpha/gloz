@@ -14,7 +14,7 @@ const h = json('heldout.json')
 const t = json('time.json')
 const v = json('video.json')
 // A missing result file fails the check: a page must never keep an old number silently.
-const missing = ['heldout.json', 'heldout.md', 'time.json', 'time.md', 'video.json', 'complaints.json', 'cost.json'].filter(n => !existsSync(R(n)))
+const missing = ['heldout.json', 'heldout.md', 'time.json', 'time.md', 'video.json', 'complaints.json', 'cost.json', 'coverage.json'].filter(n => !existsSync(R(n)))
 if (missing.length) { console.log('missing result files:', missing.join(', ')); process.exit(1) }
 blocks.video = `${v.seconds} s`
 // The most one AI draft can cost, from `node eval/cost.mjs` (largest prompt and reply, every byte counted as a token).
@@ -45,7 +45,8 @@ blocks.wins = [
 // The tests, counted as the runner counts them (each test( call in test/), with the log of every run.
 const testFiles = readdirSync(new URL('../test/', import.meta.url)).filter(n => /\.test\.(m?js|ts)$/.test(n))
 const testCount = testFiles.reduce((n, f) => n + (readFileSync(new URL(`../test/${f}`, import.meta.url), 'utf8').match(/^\s*test\(/gm) || []).length, 0)
-blocks.tests = `${testCount} tests in ${testFiles.length} files, all run on every push, with line coverage in the log: [pass log](https://github.com/drexthealpha/gloz/actions/workflows/ci.yml)`
+const cov = json('coverage.json')
+blocks.tests = `${testCount} tests in ${testFiles.length} files, all run on every push; they cover ${cov.line}% of lines, ${cov.branch}% of branches and ${cov.funcs}% of functions (\`node scripts/coverage.mjs\`, checked in CI): [pass log](https://github.com/drexthealpha/gloz/actions/workflows/ci.yml)`
 
 // Each page and the blocks it must hold; a block written inline (gen-i) stays on its line.
 // Links to the exact line that does each job, found by what the line says, so they never point at a stale line.
