@@ -8,6 +8,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/phone/components/ui/toggle-group
 import { NativeSelect, NativeSelectOption } from '@/phone/components/ui/native-select'
 import { Input } from '@/phone/components/ui/input'
 import { t } from './strings'
+import { QUIET_CHOICES, quietLabel } from '../core/quiet'
 import { big, field, LANGS, Listen } from './shared'
 import type { Live, Set, Theme } from './SettingsScreen'
 import type { Settings } from '../core/types'
@@ -27,6 +28,12 @@ export default function MoreSettings({ s, set, l, setL, live, unmute, pick, unpa
       <div className="flex min-h-12 flex-wrap items-center justify-between gap-3">
         <Label htmlFor="tr" className="min-w-0 flex-1 basis-40 text-base">{t('translate')}</Label>
         <Switch id="tr" aria-label={t('translate')} checked={s.translate} onCheckedChange={v => set({ translate: v })} />
+      </div>
+      <div className="flex min-h-12 flex-wrap items-center justify-between gap-3">
+        <Label htmlFor="quiet" className="min-w-0 flex-1 basis-24 text-base">{t('quiet')}</Label>
+        <NativeSelect id="quiet" className={field} value={s.quiet ?? ''} onChange={e => set({ quiet: e.target.value })}>
+          {QUIET_CHOICES.map(q => <NativeSelectOption key={q} value={q}>{q ? quietLabel(q) : t('quietOff')}</NativeSelectOption>)}
+        </NativeSelect>
       </div>
       <div className="flex min-h-12 flex-wrap items-center justify-between gap-3">
         <Label htmlFor="mark" className="min-w-0 flex-1 basis-40 text-base">{t('mark')}</Label>

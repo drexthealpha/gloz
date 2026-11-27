@@ -38,6 +38,7 @@ export interface Settings {
   myLang: string        // the wearer's language, e.g. "en"
   autoPace: boolean     // lines move on at reading pace
   roomLang?: string     // Listen to the room: the language spoken there; empty finds it
+  quiet?: string        // quiet hours, "22-7": new messages wait until the end hour; empty is off
   mark?: boolean        // sign each reply "via Gloz" (off unless the wearer turns it on)
 }
 

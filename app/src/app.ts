@@ -4,6 +4,7 @@ import { shows } from './core/chats.ts'
 import type { EvenAppBridge } from '@evenrealities/even_hub_sdk'
 import { start, step, card, type State, type Event, type Effect } from './core/flow.ts'
 import { Outbox, type Store } from './core/outbox.ts'
+import { quietUntil, quietNote } from './core/quiet.ts'
 import { DEFAULT_SETTINGS, type Settings, type Card } from './core/types.ts'
 import { Glasses } from './glasses.ts'
 import { menuItems } from './core/menu.ts'
@@ -184,8 +185,13 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
     }
   }
 
+  let quietTo: number | null = null
   async function poll(wait = 0): Promise<number> {
     if (!api) return 0
+    // Quiet hours: the waiting messages stay on the server and all come when they end. Check now still fetches.
+    const q = quietUntil(settings.quiet, new Date())
+    if (q !== quietTo) { quietTo = q; if (q !== null) dispatch({ t: 'note', text: quietNote(settings.myLang, q), ms: 5000 }) }
+    if (wait > 0 && q !== null) return 0
     const used = api
     try {
       const r = await used.inbox(after, settings.myLang, settings.translate, wait)
