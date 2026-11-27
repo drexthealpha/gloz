@@ -1,6 +1,7 @@
 // The complaint rows for the README. Quotes and dates are from public reviews
 // read on 23 Nov 2026 (App Store, Google Play, Trustpilot, X, press), cut to a few words.
-// Gloz's number in each row is read from eval/results, never typed here.
+// Gloz's number in each row is read from eval/results where a run measures it. A few are fixed by the design
+// (none typed, nothing paid) and written here; those that come from code are checked against it (eval/claims.json, test/rows-numbers.test.mjs).
 // verdict: beaten | matched | not beaten | different measure | not measured | needs a key | no number to beat | not built
 import { readFileSync, existsSync } from 'node:fs'
 

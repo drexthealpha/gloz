@@ -7,6 +7,7 @@
   { "what": "earlier messages a draft sees (complaint row)", "in": { "file": "eval/rows.mjs", "regex": "Drafts see the last (\\d+) messages" }, "from": { "file": "server/ai.mjs", "regex": "thread\\.slice\\(-(\\d+)\\)" } },
   { "what": "earlier messages a draft sees (data policy)", "in": { "file": "README.md", "regex": "up to (\\d+) earlier messages of that chat" }, "from": { "file": "server/ai.mjs", "regex": "thread\\.slice\\(-(\\d+)\\)" } },
   { "what": "days unused before a pairing ends", "in": { "file": "eval/rows.mjs", "regex": "unused for (\\d+) days" }, "from": { "file": "server/app.mjs", "regex": "IDLE_MS = (\\d+) \\* 24" } },
+  { "what": "characters the reader test pages through", "in": { "file": "eval/rows.mjs", "regex": "([\\d,]+) characters paged" }, "from": { "file": "test/modes-reader.test.mjs", "regex": "big\\.length < ([\\d_]+)" } },
   { "what": "wrong pairing codes before pairing stops for a minute", "in": { "file": "README.md", "regex": "(\\w+) wrong codes retire it" }, "from": { "file": "server/app.mjs", "regex": "\\+\\+wrongTotal >= (\\d+)" } }
  ]
 }

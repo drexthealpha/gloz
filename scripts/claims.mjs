@@ -3,7 +3,8 @@
 import { readFileSync } from 'node:fs'
 
 const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten']
-const norm = v => { const w = WORDS.indexOf(String(v).toLowerCase()); return w >= 0 ? String(w) : String(v) }
+// "five" is 5, and "2,000,000" in prose is 2_000_000 in code.
+const norm = v => { const w = WORDS.indexOf(String(v).toLowerCase()); return w >= 0 ? String(w) : String(v).replace(/[,_](?=\d{3}\b|\d{3}[,_])/g, '') }
 export function check(claims, read) {
   const bad = []
   for (const c of claims) {
