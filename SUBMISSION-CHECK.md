@@ -68,3 +68,5 @@ https://drexthealpha.github.io/gloz/gloz-demo.mp4 (<!-- gen:video -->129 s<!-- /
 ## Checked
 
 Checked on 25 Nov 2026 at commit 93fa5ff by an agent that did not build Gloz, on a fresh clone of the public repository: every rule on the page it could check passed (tests, text check, secret check, no secrets in history, live demo with no sign-in, status badge, video under 3 minutes, package). Its `npm run check:setup` stopped during the app build while the same PC ran the simulator and three other checks; on a fresh clone of the same commit, run again on that Windows PC, every setup step passed (install, 128 tests, app build, package, backend, pairing). It could not open the rules page itself (a human check), so it used the copy in PLAN.md, and it could not check team size, the services' terms in practice, or the submission itself, which only the DoraHacks form and the founder can show. Test counts and timings are in the CI run for each commit.
+
+Owner: drexthealpha · reviewed 2026-11-27

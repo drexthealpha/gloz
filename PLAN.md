@@ -138,3 +138,5 @@ The Q&A page (https://dorahacks.io/hackathon/even-realities/qa) showed no questi
 2. The locked evaluation (eval/): expected answers committed before the run.
 3. The app (app/), the backend (server/), the live demo (demo/).
 4. README, SUBMISSION-CHECK.md, video, .ehpk.
+
+Owner: drexthealpha · reviewed 2026-11-27

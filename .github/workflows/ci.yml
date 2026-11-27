@@ -17,6 +17,8 @@ jobs:
         run: |
           set -o pipefail
           npm run test:coverage | tee coverage.log
+      - name: Docs reviewed in the last 90 days (warning only)
+        run: node scripts/reviewed.mjs
       - name: Public text (no em dashes, no banned words)
         run: npm run check:text
       - name: No keys or tokens in tracked files

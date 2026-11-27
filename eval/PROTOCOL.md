@@ -78,3 +78,5 @@ Committed before eval/results/heldout.* existed (23 Nov, 11:19 against 14:00). M
 
 The git history before 24 Nov was squashed, so the commit order alone cannot show the set was fixed before the runs. Its SHA-256 is written here, and CI recomputes it on every push: any change to a held-out message fails CI.
 sha256 eval/set/heldout.json: 328a57dff58286e875df82ca868b3ed49964b252d0039e6a88024eba18e83c00
+
+Owner: drexthealpha · reviewed 2026-11-27

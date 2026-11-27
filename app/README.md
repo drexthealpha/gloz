@@ -11,3 +11,5 @@ Started from the official Even Hub `minimal` template (see "What existed before 
 - `eval.html`, `probe.html`: evaluation pages, not built into the app.
 
 Run it in the simulator: `npm run dev`, then `evenhub-simulator http://localhost:5173`.
+
+Owner: drexthealpha · reviewed 2026-11-27
