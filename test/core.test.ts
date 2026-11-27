@@ -50,6 +50,13 @@ test('a swipe on a reply shows the next of three, wraps round, and tap sends the
   assert.equal(one.view, 'skipped')
 })
 
+test('a message shown in translation says an AI translated it, beside the sender', () => {
+  const t = run(start(true), { t: 'inbox', msgs: [{ ...m('a', 'Можем в три?'), translated: 'Can we do three?' }] }).s
+  assert.match(card(t).hint!, /^Ana · AI translation · /)
+  assert.equal(card(t).text, 'Can we do three?')
+  assert.match(card(run(start(true), { t: 'inbox', msgs: [m('b')] }).s).hint!, /^Ana · tap/)
+})
+
 test('up on the start of a message says so in words true for a message of any length', () => {
   const s = run(start(true), { t: 'inbox', msgs: [m('a')] }, { t: 'prev' }).s
   assert.equal(card(s).hint, 'Ana · Start of this message')
@@ -108,6 +115,33 @@ test('unpaired glasses say what to do, never a blank screen', () => {
 })
 
 const mem = () => { const d: Record<string, string> = {}; return { get: (k: string) => d[k] ?? null, set: (k: string, v: string) => { d[k] = v }, d } }
+
+test('undo: a reply is held 5 s and can be taken back; after the hold it goes, even after a restart', async () => {
+  let t = 0
+  const sent: string[] = []
+  const store = mem()
+  const ob = new Outbox(store, async p => { sent.push(p.text); return 'ok' }, () => t)
+  ob.add('a', 'Yes', 5000)
+  assert.equal(await ob.flush(), 0, 'held during the undo window')
+  ob.retryNow()   // the link coming back does not cut the hold short
+  assert.equal(await ob.flush(), 0)
+  assert.equal(ob.cancel('a'), true)
+  assert.equal(ob.size, 0)
+  ob.add('b', 'No', 5000)
+  const again = new Outbox(store, async p => { sent.push(p.text); return 'ok' }, () => t)   // the app closed in the window
+  t = 5001
+  assert.equal(again.cancel('b'), false, 'too late to undo')
+  assert.equal(await again.flush(), 1)
+  assert.deepEqual(sent, ['No'])
+  // In the flow: up on "Sending…" takes the reply back to the screen; down moves on while it goes.
+  let s = run(start(true), { t: 'inbox', msgs: [m('x'), m('y')] }, { t: 'draft', id: 'x', draft: { text: 'Sure', by: 'ai' } }, { t: 'tap' }, { t: 'tap' }).s
+  assert.equal(s.view, 'sent')
+  assert.match(card(s).hint!, /^up: undo/)
+  const u = run(s, { t: 'prev' })
+  assert.equal(u.s.view, 'draft')
+  assert.deepEqual(u.fx.map(f => f.e), ['undo'])
+  assert.equal(run(s, { t: 'next' }).s.queue[run(s, { t: 'next' }).s.at]?.id, 'y')
+})
 
 test('outbox keeps a reply through a drop and sends it once the link is back', async () => {
   let t = 0

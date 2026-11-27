@@ -43,6 +43,7 @@ export type Event =
 export type Effect =
   | { e: 'draft'; msg: Msg; ask?: string }
   | { e: 'send'; msg: Msg; text: string }
+  | { e: 'undo'; msg: Msg }         // the reply still held is taken back
   | { e: 'mic'; on: boolean }
   | { e: 'read'; msg: Msg }         // answered: mark as read at the source
   | { e: 'seen'; msg: Msg }         // skipped: never shown again here, still unread at the source
@@ -135,7 +136,9 @@ export function step(s: State, ev: Event): { s: State; fx: Effect[] } {
     case 'next':
       if (s.view === 'empty') { fx.push({ e: 'later', ms: 3500, ev: { t: 'note', text: '', was: (s.online ? '\u0000noMore' : '\u0000laterOnline') } }); return { s: { ...s, note: s.online ? '\u0000noMore' : '\u0000laterOnline' }, fx } }
       if (s.view === 'skipped') return { s: advance(s, fx), fx }   // a second swipe moves on at once
-      if (!msg || s.view === 'listen' || s.view === 'sent') return { s, fx }
+      // While a reply is going out, a swipe moves on at once; the reply still goes.
+      if (msg && s.view === 'sent') return { s: advance(s, fx), fx }
+      if (!msg || s.view === 'listen') return { s, fx }
       // On a reply with alternatives, a swipe (or the ring) shows the next one; tap sends the one on screen.
       { const d = s.drafts[msg.id]
         if (s.view === 'draft' && typeof d === 'object' && d.alts && d.alts.length > 1) { const pick = ((d.pick ?? 0) + 1) % d.alts.length; return { s: { ...s, drafts: { ...s.drafts, [msg.id]: { ...d, ...d.alts[pick], pick } } }, fx } } }
@@ -148,6 +151,8 @@ export function step(s: State, ev: Event): { s: State; fx: Effect[] } {
       }
       if (s.view === 'empty') { fx.push({ e: 'later', ms: 3500, ev: { t: 'note', text: '', was: '\u0000nothingEarlier' } }); return { s: { ...s, note: '\u0000nothingEarlier' }, fx } }
       if (!msg) return { s, fx }
+      // Undo: while the reply is still held (a few seconds), up takes it back; nothing is sent.
+      if (s.view === 'sent' && !s.sendResult) { fx.push({ e: 'undo', msg }); return { s: { ...s, view: 'draft' }, fx } }
       // Back from words being written goes where the hold began: the reply, if there was one.
       if (s.view === 'thinking' && s.heldFrom === 'draft' && typeof s.drafts[msg.id] === 'object') return { s: { ...s, view: 'draft', heldFrom: undefined }, fx }
       if (s.view === 'draft' || s.view === 'thinking') return { s: { ...s, view: 'message', heldFrom: undefined }, fx }
@@ -253,7 +258,8 @@ function cardOf(s: State, lang: string): Card {
     }
     case 'listen': return { kind: 'status', text: w.listening, hint: w.done }
     case 'thinking': return { kind: 'status', text: s.hearing ? w.hearing : s.heard ? `“${s.heard}”` : w.writing, hint: w.writingHint }
-    case 'sent': return { kind: 'status', text: s.sendResult === 'sent' ? w.sent : s.sendResult === 'saved' ? w.saved : w.sending, hint: s.queue.length > 1 ? w.nextSoon : w.lastOne }
+    // While the reply is held, the hint offers undo first; once it went, where the wearer goes next.
+    case 'sent': return { kind: 'status', text: s.sendResult === 'sent' ? w.sent : s.sendResult === 'saved' ? w.saved : w.sending, hint: !s.sendResult ? `${w.undo} · ${s.queue.length > 1 ? w.nextSoon : w.lastOne}` : s.queue.length > 1 ? w.nextSoon : w.lastOne }
     case 'skipped': return { kind: 'status', text: w.skipped, hint: s.queue.length > 1 ? w.nextSoon : w.lastOne }
   }
   if (!msg) return { kind: 'status', text: w.empty, hint: w.checkNow }
@@ -277,6 +283,8 @@ function cardOf(s: State, lang: string): Card {
   const brief = (msg as Msg & { brief?: string }).brief
   const body = msg.translated ?? msg.text
   const left = s.queue.length - s.at - 1
-  // The sender's name is in the hint row of every page, so the text gets the whole line.
-  return { kind: 'message', text: brief ? `${w.inShort} ${brief}\n${body}` : body, hint: (net ? `${msg.from} · ${w.noSignal} · ${w.offlineHint}` : `${msg.from} · ${w.msgHint}`) + (left > 0 ? ` · ${w.more(left)}` : ''), progress }
+  // The sender's name is in the hint row of every page, so the text gets the whole line. A message shown in
+  // translation says so beside the name: those words are an AI's, not the sender's own.
+  const from = msg.translated ? `${msg.from} · AI translation` : msg.from
+  return { kind: 'message', text: brief ? `${w.inShort} ${brief}\n${body}` : body, hint: (net ? `${from} · ${w.noSignal} · ${w.offlineHint}` : `${from} · ${w.msgHint}`) + (left > 0 ? ` · ${w.more(left)}` : ''), progress }
 }

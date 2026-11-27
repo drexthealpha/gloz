@@ -1,6 +1,6 @@
 // Replies wait here until the backend confirms them, so a dropped phone link,
 // a dead network or a closed app never loses a reply. Stored after every change.
-export interface Pending { key: string; msgId: string; text: string; tries: number; nextAt: number }
+export interface Pending { key: string; msgId: string; text: string; tries: number; nextAt: number; notBefore?: number }   // notBefore: held for undo until then
 
 export interface Store { get(k: string): string | null; set(k: string, v: string): void }
 
@@ -23,14 +23,24 @@ export class Outbox {
   private save() { this.store.set(KEY, JSON.stringify(this.items)) }
 
   // The key makes a resend after a drop safe: the backend sends each key once.
-  add(msgId: string, text: string): Pending {
-    const p: Pending = { key: `${msgId}#${this.now()}`, msgId, text, tries: 0, nextAt: 0 }
+  // holdMs keeps it back a few seconds, so the wearer can still undo it; the hold is stored, so a closed app keeps it.
+  add(msgId: string, text: string, holdMs = 0): Pending {
+    const p: Pending = { key: `${msgId}#${this.now()}`, msgId, text, tries: 0, nextAt: 0, ...(holdMs ? { notBefore: this.now() + holdMs } : {}) }
     this.items.push(p)
     this.save()
     return p
   }
 
   get size() { return this.items.length }
+
+  // Undo: a reply still held is taken back and never sent. False when it already went.
+  cancel(msgId: string): boolean {
+    const held = this.items.filter(p => p.msgId === msgId && (p.notBefore ?? 0) > this.now())
+    if (!held.length) return false
+    this.items = this.items.filter(p => !held.includes(p))
+    this.save()
+    return true
+  }
 
   // The link is back: every waiting reply is due now, not after its back-off.
   retryNow() { for (const p of this.items) p.nextAt = 0; this.save() }
@@ -42,7 +52,7 @@ export class Outbox {
     let done = 0
     this.confirmed = []
     for (const p of [...this.items]) {
-      if (p.nextAt > this.now()) continue
+      if (p.nextAt > this.now() || (p.notBefore ?? 0) > this.now()) continue
       let r: 'ok' | 'retry' | 'drop'
       try { r = await this.send(p) } catch { r = 'retry' }
       if (r === 'ok' || r === 'drop') {

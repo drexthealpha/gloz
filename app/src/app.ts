@@ -85,6 +85,8 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   const home = () => !active && !r.on && s.paired && s.view === 'empty'
 
   const outbox = new Outbox(store, p => api ? api.send(p.key, p.msgId, p.text) : Promise.resolve('retry'))
+  const UNDO_MS = 5000
+  const held: Record<string, ReturnType<typeof setTimeout>> = {}   // replies in their undo window
 
   function render() {
     if (home() || saying) { g.show(homeCard()); onState?.(saying ? { ...s, view: 'listen' } : s, settings); return }
@@ -146,11 +148,17 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
           dispatch({ t: 'draft', id: f.msg.id, draft: f.ask ? { text: f.ask, by: 'default' } : holdingReply(f.msg.text, settings.myLang) })
         }
         return
-      case 'send':
+      case 'send': {
         names[f.msg.id] = f.msg.from
-        outbox.add(f.msg.id, f.text)
-        await outbox.flush()
-        dispatch({ t: 'sent', queued: outbox.size })
+        // Held 5 s (as long as the usual undo window for email), then sent; the hold is stored, so a closed app keeps it.
+        outbox.add(f.msg.id, f.text, UNDO_MS)
+        const id = f.msg.id
+        held[id] = setTimeout(async () => { delete held[id]; await outbox.flush(); dispatch({ t: 'sent', queued: outbox.size }) }, UNDO_MS)
+        return
+      }
+      case 'undo':
+        clearTimeout(held[f.msg.id]); delete held[f.msg.id]
+        outbox.cancel(f.msg.id)
         return
       case 'read': api?.read(f.msg.id); store.set('gloz.seen', JSON.stringify(s.seen)); return
       case 'seen': store.set('gloz.seen', JSON.stringify(s.seen)); store.set('gloz.skipped', JSON.stringify(s.skippedMsgs ?? [])); return
