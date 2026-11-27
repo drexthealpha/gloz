@@ -155,6 +155,9 @@ export function step(s: State, ev: Event): { s: State; fx: Effect[] } {
       if (s.view === 'sent' && !s.sendResult) { fx.push({ e: 'undo', msg }, { e: 'later', ms: 3500, ev: { t: 'note', text: '', was: '\u0000notSent' } }); return { s: { ...s, view: 'draft', note: '\u0000notSent' }, fx } }
       // Back from words being written goes where the hold began: the reply, if there was one.
       if (s.view === 'thinking' && s.heldFrom === 'draft' && typeof s.drafts[msg.id] === 'object') return { s: { ...s, view: 'draft', heldFrom: undefined }, fx }
+      // Up on the second or third reply goes back one reply; on the first, back to the message.
+      { const d = s.drafts[msg.id]
+        if (s.view === 'draft' && typeof d === 'object' && d.alts && (d.pick ?? 0) > 0) { const pick = (d.pick ?? 0) - 1; return { s: { ...s, drafts: { ...s.drafts, [msg.id]: { ...d, ...d.alts[pick], pick } } }, fx } } }
       if (s.view === 'draft' || s.view === 'thinking') return { s: { ...s, view: 'message', heldFrom: undefined }, fx }
       if (s.view === 'message') { fx.push({ e: 'later', ms: 3500, ev: { t: 'note', text: '', was: '\u0000firstPart' } }); return { s: { ...s, note: '\u0000firstPart' }, fx } }
       return { s, fx }

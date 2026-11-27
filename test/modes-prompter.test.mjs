@@ -63,7 +63,7 @@ test('the app: opens paused, tap follows the voice, tap pauses, down and up move
   const first = m.card()
   assert.equal(first.kind, 'status')
   assert.match(first.text, /^Sample script\./)
-  assert.equal(first.hint, 'Following · tap: pause · down: next line')
+  assert.equal(first.hint, 'Following your voice · tap: pause · down: next line')
   m.audio(loud()); await tick()
   const f = calls.at(-1)
   assert.equal(f.action, 'follow')

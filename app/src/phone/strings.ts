@@ -10,7 +10,7 @@ export const STRINGS = {
   myLanguage: s('My language'), // Label: the language the wearer reads; replies are shown in it (max 24)
   saved: s('Saved ✓'), // Shown for a moment after a setting changes (max 12)
   pairTitle: s('Pair Gloz with your server'), // Heading of the pairing screen (max 40)
-  onlyChats: s('On: only these reach the glasses. All off: every chat does'), // Heading of the list of chats the wearer can pick (max 70)
+  onlyChats: s('Switch on chats to see only those. Muted chats stay hidden either way'), // Heading of the list of chats the wearer can pick (max 70)
   allChats: s('Every chat reaches the glasses'), // Chats row when none is picked or muted (max 40)
   onlyPicked: s('Only chats switched on reach the glasses'), // Chats row when some are picked (max 50)
   isMuted: s('muted'), // Mark after a muted chat in the list (max 12)

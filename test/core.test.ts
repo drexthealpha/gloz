@@ -455,3 +455,13 @@ test('undo says "Not sent" on the reply it brought back', () => {
   assert.equal(s.view, 'draft')
   assert.match(card(s).hint!, /Not sent/)
 })
+
+test('up on the third reply goes back to the second; on the first, back to the message', () => {
+  const alts = [{ text: 'One' }, { text: 'Two' }, { text: 'Three' }]
+  let s = run(start(true), { t: 'inbox', msgs: [m('a')] }, { t: 'draft', id: 'a', draft: { text: 'One', by: 'ai', alts } }, { t: 'tap' }, { t: 'next' }, { t: 'next' }).s
+  assert.equal(card(s).text, 'Three')
+  s = run(s, { t: 'prev' }).s
+  assert.equal(card(s).text, 'Two')
+  s = run(s, { t: 'prev' }, { t: 'prev' }).s
+  assert.equal(s.view, 'message')
+})
