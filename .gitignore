@@ -16,3 +16,5 @@ dist-check/
 # Logs a run leaves behind
 log_*.txt
 *.log
+eval/results/ci.json
+eval/results/ci.md

@@ -72,7 +72,7 @@ jobs:
       - run: npm ci
         working-directory: app
       - run: npm install -g @evenrealities/evenhub-simulator@0.9.5
-      - name: Evaluation in the simulator, one held-out message per script
+      - name: Evaluation in the simulator, one held-out message per script, each checked against eval/results/heldout.json
         run: xvfb-run -a node eval/run.mjs heldout --per-script=1 --out=ci
       - uses: actions/upload-artifact@v4
         if: always()

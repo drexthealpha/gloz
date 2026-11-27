@@ -7,6 +7,10 @@ import { PNG } from 'pngjs'
 import { createWorker } from 'tesseract.js'
 import { startVite, startSim, waitUp, waitLog, frame, kill } from './sim.mjs'
 import * as OpenCC from 'opencc-js'
+import { execSync } from 'node:child_process'
+
+// The commit this run measured, written into its results, so a result is never read against other code.
+const COMMIT = (() => { try { return execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim() } catch { return null } })()
 
 const SET = process.argv[2] || 'heldout'
 const arg = k => (process.argv.find(a => a.startsWith(`--${k}=`)) || '').split('=')[1]
@@ -152,7 +156,7 @@ try {
   if (process.argv.includes('--first-line')) {
     kill(sim); kill(vite)
     mkdirSync(new URL('./results/', import.meta.url), { recursive: true })
-    writeFileSync(new URL('./results/first-line.json', import.meta.url), JSON.stringify({ what: 'page start to the first Gloz line on the glasses, in the Even Hub simulator, dev server warmed', firstLineMs, bridgeMs, budgetMs: FIRST_LINE_MAX_MS, read: new Date().toISOString().slice(0, 10) }, null, 1) + '\n')
+    writeFileSync(new URL('./results/first-line.json', import.meta.url), JSON.stringify({ commit: COMMIT, what: 'page start to the first Gloz line on the glasses, in the Even Hub simulator, dev server warmed', firstLineMs, bridgeMs, budgetMs: FIRST_LINE_MAX_MS, read: new Date().toISOString().slice(0, 10) }, null, 1) + '\n')
     process.exit(firstLineMs <= FIRST_LINE_MAX_MS ? 0 : 1)
   }
   await waitLog('[eval] up', 60000)
@@ -230,9 +234,23 @@ for (const [k, s] of Object.entries(by)) {
 md += `
 Scripts won: ${wins} of ${Object.keys(by).length}. Shown means a character error rate of at most ${PASS}. Blur ladder: ${LADDER.join(', ')} px. Protocol: eval/PROTOCOL.md.
 `
-writeFileSync(new URL(`./results/${OUT}.json`, import.meta.url), JSON.stringify({ protocol: 'eval/PROTOCOL.md', firstLineMs, size: SIZE, ladder: LADDER, pass: PASS, wins, by, results }, null, 1) + '\n')
+writeFileSync(new URL(`./results/${OUT}.json`, import.meta.url), JSON.stringify({ protocol: 'eval/PROTOCOL.md', commit: COMMIT, firstLineMs, size: SIZE, ladder: LADDER, pass: PASS, wins, by, results }, null, 1) + '\n')
 writeFileSync(new URL(`./results/${OUT}.md`, import.meta.url), md)
 console.log(md)
+// The CI run, one held-out message per script, checked against the committed held-out run: a message the held-out
+// run showed sharp that this build no longer shows fails, so the headline result stays true of the code being shipped.
+if (OUT === 'ci') {
+  const was = JSON.parse(readFileSync(new URL('./results/heldout.json', import.meta.url), 'utf8')).results
+  const lost = []
+  for (const r of results) {
+    const h = was.find(x => x.lang === r.lang && x.id === r.id)
+    if (!h) continue
+    const then = h.gloz.cerA <= PASS, now = r.gloz.cerA <= PASS
+    console.log(`${r.script}: held-out run ${then ? 'shown' : 'not shown'}, this build ${now ? 'shown' : 'not shown'}`)
+    if (then && !now) lost.push(r.script)
+  }
+  if (lost.length) { console.log(`this build no longer shows what the held-out run showed in: ${lost.join(', ')}`); process.exit(1) }
+}
 // The time gate: a start slower than the budget fails the run (and the CI job that runs it).
 if (firstLineMs == null || firstLineMs > FIRST_LINE_MAX_MS) { console.log(`start to first line ${firstLineMs} ms: over the ${FIRST_LINE_MAX_MS} ms budget`); process.exit(1) }
 console.log(`start to first line ${firstLineMs} ms, within the ${FIRST_LINE_MAX_MS} ms budget`)

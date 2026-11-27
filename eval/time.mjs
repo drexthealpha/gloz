@@ -7,6 +7,10 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createApp } from '../server/app.mjs'
 import * as ai from '../server/ai.mjs'
+import { execSync } from 'node:child_process'
+
+// The commit this run measured, written into its result.
+const COMMIT = (() => { try { return execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim() } catch { return null } })()
 
 const items = JSON.parse(readFileSync(new URL('./set/heldout.json', import.meta.url), 'utf8')).items
 const CPS = (238 / 60) * 5.7       // reading, characters a second (Brysbaert 2019, 238 wpm)
@@ -48,10 +52,11 @@ for (let i = 0; i < items.length; i++) {
 app.server.close()
 const med = a => { const b = [...a].sort((x, y) => x - y); const m = b.length >> 1; return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2 }
 const by = [...new Set(rows.map(r => r.by))].join(', ')
-const out = { drafter: by, bytesMedian: med(rows.map(r => r.bytes)), draftMedianS: med(rows.map(r => r.draftS)), wpmMedian: med(rows.map(r => r.wpm)), plainMedian: med(rows.map(r => r.plain)), glozMedian: med(rows.map(r => r.gloz)), glozFaster: rows.filter(r => r.gloz < r.plain).length, n: rows.length, rows }
+const out = { commit: COMMIT, drafter: by, bytesMedian: med(rows.map(r => r.bytes)), draftMedianS: med(rows.map(r => r.draftS)), wpmMedian: med(rows.map(r => r.wpm)), plainMedian: med(rows.map(r => r.plain)), glozMedian: med(rows.map(r => r.gloz)), glozFaster: rows.filter(r => r.gloz < r.plain).length, n: rows.length, rows }
 // The budget: a slower or heavier build is a bug. Compared with the committed run, same drafter.
 if (process.argv.includes('--check')) {
   const was = JSON.parse(readFileSync(new URL('./results/time.json', import.meta.url), 'utf8'))
+  // The committed run's commit is kept: this check measures, it does not rewrite the result.
   if (was.drafter !== out.drafter) { console.log(`time budget: committed run drafted by ${was.drafter}, this one by ${out.drafter}: run without a key`); process.exit(1) }
   const over = [
     ['median draft time', out.draftMedianS, Math.max(was.draftMedianS * 1.1, was.draftMedianS + 0.05), 's'],
