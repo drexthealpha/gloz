@@ -5,28 +5,14 @@ import type { Api } from './api.ts'
 import type { Draft, Msg } from './core/types.ts'
 import { HOLDING_REPLIES } from './demo-data.ts'
 import samples from './demo-inbox.json'
-import { sampleDash } from './modes/dash.ts'
-import { sampleTasks } from './modes/tasks.ts'
-import { sampleNotes } from './modes/notes.ts'
-import { sampleAsk } from './modes/ask.ts'
-import { sampleReader } from './modes/reader.ts'
-import { samplePrompter } from './modes/prompter.ts'
-import { sampleNav } from './modes/nav.ts'
-import { sampleStocks } from './modes/stocks.ts'
-import { sampleMusic } from './modes/music.ts'
-import { sampleTerm } from './modes/term.ts'
 // @ts-ignore: plain JS shared with the server
 import { handle as weather } from '../../server/modes/weather.mjs'
-// @ts-ignore: plain JS shared with the server
-import { SAMPLE as news } from '../../server/modes/news.mjs'
 
 type Sample = Msg & { draft?: string; gloss?: string; lang: string }
 const all = samples as unknown as Sample[]
+// Before pairing, the tools that need the wearer's own accounts say so; the forecast is real (Open-Meteo needs no
+// account), and the timer runs on the glasses alone.
 const TOOLS: Record<string, (b: any) => any> = {
-  dash: sampleDash, tasks: sampleTasks, notes: sampleNotes, ask: sampleAsk, reader: sampleReader, nav: sampleNav,
-  stocks: sampleStocks, music: sampleMusic, term: sampleTerm, news: () => news,
-  prompter: (b: any) => b?.action === 'follow' ? { at: (Number(b.from) || 0) + (Number(b.at) || 0) + 4, heard: '', sample: true } : samplePrompter(b),
-  // A real forecast (Open-Meteo needs no account) for where the phone is.
   weather: (b: any) => weather(b, { env: {} }),
 }
 
@@ -44,5 +30,5 @@ export class SampleApi implements Api {
   async read() {}
   async stt() { return { text: '' } }
   async listen() { return { text: '' } }
-  async mode(id: string, body: unknown) { const f = TOOLS[id]; if (!f) throw new Error('no such app'); return f(body) }
+  async mode(id: string, body: unknown) { const f = TOOLS[id]; if (!f) return { error: 'Pair on your phone to use this' }; return f(body) }
 }

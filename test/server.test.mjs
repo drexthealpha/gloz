@@ -142,6 +142,24 @@ test('sample mode: each sample message gets the reply written for it ahead of ti
   app.server.close()
 })
 
+test('long polling: a waiting inbox request answers the moment a message arrives', async () => {
+  const svc = fakeService()
+  const { app, call } = await boot(svc)
+  const { json: { token } } = await call('/pair', { code: app.pairCode() })
+  const t0 = Date.now()
+  const pending = call('/inbox?after=0&wait=10', null, token)
+  setTimeout(() => { svc.push(msg(9, 'now?')); void app.pollOnce() }, 300)
+  const r = await pending
+  assert.equal(r.json.msgs.length, 1)
+  assert.ok(Date.now() - t0 < 3000, `answered after ${Date.now() - t0} ms`)
+  // Nothing new: the request waits its time out, then answers empty.
+  const t1 = Date.now()
+  const empty = await call(`/inbox?after=${r.json.after}&wait=1`, null, token)
+  assert.equal(empty.json.msgs.length, 0)
+  assert.ok(Date.now() - t1 >= 900)
+  app.server.close()
+})
+
 test('PCM from the glasses becomes audio samples', () => {
   const b = Buffer.alloc(4)
   b.writeInt16LE(16384, 0)

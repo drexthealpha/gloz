@@ -39,7 +39,7 @@ Messages come from **Telegram (your account or a bot), Slack, Discord and Gmail*
 |---|---|
 | Usefulness on G2 · 30% | The live demo, then [the held-out results](#results): plain G2 text drops Arabic, Persian, Hindi, Thai and Hebrew; Gloz shows them, one line at a time, with the phone in the pocket. Who it is for: [Business potential](#business-potential-and-safety). |
 | Read and write · 25% | In the live demo, paste your own OpenRouter key under the glasses and each reply is drafted live by AI (the key stays in your browser tab and goes only to OpenRouter). Tap, tap: [app/src/core/flow.ts](app/src/core/flow.ts) (every press, tested in [test/core.test.ts](test/core.test.ts)); drafts with no long dictation: [server/ai.mjs](server/ai.mjs); time from message seen to reply sent: [eval/results/time.md](eval/results/time.md). |
-| Technical execution · 20% | <!-- gen:tests -->149 tests in 20 files, all run on every push, with line coverage in the log: [pass log](https://github.com/drexthealpha/gloz/actions/workflows/ci.yml)<!-- /gen -->. Real services, no stand-ins in the app: [server/connectors.mjs](server/connectors.mjs). Replies sent once even when retried: [server/app.mjs](server/app.mjs) `/send`. Outbox: [app/src/core/outbox.ts](app/src/core/outbox.ts). Tests with no keys and the evaluation in the Linux simulator run on every push: [CI](https://github.com/drexthealpha/gloz/actions/workflows/ci.yml). Setup checked by `npm run check:setup`. |
+| Technical execution · 20% | <!-- gen:tests -->150 tests in 20 files, all run on every push, with line coverage in the log: [pass log](https://github.com/drexthealpha/gloz/actions/workflows/ci.yml)<!-- /gen -->. Real services, no stand-ins in the app: [server/connectors.mjs](server/connectors.mjs). Replies sent once even when retried: [server/app.mjs](server/app.mjs) `/send`. Outbox: [app/src/core/outbox.ts](app/src/core/outbox.ts). Tests with no keys and the evaluation in the Linux simulator run on every push: [CI](https://github.com/drexthealpha/gloz/actions/workflows/ci.yml). Setup checked by `npm run check:setup`. |
 | UX for display and voice · 15% | One line on the glasses, drawn at the wearer's size: [app/src/render.ts](app/src/render.ts), [app/src/glasses.ts](app/src/glasses.ts). Every screen says what a press does. Voice: hold, speak, let go; one word acts. The phone screens are built with shadcn/ui: [app/src/phone](app/src/phone), live at https://drexthealpha.github.io/gloz/phone/. |
 | Business potential and safety · 10% | [Business potential and safety](#business-potential-and-safety): who pays, what it costs, what is stored (nothing after sending), what is never sent without the wearer. |
 
@@ -260,7 +260,7 @@ Every route answers JSON. Pair once, then send the token as `Authorization: Bear
 | Route | Does |
 |---|---|
 | `POST /pair {code}` | the 6-digit code the server prints gives a token |
-| `GET /inbox?after=N&lang=en` | messages after N, with their translation and summary when AI is on |
+| `GET /inbox?after=N&lang=en&wait=25` | messages after N, with their translation and summary when AI is on; with `wait`, the answer waits up to 25 s for a message, so one shows the moment it arrives |
 | `POST /draft {id, ask?, lang?}` | a reply in the sender's language, its meaning in yours, and up to three to pick from |
 | `POST /send {key, id, text}` | sends once per key, however often it is retried; the same key with other text is refused |
 | `POST /read {id}` | marks the message read at its service |

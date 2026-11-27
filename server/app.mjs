@@ -49,6 +49,7 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
   let seq = 0
   const translations = new Map()   // `${id}|...` -> translation or summary
   let dirty = false   // state changed since it was last written
+  const waiters = new Set()   // /inbox requests waiting for a message (long polling)
 
   function add(m) {
     if (msgs.has(m.id) || state.refs[m.id]?.done) return
@@ -56,6 +57,8 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
     state.refs[m.id] = { source: m.source, ref: m.ref, at: m.at }
     dirty = true
     inbox.push({ seq: ++seq, id: m.id })
+    for (const w of waiters) w()
+    waiters.clear()
     const key = `${m.source}:${m.chat}`
     const t = threads.get(key) || []
     t.push({ id: m.id, from: m.from, text: m.text })
@@ -166,6 +169,9 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
 
   async function inboxSince({ url }) {
     const after = Number(url.searchParams.get('after') || 0)
+    // ?wait=N (up to 25 s): with nothing new, the answer waits until a message comes, so it shows at once.
+    const wait = Math.min(25, Number(url.searchParams.get('wait') || 0))
+    if (wait > 0 && !inbox.some(e => e.seq > after)) await new Promise(done => { const t = setTimeout(() => { waiters.delete(go); done() }, wait * 1000); const go = () => { clearTimeout(t); done() }; waiters.add(go) })
     const lang = url.searchParams.get('lang') || 'en'
     const tr = url.searchParams.get('translate') === '1'
     const out = []

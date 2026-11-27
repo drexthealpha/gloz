@@ -184,11 +184,11 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
     }
   }
 
-  async function poll(): Promise<number> {
+  async function poll(wait = 0): Promise<number> {
     if (!api) return 0
     const used = api
     try {
-      const r = await used.inbox(after, settings.myLang, settings.translate)
+      const r = await used.inbox(after, settings.myLang, settings.translate, wait)
       after = r.after
       if (!s.online) { outbox.retryNow(); dispatch({ t: 'online', online: true, queued: outbox.size }) }
       for (const m of r.msgs) { const k = `${m.source}:${m.chat}`; chats.delete(k); chats.set(k, `${m.chat} · ${m.source}`) }
@@ -384,8 +384,9 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   await g.open(menuItems(settings.myLang, false, undefined, false, null))
   render()
   console.log('[gloz] ready')
-  poll()
-  setInterval(poll, 3000)
+  // Messages show as soon as the server has them: each request waits up to 25 s for one (long polling).
+  // An answer that comes back at once with nothing (no server, or one that does not wait) waits 3 s here.
+  void (async () => { for (;;) { const t0 = Date.now(); const n = await poll(25); if (n < 0 || (n === 0 && Date.now() - t0 < 1000)) await new Promise(r => setTimeout(r, 3000)) } })()
   void loadDay()
   setInterval(() => { if (home()) void loadDay() }, 60000)
   api?.health?.().then(h => { aiOn = Boolean(h?.ai); if (!active) rootMenu() }).catch(() => {})
