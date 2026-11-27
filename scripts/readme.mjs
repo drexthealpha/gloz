@@ -29,6 +29,21 @@ if (h) {
   blocks.heldout = read('heldout.md').trim()
 }
 if (t) blocks.time = read('time.md').trim()
+// Each judging criterion against the best measured elsewhere, with Gloz's own number from eval/results.
+// The "best" side is sourced; where Gloz's number is modelled or not measured on people, the verdict says so.
+{
+  const cj = json('complaints.json'), five = ['Arabic', 'Persian', 'Hindi', 'Thai', 'Hebrew']
+  const shown = h ? five.reduce((n, k) => n + h.by[k].glozA, 0) : null, plain = h ? five.reduce((n, k) => n + h.by[k].plainA, 0) : null
+  blocks.crit = [
+    '| Criterion | Best measured elsewhere | Gloz | Where Gloz stands |',
+    '|---|---|---|---|',
+    `| Usefulness on G2 (30%) | [6.69 s median per notification glance on Apple Watch, filmed in real use](https://link.springer.com/chapter/10.1007/978-3-319-58637-3_22) | ${t.glozMedian.toFixed(1)} s from message seen to reply sent, phone in the pocket, modelled from published operator times | different measure: Gloz is modelled, not timed on people |`,
+    `| Read and write (25%) | [12% of mobile replies sent from a suggestion (Google Smart Reply)](https://research.google/blog/efficient-smart-reply-now-for-gmail) | a reply ready under ${cj.replyLanguage.messages} of ${cj.replyLanguage.messages} messages, sent with ${cj.strayPress.pressesToSend} taps; ${t.wpmMedian.toFixed(0)} words a minute, silent (modelled) | different measure: the share of replies sent from a draft is not measured on people |`,
+    `| Technical execution (20%) | [99.99% crash-free sessions, top apps (Luciq 2025)](https://www.luciq.ai/mobile-app-stability-outlook-2025) | ${cj.outage.gotReply} of ${cj.outage.messages} messages got a reply with every AI provider failing; ${cj.strayPress.sendsWithoutReplyShown} of ${cj.strayPress.presses} stray presses sent anything | not measured on users: no crash figures from real use yet |`,
+    `| UX for display and voice (15%) | no published figure for reading on a display like G2's | ${shown} of 100 held-out messages in Arabic, Persian, Hindi, Thai and Hebrew shown, against ${plain} with plain G2 text (simulator) | no number to beat |`,
+    `| Business potential and safety (10%) | [0 message content handed over under legal process (Signal)](https://signal.org/bigbrother/cd-california-grand-jury/) | ${cj.privacy.messageTextOnDisk} of ${cj.privacy.messages} message texts on the server's disk after sending | matched on message content |`,
+  ].join('\n')
+}
 // Start to first line, from `node eval/run.mjs heldout --first-line` (the CI run gates it at the same budget).
 const fl = json('first-line.json')
 blocks.firstline = fl ? `${(fl.firstLineMs / 1000).toFixed(1)} s from page start to the first line on the glasses in the simulator (budget ${fl.budgetMs / 1000} s, read ${fl.read})` : 'not measured yet'
@@ -74,7 +89,7 @@ blocks.Ltime = at('eval/time.mjs', 'const CPS')
 blocks.sdk = JSON.parse(readFileSync(new URL('../app/package.json', import.meta.url), 'utf8')).dependencies['@evenrealities/even_hub_sdk'].replace(/^[~^]/, '')
 blocks.Lwho = at('server/app.mjs', 'const by = aiWrote')
 
-const PAGES = { 'README.md': ['first', 'heldout', 'time', 'wins', 'video', 'cost', 'tests', 'Lsend', 'Ldraft', 'Lonce', 'Loutbox', 'Llayout', 'Ldrop', 'Ldraw', 'Ltap', 'Lconn', 'Lmove', 'Lphone', 'Ltime', 'Lwho', 'firstline', 'sdk'], 'SUBMISSION-CHECK.md': ['video', 'sdk'] }
+const PAGES = { 'README.md': ['first', 'heldout', 'time', 'wins', 'video', 'cost', 'tests', 'Lsend', 'Ldraft', 'Lonce', 'Loutbox', 'Llayout', 'Ldrop', 'Ldraw', 'Ltap', 'Lconn', 'Lmove', 'Lphone', 'Ltime', 'Lwho', 'firstline', 'sdk', 'crit'], 'SUBMISSION-CHECK.md': ['video', 'sdk'] }
 let stale = false
 for (const [file, want] of Object.entries(PAGES)) {
   const path = new URL(`../${file}`, import.meta.url)

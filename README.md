@@ -77,6 +77,18 @@ Gloz faster on 160 of 200 messages. Silent reply rate with Gloz: 91 words a minu
 
 Start to first line: <!-- gen:firstline -->2.2 s from page start to the first line on the glasses in the simulator (budget 5 s, read 2026-11-27)<!-- /gen --> (`node eval/run.mjs heldout --first-line`; every CI simulator run fails above the budget, and `node eval/time.mjs --check` fails a build over 10% slower or heavier per message than the results above).
 
+### Against the best measured elsewhere, per criterion
+
+<!-- gen:crit -->
+| Criterion | Best measured elsewhere | Gloz | Where Gloz stands |
+|---|---|---|---|
+| Usefulness on G2 (30%) | [6.69 s median per notification glance on Apple Watch, filmed in real use](https://link.springer.com/chapter/10.1007/978-3-319-58637-3_22) | 2.1 s from message seen to reply sent, phone in the pocket, modelled from published operator times | different measure: Gloz is modelled, not timed on people |
+| Read and write (25%) | [12% of mobile replies sent from a suggestion (Google Smart Reply)](https://research.google/blog/efficient-smart-reply-now-for-gmail) | a reply ready under 200 of 200 messages, sent with 2 taps; 91 words a minute, silent (modelled) | different measure: the share of replies sent from a draft is not measured on people |
+| Technical execution (20%) | [99.99% crash-free sessions, top apps (Luciq 2025)](https://www.luciq.ai/mobile-app-stability-outlook-2025) | 200 of 200 messages got a reply with every AI provider failing; 0 of 20 stray presses sent anything | not measured on users: no crash figures from real use yet |
+| UX for display and voice (15%) | no published figure for reading on a display like G2's | 84 of 100 held-out messages in Arabic, Persian, Hindi, Thai and Hebrew shown, against 0 with plain G2 text (simulator) | no number to beat |
+| Business potential and safety (10%) | [0 message content handed over under legal process (Signal)](https://signal.org/bigbrother/cd-california-grand-jury/) | 0 of 200 message texts on the server's disk after sending | matched on message content |
+<!-- /gen -->
+
 Run it yourself: `npm run eval` (needs the simulator), `npm run eval:time`, `node eval/score.mjs`. Method and limits: [eval/PROTOCOL.md](eval/PROTOCOL.md).
 
 ## Complaints Gloz fixes
