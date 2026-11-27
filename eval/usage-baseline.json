@@ -1,0 +1,5 @@
+{
+ "at": "2026-11-27",
+ "downloads": 234,
+ "why": "Until 27 Nov 2026 the hourly demo check and the private checks downloaded gloz.ehpk each run; from then on they read it from the API, so downloads after this count are not ours."
+}

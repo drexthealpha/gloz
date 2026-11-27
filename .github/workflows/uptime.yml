@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 330
     steps:
+      - uses: actions/checkout@v4
       - name: Check the live demo every hour and publish the badge
         run: |
           for round in 1 2 3 4 5 6; do
@@ -18,14 +19,19 @@ jobs:
             # Everything a judge opens: the demo, the phone page, the video, the app package, and this badge's own file.
             down=""
             [ "$code" = "200" ] && grep -q 'id="g2"' page.html || down="$down demo"
-            for u in https://drexthealpha.github.io/gloz/phone/ https://drexthealpha.github.io/gloz/gloz-demo.mp4 https://github.com/drexthealpha/gloz/releases/latest/download/gloz.ehpk https://raw.githubusercontent.com/drexthealpha/gloz/status/status.json; do
+            for u in https://drexthealpha.github.io/gloz/phone/ https://drexthealpha.github.io/gloz/gloz-demo.mp4 https://raw.githubusercontent.com/drexthealpha/gloz/status/status.json; do
               c=$(curl -sL -o /dev/null -r 0-1023 -w '%{http_code}' "$u" || echo 000)
               case "$c" in 200|206) ;; *) down="$down $u:$c" ;; esac
             done
+            # The app package is checked through GitHub's API, not downloaded, so its download count stays a count of people.
+            st=$(curl -s -H "Authorization: Bearer ${{ github.token }}" https://api.github.com/repos/drexthealpha/gloz/releases/latest | python3 -c 'import sys,json; print(next((a["state"] for a in json.load(sys.stdin).get("assets",[]) if a["name"]=="gloz.ehpk"),"missing"))' 2>/dev/null || echo missing)
+            [ "$st" = "uploaded" ] || down="$down gloz.ehpk:$st"
             if [ -z "$down" ]; then msg=up; color=brightgreen; else msg=down; color=red; fi
             echo "{\"schemaVersion\":1,\"label\":\"live demo\",\"message\":\"$msg\",\"color\":\"$color\"}" > status.json
             echo "$(date -u +%FT%TZ) $code $msg$down" > last.txt
             cat status.json last.txt
-            rm -rf pub && git init -q pub && cp status.json last.txt pub/ && (cd pub && git config user.name "drexthealpha" && git config user.email "142920951+drexthealpha@users.noreply.github.com" && git add . && git commit -qm "Demo status $(cat last.txt)" && git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:status)
+            # Installs: downloads of gloz.ehpk since 27 Nov 2026 (eval/usage-baseline.json), counted by GitHub; a live badge in the README.
+            curl -s -H "Authorization: Bearer ${{ github.token }}" "https://api.github.com/repos/drexthealpha/gloz/releases?per_page=100" | python3 -c 'import sys,json; base=json.load(open("eval/usage-baseline.json"))["downloads"]; n=sum(a["download_count"] for r in json.load(sys.stdin) for a in r["assets"] if a["name"]=="gloz.ehpk"); print(json.dumps({"schemaVersion":1,"label":"installs since 27 Nov","message":str(n-base),"color":"blue"}))' > usage.json || true
+            rm -rf pub && git init -q pub && cp status.json last.txt usage.json pub/ && (cd pub && git config user.name "drexthealpha" && git config user.email "142920951+drexthealpha@users.noreply.github.com" && git add . && git commit -qm "Demo status $(cat last.txt)" && git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:status)
             if [ $round -lt 6 ]; then sleep 3600; fi
           done

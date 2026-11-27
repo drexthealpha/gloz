@@ -4,7 +4,7 @@ import { readFileSync, existsSync } from 'node:fs'
 import { resolve, dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-export const DOCS = ['README.md', 'SUBMISSION-CHECK.md', 'app/README.md', 'docs/BEYOND-MESSAGES.md']
+export const DOCS = ['README.md', 'SUBMISSION-CHECK.md', 'SUBMIT.md', 'app/README.md', 'docs/BEYOND-MESSAGES.md']
 
 export function missing(root) {
   const json = p => { try { return JSON.parse(readFileSync(join(root, p), 'utf8')) } catch { return {} } }
