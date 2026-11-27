@@ -39,7 +39,7 @@ const rows = complaintRows().sort((a, b) => ORDER.indexOf(a.v) - ORDER.indexOf(b
 blocks.wins = [
   '| What G2 owners asked for | What Gloz does | Gloz | Best elsewhere | Result |',
   '|---|---|---|---|---|',
-  ...rows.map(r => `| "${r.q}" (${r.d}) | ${r.fix} | ${r.gloz} | ${r.best} | ${r.v === 'beaten' ? 'Gloz ahead' : r.v} |`),
+  ...rows.map(r => `| "${r.q}" (${r.d}) | ${r.fix} | ${r.gloz} | ${r.src ? `[${r.best}](${r.src}), read ${r.read}` : r.best} | ${r.v === 'beaten' ? 'Gloz ahead' : r.v} |`),
 ].join('\n')
 
 // The tests, counted as the runner counts them (each test( call in test/), with the log of every run.

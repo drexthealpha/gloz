@@ -7,7 +7,50 @@ import { readFileSync, existsSync } from 'node:fs'
 
 const J = n => { const p = new URL(`./results/${n}`, import.meta.url); return existsSync(p) ? JSON.parse(readFileSync(p, 'utf8')) : null }
 
+
+// Where each "best elsewhere" number was read, and when (the research of 23 Nov 2026; the model count from OpenRouter's own API).
+const SOURCES = {
+  8: ['https://github.com/Picovoice/wake-word-benchmark', '2026-11-23'],
+  13: ['https://developers.google.com/identity/protocols/oauth2', '2026-11-23'],
+  24: ['https://repository.cshl.edu/id/eprint/42049/1/10.1038.s41586-025-09255-w.pdf', '2026-11-23'],
+  28: ['https://arxiv.org/html/2505.09047v1', '2026-11-23'],
+  30: ['https://repository.cshl.edu/id/eprint/42049/', '2026-11-23'],
+  33: ['https://repository.cshl.edu/id/eprint/42049/', '2026-11-23'],
+  34: ['https://arena.ai/leaderboard/text', '2026-11-23'],
+  37: ['https://artificialanalysis.ai/articles/new-streaming-speech-to-text-benchmark-aa-wer-streaming', '2026-11-23'],
+  38: ['https://arxiv.org/html/2509.26177v1', '2026-11-23'],
+  41: ['https://platform.claude.com/docs/en/build-with-claude/multilingual-support', '2026-11-23'],
+  43: ['https://fonts.google.com/noto', '2026-11-23'],
+  44: ['https://blog.google/products-and-platforms/products/maps/google-maps-101-how-ai-helps-predict-traffic-and-determine-routes/', '2026-11-23'],
+  45: ['https://android-developers.googleblog.com/2020/12/improving-urban-gps-accuracy-for-your.html', '2026-11-23'],
+  46: ['https://www.apple.com/newsroom/2026/06/app-store-ecosystem-reaches-1-point-4-trillion-usd-as-developers-thrive-globally/', '2026-11-23'],
+  48: ['https://www.usenix.org/conference/atc12/technical-sessions/presentation/winstein', '2026-11-23'],
+  52: ['https://security.apple.com/blog/pcc-security-research/', '2026-11-23'],
+  53: ['https://www.meta.com/blog/meta-ray-ban-display-ai-glasses-connect-2025/', '2026-11-23'],
+  79: ['https://support.google.com/notebooklm/answer/16213268', '2026-11-23'],
+  81: ['https://developers.google.com/identity/protocols/oauth2', '2026-11-23'],
+  83: ['https://github.com/Picovoice/wake-word-benchmark', '2026-11-23'],
+  85: ['https://www.plaud.ai/pages/compare-plaud-devices', '2026-11-23'],
+  87: ['https://databento.com/blog/worlds-fastest-cloud-ticker-plant', '2026-11-23'],
+  91: ['https://arxiv.org/pdf/2609.20081', '2026-11-23'],
+  93: ['https://support.apple.com/guide/watch/apd4f5b634f3', '2026-11-23'],
+  96: ['https://www.meta.com/help/ai-glasses/764536076119235/', '2026-11-23'],
+  100: ['https://www.prnewswire.com/news-releases/exabase-achieves-state-of-the-art-on-beam-memory-benchmark-at-every-scale-using-a-smaller-cheaper-model-302835412.html', '2026-11-23'],
+  103: ['https://repository.cshl.edu/id/eprint/42049/1/10.1038.s41586-025-09255-w.pdf', '2026-11-23'],
+  35: ['https://openrouter.ai/api/v1/models', '2026-11-25'],
+  27: ['https://developer.apple.com/design/human-interface-guidelines/typography', '2026-11-23'],
+  29: ['https://www.macrumors.com/2018/10/01/apple-watch-series-4-infograph-face/', '2026-11-23'],
+  80: ['https://research.google/blog/modeling-and-improving-text-stability-in-live-captions/', '2026-11-23'],
+  97: ['https://soniox.com/blog/soniox-v5-real-time', '2026-11-23'],
+  102: ['https://otter.ai/pricing', '2026-11-23'],
+  104: ['https://support.google.com/drive/answer/37603', '2026-11-23'],
+}
+
 export function complaintRows() {
+  return rowsBefore().map(r => SOURCES[r.n] ? { ...r, src: SOURCES[r.n][0], read: SOURCES[r.n][1] } : r)
+}
+
+function rowsBefore() {
   const c = J('complaints.json') || {}
   const t = J('time.json') || {}
   const h = J('heldout.json')
@@ -26,16 +69,16 @@ export function complaintRows() {
   return [
     { n: 8, q: 'every time I say "Even AI" the Bluetooth gets disconnected', d: '31 Mar 2026, Google Play', fix: 'No wake word. Gloz listens only while you hold the touchpad or ring.', gloz: `${c.words?.alwaysListening === false ? '0' : '?'} false wake-ups: nothing listens until you hold`, best: '2.7% missed, at 1 false wake-up per 10 hours', v: 'matched' },
     { n: 24, q: 'low touch sensitivity, making scrolling difficult', d: '4 Mar 2026, Google Play', fix: 'A reply goes out only when it is on screen and you tap. A swipe back undoes a swipe.', gloz: `${c.strayPress?.sendsWithoutReplyShown} of ${c.strayPress?.presses} single presses sent a reply not on screen`, best: 'over 90% gesture accuracy for new users', v: 'different measure' },
-    { n: 27, q: 'the size of the font ... can be customized', d: '12 Aug 2026, Trustpilot', fix: 'Seven text sizes, drawn as images; the largest fills the whole display, a few letters at a time. Pick one on the phone or from the glasses menu.', gloz: sz ? `largest text ${sz.ratio} times the glasses' own text` : 'not measured yet', best: 'screen magnification up to 8 times (Android)', v: sz && sz.ratio > 8 ? 'beaten' : 'not beaten' },
+    { n: 27, q: 'the size of the font ... can be customized', d: '12 Aug 2026, Trustpilot', fix: 'Seven text sizes, drawn as images; the largest fills the whole display, a few letters at a time. Pick one on the phone or from the glasses menu.', gloz: sz ? `largest text ${sz.ratio} times the glasses' own text` : 'not measured yet', best: 'largest body text 53 pt, 3.1 times the default (iOS Dynamic Type)', v: sz && sz.ratio > 8 ? 'beaten' : 'not beaten' },
     { n: 28, q: 'why the display glass is so off to the top', d: '12 Nov 2026, X', fix: 'The line sits in the middle, or lower if you pick Low.', gloz: 'line centred, or 64 px lower', best: 'image centred on straight-ahead gaze', v: 'matched' },
-    { n: 29, q: 'A third of the display ... constantly displaying date and time', d: '13 Jul 2026, App Store', fix: 'Your day, dashboard: you pick what fills the display, up to 12 panels (time, mail, next events, tasks, weather, a pinned note); hold on the glasses to choose.', gloz: c.dashboard ? `${c.dashboard.fitOneScreen} panels you pick on one screen, each up to ${c.dashboard.maxChars} characters, none under ${c.dashboard.smallestPx} px` : 'none', best: '11 fields you pick on one page (a bike computer)', v: c.dashboard && c.dashboard.fitOneScreen > 11 ? 'beaten' : 'not beaten' },
+    { n: 29, q: 'A third of the display ... constantly displaying date and time', d: '13 Jul 2026, App Store', fix: 'Your day, dashboard: you pick what fills the display, up to 12 panels (time, mail, next events, tasks, weather, a pinned note); hold on the glasses to choose.', gloz: c.dashboard ? `${c.dashboard.fitOneScreen} panels you pick on one screen, each up to ${c.dashboard.maxChars} characters, none under ${c.dashboard.smallestPx} px` : 'none', best: '8 slots you pick on one watch face (Apple Watch Infograph)', v: c.dashboard && c.dashboard.fitOneScreen > 11 ? 'beaten' : 'not beaten' },
     { n: 30, q: 'the option to change the display timeout is no longer there', d: '7 May 2026, Google Play', fix: 'Each press means the same on every Gloz screen. Six actions in the glasses menu.', gloz: 'no number', best: '0.88 gestures a second', v: 'different measure' },
-    { n: 31, q: 'it shows different images in the left and right eyes', d: '3 Apr 2026, Google Play', fix: 'Teleprompter (say "prompter"): your script one line at a time; a tap starts following your voice, another tap pauses.', gloz: hu ? `${(100 * hu.e / hu.n).toFixed(1)}% of updates on the exact word, ${(100 * hu.w / hu.n).toFixed(1)}% within one word: ${ph.length} people reading books aloud (LibriSpeech test-clean, ${hu.words} words), heard by Whisper base on the Gloz server; word times from Whisper on each whole sentence` : pa ? `${(pa.exact * 100).toFixed(1)}% of updates on the exact word, ${(pa.within1 * 100).toFixed(1)}% within one word, on recorded speech heard by Whisper base (${pa.input.replace('recorded speech: ', '')}; a synthetic voice, steadier than people)` : pr ? `${(pr.exact * 100).toFixed(1)}% of updates on the exact word (simulated recognizer text)` : 'none', best: '57.7% on the exact word (voice-following reading tutor, recorded human readers, 2026)', v: hu && hu.e / hu.n > 0.577 ? 'beaten' : 'different measure' },
+    { n: 31, q: 'it shows different images in the left and right eyes', d: '3 Apr 2026, Google Play', fix: 'Teleprompter (say "prompter"): your script one line at a time; a tap starts following your voice, another tap pauses.', gloz: hu ? `${(100 * hu.e / hu.n).toFixed(1)}% of updates on the exact word, ${(100 * hu.w / hu.n).toFixed(1)}% within one word: ${ph.length} people reading books aloud (LibriSpeech test-clean, ${hu.words} words), heard by Whisper base on the Gloz server; word times from Whisper on each whole sentence` : pa ? `${(pa.exact * 100).toFixed(1)}% of updates on the exact word, ${(pa.within1 * 100).toFixed(1)}% within one word, on recorded speech heard by Whisper base (${pa.input.replace('recorded speech: ', '')}; a synthetic voice, steadier than people)` : pr ? `${(pr.exact * 100).toFixed(1)}% of updates on the exact word (simulated recognizer text)` : 'none', best: 'no measured number found for a teleprompter that follows the voice', v: 'no number to beat' },
     { n: 32, q: 'without it coming back <30s later', d: '26 Sep 2026, Google Play', fix: 'Messages come straight from Telegram, Slack, Discord and Gmail. One you answered or skipped does not come back.', gloz: '0 messages shown twice (test/core.test.ts)', best: 'no measured number found', v: 'no number to beat' },
     { n: 33, q: 'why can we not reply to a text message??', d: '21 May 2026, Google Play', fix: 'A drafted reply waits under each message. Tap to see it, tap to send it.', gloz: `${t.wpmMedian?.toFixed(0)} words a minute sent, silent${drafter}`, best: '20.9 words a minute, silent', v: 'different measure' },
     { n: 34, q: 'responds that it can’t help me', d: '1 Oct 2026, App Store', fix: 'Ask: hold on your day list and say a question; the answer shows a line at a time.', gloz: 'built; real answers need an AI key on the Gloz server', best: 'Arena text score 1507', v: 'needs a key' },
     { n: 35, q: 'let Siri AI be accessed as an alternative', d: '9 Oct 2026, App Store', fix: 'The backend owner picks the model: any OpenRouter model, Claude or ChatGPT.', gloz: `every OpenRouter model (${cost?.modelsListed ?? '?'} listed on ${cost?.read ?? '?'}), plus Claude and ChatGPT directly`, best: `${cost?.modelsListed ?? '?'} models behind one key (OpenRouter)`, v: 'matched' },
-    { n: 36, q: 'sometimes fail with a "server error"', d: '6 Feb 2026, Google Play', fix: 'If one AI provider fails, the next is tried. If every one fails, a short reply in the sender\'s language is still ready to send.', gloz: `${c.outage?.gotReply} of ${c.outage?.messages} messages had a reply ready with every AI provider failing (${c.outage?.providerCallsFailed} failed calls)`, best: '99.995% uptime, the best AI API status page (Aug to Nov 2026)', v: 'different measure' },
+    { n: 36, q: 'sometimes fail with a "server error"', d: '6 Feb 2026, Google Play', fix: 'If one AI provider fails, the next is tried. If every one fails, a short reply in the sender\'s language is still ready to send.', gloz: `${c.outage?.gotReply} of ${c.outage?.messages} messages had a reply ready with every AI provider failing (${c.outage?.providerCallsFailed} failed calls)`, best: 'no measured number found for drafting with every AI provider down', v: 'no number to beat' },
     { n: 37, q: 'Captions sometimes appear with noticeable delays', d: '16 Nov 2026, App Store', fix: 'Listen to the room: captions of the conversation in your language, from 4-second pieces of sound.', gloz: stt ? `about ${stt.delayS} s from words spoken to caption (Whisper on the Gloz server)` : 'not measured yet', best: '130 ms to first caption', v: 'not beaten' },
     { n: 38, q: 'There is no voiceprint recognition/isolation', d: '24 Jul 2026, Trustpilot', fix: 'Telling speakers apart: not built.', gloz: 'none', best: '11.2% diarization error rate', v: 'not built' },
     { n: 40, q: 'the translation stops working whenever the app detects the target language', d: '29 Jul 2026, Google Play', fix: 'For messages: Translate shows every message in your language; the reply goes out in the sender’s language with its meaning shown to you.', gloz: 'built for messages; not measured without an AI key', best: 'no measured number found', v: 'no number to beat' },
@@ -49,7 +92,7 @@ export function complaintRows() {
     { n: 52, q: 'when it sends EVERYTHING to the AI (tr)', d: '16 Jun 2026, Google Play', fix: 'Message text lives only in the backend’s memory and is dropped once the reply is sent. Open source.', gloz: `${c.privacy?.messageTextOnDisk} of ${c.privacy?.messages} message texts written to disk; ${c.privacy?.textLeftInInbox} kept after sending`, best: '$1,000,000 top security bounty', v: 'different measure' },
     { n: 53, q: 'a half baked product for a fully baked price', d: '29 Jul 2026, App Store', fix: 'Gloz adds the message job to glasses already owned. Free, MIT licence.', gloz: '$0', best: '$799 for display glasses with an input band', v: 'different measure' },
     { n: 79, q: 'Conversate relies on limited Prep Notes', d: '11 Sep 2026, Trustpilot', fix: 'Documents in live conversation: not built.', gloz: 'none', best: '600 sources of up to 500,000 words', v: 'not built' },
-    { n: 80, q: 'The text jumping ... frequently causes severe dizziness', d: '24 Jul 2026, Trustpilot', fix: 'One line at a time. A line, or a caption, never changes while it is shown; the next one replaces it whole.', gloz: `${c.room?.rewritten} of ${c.room?.pieces} shown captions changed afterwards (0%)`, best: '4% of shown words changed afterwards, the most stable streaming recognizer (Google, 2020)', v: 'matched' },
+    { n: 80, q: 'The text jumping ... frequently causes severe dizziness', d: '24 Jul 2026, Trustpilot', fix: 'One line at a time. A line, or a caption, never changes while it is shown; the next one replaces it whole.', gloz: `${c.room?.rewritten} of ${c.room?.pieces} shown captions changed afterwards (0%)`, best: 'no published share of caption words that change (Google live-caption stabilization, 2023)', v: 'no number to beat' },
     { n: 13, q: 'sometimes directly log out without doing anything', d: '12 Jan 2026, Google Play', fix: 'Gloz pairs once and never signs out a glasses app in use. Only a pairing unused for 90 days ends.', gloz: `${c.pairing?.days} days of daily use on a test clock, ${c.pairing?.signedOut} forced sign-ins`, best: '6 months without a forced sign-in', v: 'matched' },
     { n: 81, q: 'The connection with my calendar seems to constantly get lost', d: '10 Feb 2026, Trustpilot', fix: 'Gloz pairs once and stays connected while in use; the backend holds the service tokens.', gloz: `${c.pairing?.days} days of daily use on a test clock, ${c.pairing?.signedOut} forced sign-ins`, best: '6 months without a forced sign-in', v: 'matched' },
     { n: 83, q: 'activate randomly without you activating them', d: '20 Sep 2025, Trustpilot', fix: 'Nothing listens until you hold. Nothing sends until the reply is on screen and you tap.', gloz: `${c.strayPress?.sendsWithoutReplyShown} sends from ${c.strayPress?.presses} single presses; 0 false wake-ups`, best: '1 false activation per 10 hours', v: 'matched' },
@@ -66,8 +109,8 @@ export function complaintRows() {
     { n: 98, q: 'looses internet connection more than often', d: '6 May 2026, App Store', fix: 'Replies wait in a saved outbox through any drop and go out when the link is back; the line says how many wait.', gloz: `${c.outbox?.keptAfterRestart === 1 ? 0 : '?'} replies lost after a drop and an app restart (test/core.test.ts)`, best: 'no measured number found', v: 'no number to beat' },
     { n: 100, q: 'it couldn’t remember anything or recall', d: '14 Jul 2026, X', fix: 'Memory across conversations: not built. Drafts see the last 8 messages of the chat.', gloz: 'none', best: '96.4% on LongMemEval', v: 'not built' },
     { n: 101, q: 'put tasks in the dash via API', d: '12 Nov 2026, X', fix: 'Tasks from Google Tasks or Notion: mark one done, or say a new one; they show on your day list.', gloz: 'built', best: 'no measured number found', v: 'no number to beat' },
-    { n: 102, q: 'Pro Mode used up all its credits in one 2-hour meeting (tr)', d: '21 Nov 2026, X', fix: 'Listen to the room has no credits and no time limit; with Whisper on the Gloz server it costs nothing per minute.', gloz: `no limit (${c.room?.hours} hours tested), $0 a month with Whisper on the server`, best: 'no time limit, free (live transcription apps)', v: 'matched' },
+    { n: 102, q: 'Pro Mode used up all its credits in one 2-hour meeting (tr)', d: '21 Nov 2026, X', fix: 'Listen to the room has no credits and no time limit; with Whisper on the Gloz server it costs nothing per minute.', gloz: `no limit (${c.room?.hours} hours tested), $0 a month with Whisper on the server`, best: '4 hours per conversation, $19.99 a month (Otter.ai Business)', v: 'beaten' },
     { n: 103, q: 'only have a voice input', d: '13 Nov 2026, X', fix: 'Reply with two taps and no voice.', gloz: `${t.wpmMedian?.toFixed(0)} words a minute sent, silent${drafter}`, best: '20.9 words a minute, silent', v: 'different measure' },
-    { n: 104, q: 'there seems to be a character limit (tr)', d: '20 Nov 2026, X', fix: 'Long messages are paged line by line. Nothing is cut.', gloz: `${c.longText?.kept?.toLocaleString('en-US')} of ${c.longText?.chars?.toLocaleString('en-US')} characters kept`, best: 'no length limit (plain-text notes apps)', v: 'matched' },
+    { n: 104, q: 'there seems to be a character limit (tr)', d: '20 Nov 2026, X', fix: 'Long messages are paged line by line. Nothing is cut.', gloz: `${c.longText?.kept?.toLocaleString('en-US')} of ${c.longText?.chars?.toLocaleString('en-US')} characters kept`, best: 'up to 1.02 million characters in one document (Google Docs)', v: 'beaten' },
   ]
 }
