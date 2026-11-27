@@ -27,12 +27,20 @@ const gloz = await runGloz(bridge, token ? new HttpApi(base, token) : link ? nul
   status = !s.online ? `${t('noSignal')}${s.queued ? ` · ${t('waitingSignal', s.queued)}` : ''}` : phoneStatus(Math.max(0, s.queue.length - (s.view === 'empty' ? 0 : s.at)), s.skippedMsgs?.length ?? 0, s.mutedMsgs?.length ?? 0, s.queued)
 })
 
-function showSettings() { settingsScreen(root, gloz.settings(), n => gloz.update(n), () => status, () => gloz.transcript(), () => gloz.muted(), () => gloz.unmuteAll(), () => gloz.settings(), () => gloz.chats(), (k, on) => gloz.pick(k, on), unpair) }
+// Who writes the drafts, from the paired server, shown with its data policy before the first message.
+let aiInfo: { name: string; policy: string } | null = null
+function showSettings() {
+  const t = get('gloz.token')
+  if (t && !aiInfo) fetch(`${base}/health`, { headers: { authorization: `Bearer ${t}` } }).then(r => r.json()).then(h => { aiInfo = h?.aiProvider ?? null }).catch(() => {})
+  settingsScreen(root, gloz.settings(), n => gloz.update(n), () => status, () => gloz.transcript(), () => gloz.muted(), () => gloz.unmuteAll(), () => gloz.settings(), () => gloz.chats(), (k, on) => gloz.pick(k, on), unpair, () => aiInfo)
+}
 
 // This phone's pairing ends at once on the server; pairing again needs a new code.
 async function unpair() {
   const t = get('gloz.token')
-  if (t) await fetch(`${base}/unpair`, { method: 'POST', headers: { authorization: `Bearer ${t}` } }).catch(() => {})
+  // Delete everything: the server forgets every pairing and message reference, and this phone forgets every Gloz setting.
+  if (t) await fetch(`${base}/forget`, { method: 'POST', headers: { authorization: `Bearer ${t}` } }).catch(() => {})
+  try { for (const k of Object.keys(localStorage)) if (k.startsWith('gloz.')) localStorage.removeItem(k) } catch {}
   for (const k of ['gloz.token', 'gloz.outbox', 'gloz.seen', 'gloz.skipped', 'gloz.after']) put(k, '')
   // Starting again with no token shows pairing on the phone and on the glasses.
   location.reload()

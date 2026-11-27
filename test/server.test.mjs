@@ -305,3 +305,22 @@ test('each message gets one model call on arrival; the inbox puts the most press
   assert.equal(calls, 2)
   app.server.close()
 })
+
+test('delete everything: every pairing, message reference, sent record and message is gone, and the old token no longer works', async () => {
+  const svc = fakeService()
+  const { app, call } = await boot(svc)
+  const { json: { token } } = await call('/pair', { code: app.pairCode() })
+  svc.push(msg(1, 'keep me?'))
+  await app.pollOnce()
+  await call('/send', { key: 'k', id: msg(1).id, text: 'ok' }, token)
+  svc.push(msg(2, 'and me?'))
+  await app.pollOnce()
+  assert.equal((await call('/forget', {}, token)).json.ok, true)
+  // The old pairing is gone; a new one sees nothing that was there.
+  assert.equal((await call('/inbox?after=0', null, token)).status, 401)
+  const { json: { token: again } } = await call('/pair', { code: app.pairCode() })
+  assert.deepEqual((await call('/inbox?after=0', null, again)).json.msgs, [])
+  // The reply already sent is forgotten too: its key no longer counts as sent.
+  assert.equal((await call('/send', { key: 'k', id: msg(1).id, text: 'ok' }, again)).status, 410)
+  app.server.close()
+})

@@ -304,7 +304,7 @@ ${text}`), by }
     try { return [200, await h(await body(req), { ai, env: process.env })] } catch (e) { return [502, { error: String(e.message || e).slice(0, 200) }] }
   }
 
-  const health_ = async () => [200, { ok: true, connectors: health.connectors, errors: health.errors, ai: ai.ready(), stt: await stt.ready(), paired: state.tokens.length, activeDay: active(DAY), activeMonth: active(30 * DAY) }]
+  const health_ = async () => [200, { ok: true, connectors: health.connectors, errors: health.errors, ai: ai.ready(), aiProvider: ai.provider?.() ?? null, stt: await stt.ready(), paired: state.tokens.length, activeDay: active(DAY), activeMonth: active(30 * DAY) }]
 
   // A phone ends its own pairing at once (lost phone, new phone): its token stops working.
   async function unpair({ dev }) {
@@ -313,8 +313,22 @@ ${text}`), by }
     save()
     return [200, { ok: true }]
   }
+  // Delete everything: every pairing, message reference, sent record, meeting mark and message still in memory.
+  // The server keeps its own keys (they live in its environment, set by its owner); nothing else is left.
+  async function forget() {
+    state.tokens = []
+    state.refs = {}
+    state.sent = {}
+    state.meets = {}
+    seen.clear()
+    for (const id of [...msgs.keys()]) drop(id)
+    threads.clear(); early.clear(); lastFrom.clear(); translations.clear(); aiWrote.clear()
+    inbox.length = 0
+    save()
+    return [200, { ok: true }]
+  }
   const OPEN = { 'GET /health': health_, 'POST /health': health_, 'POST /pair': pair }
-  const PAIRED = { 'GET /inbox': inboxSince, 'POST /draft': draftReply, 'POST /send': sendReply, 'POST /read': markRead, 'POST /stt': speech, 'POST /listen': listen, 'POST /unpair': unpair }
+  const PAIRED = { 'GET /inbox': inboxSince, 'POST /draft': draftReply, 'POST /send': sendReply, 'POST /read': markRead, 'POST /stt': speech, 'POST /listen': listen, 'POST /unpair': unpair, 'POST /forget': forget }
 
   async function handle(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*')

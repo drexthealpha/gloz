@@ -8,7 +8,7 @@ import * as stt from './stt.mjs'
 const port = Number(process.env.PORT || 8787)
 const app = createApp({
   connectors: connectors(),
-  ai: { ready: ai.aiReady, draft: ai.draft, translate: ai.translate, brief: ai.brief },
+  ai: { ready: ai.aiReady, provider: ai.aiProvider, draft: ai.draft, translate: ai.translate },
   stt: { ready: stt.sttReady, transcribe: stt.transcribe },
   dataDir: process.env.GLOZ_DATA || new URL('./data/', import.meta.url).pathname.replace(/^\/(\w:)/, '$1'),
 })

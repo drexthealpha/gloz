@@ -81,5 +81,6 @@
  "skipped": "{n} ردشده",
  "fromMuted": "{n} از گفتگوهای بی‌صدا",
  "waitingSignal": "{n} در انتظار آنتن",
- "noSignal": "آنتن نیست"
+ "noSignal": "آنتن نیست",
+ "draftsBy": "پیش‌نویس‌ها:"
 }

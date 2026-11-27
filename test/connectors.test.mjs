@@ -71,7 +71,11 @@ test('Discord: skips bots, replies with a reference to the message', async () =>
   const msgs = await c.poll()
   assert.deepEqual(msgs.map(m => m.text), ['Ship it today?'])
   await c.send(msgs[0], 'Yes.')
-  assert.deepEqual(JSON.parse(calls.at(-1).opts.body), { content: 'Yes.', message_reference: { message_id: '2' } })
+  // The bot posts under its own name, so the reply says whose it is.
+  assert.deepEqual(JSON.parse(calls.at(-1).opts.body), { content: 'Yes.\n(from the wearer via G2)', message_reference: { message_id: '2' } })
+  process.env.GLOZ_OWNER_NAME = 'Sam'
+  await c.send(msgs[0], 'On my way.')
+  assert.equal(JSON.parse(calls.at(-1).opts.body).content, 'On my way.\n(from Sam via G2)')
 })
 
 test('Gmail: reads the new part of an unread mail, replies in the same thread, marks it read', async () => {

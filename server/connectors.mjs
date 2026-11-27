@@ -152,7 +152,9 @@ export function discord() {
       return out
     },
     async send(msg, text) {
-      await getJSON(`https://discord.com/api/v10/channels/${msg.ref.ch}/messages`, { method: 'POST', headers: h, body: JSON.stringify({ content: text, message_reference: { message_id: msg.ref.mid } }) })
+      // The bot posts under its own name, so the reply says whose it is (GLOZ_OWNER_NAME).
+      const content = `${text}\n(from ${env.GLOZ_OWNER_NAME || 'the wearer'} via G2)`
+      await getJSON(`https://discord.com/api/v10/channels/${msg.ref.ch}/messages`, { method: 'POST', headers: h, body: JSON.stringify({ content, message_reference: { message_id: msg.ref.mid } }) })
     },
     async read() {},
   }

@@ -29,9 +29,9 @@ export async function pairScreen(el: HTMLElement, backend: string, onPair: (base
   rootOf(el).render(<PairScreen backend={backend} onPair={onPair} />)
 }
 
-export async function settingsScreen(el: HTMLElement, s: Settings & { roomLang?: string }, onChange: (n: Partial<Settings> & { roomLang?: string }) => void, status: () => string, said: () => string = () => '', muted: () => number = () => 0, unmute: () => void = () => {}, current?: () => Settings & { roomLang?: string }, chats: () => Chat[] = () => [], pick: (key: string, on: boolean) => void = () => {}, unpair?: () => void) {
+export async function settingsScreen(el: HTMLElement, s: Settings & { roomLang?: string }, onChange: (n: Partial<Settings> & { roomLang?: string }) => void, status: () => string, said: () => string = () => '', muted: () => number = () => 0, unmute: () => void = () => {}, current?: () => Settings & { roomLang?: string }, chats: () => Chat[] = () => [], pick: (key: string, on: boolean) => void = () => {}, unpair?: () => void, ai: () => Live['ai'] = () => null) {
   const [{ SettingsScreen }] = await Promise.all([import('./SettingsScreen'), useLang(s.myLang || savedLang())])
-  const live = (): Live => ({ status: status(), said: said(), muted: muted(), chats: chats() })
+  const live = (): Live => ({ status: status(), said: said(), muted: muted(), chats: chats(), ai: ai() })
   // A new language loads, then the screen is drawn again in it.
   const change = (n: Partial<Settings> & { roomLang?: string }) => { onChange(n); if (n.myLang) void useLang(n.myLang).then(c => { if (c) draw() }) }
   const draw = () => rootOf(el).render(<SettingsScreen settings={{ ...s }} current={current} onChange={change} live={live} unmute={unmute} pick={pick} unpair={unpair} theme={theme()} onTheme={v => { applyTheme(v); draw() }} />)

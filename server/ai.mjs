@@ -17,6 +17,13 @@ function providers() {
 }
 export const aiReady = () => providers().length > 0
 
+// Who writes the drafts, and where that provider's data policy is: the phone shows both before the first message.
+const POLICY = {
+  nearai: ['NEAR AI', 'https://near.ai/?p=10812'], claude: ['Claude (Anthropic)', 'https://www.anthropic.com/legal/privacy'],
+  chatgpt: ['ChatGPT (OpenAI)', 'https://openai.com/policies/privacy-policy/'], openrouter: ['OpenRouter', 'https://openrouter.ai/privacy'],
+}
+export function aiProvider() { const p = providers()[0]; return p ? { name: POLICY[p.name][0], policy: POLICY[p.name][1] } : null }
+
 // NEAR AI credit cannot be topped up: spend is counted from the tokens each answer reports, at the model's list
 // price (USD per million tokens, input and output), and calls stop before the budget is gone, or at once when
 // NEAR says the credit is used up. Then drafts are the holding reply.

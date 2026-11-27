@@ -81,5 +81,6 @@
  "skipped": "{n} דולגו",
  "fromMuted": "{n} מצ'אטים מושתקים",
  "waitingSignal": "{n} ממתינות לקליטה",
- "noSignal": "אין קליטה"
+ "noSignal": "אין קליטה",
+ "draftsBy": "טיוטות:"
 }

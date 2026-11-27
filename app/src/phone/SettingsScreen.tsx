@@ -11,7 +11,10 @@ import type { Settings } from '../core/types'
 
 const More = lazy(() => import('./MoreSettings'))
 export type Chat = { key: string; label: string; on: boolean; muted?: boolean }
-export type Live = { status: string; said: string; muted: number; chats: Chat[] }
+export type Live = {
+  status: string; said: string; muted: number; chats: Chat[]
+  ai?: { name: string; policy: string } | null   // who writes the drafts, and its data policy
+}
 export type Theme = 'device' | 'light' | 'dark'
 export type Set = (n: Partial<Settings> & { roomLang?: string }) => void
 
@@ -32,6 +35,7 @@ export function SettingsScreen({ settings, current, onChange, live, unmute, pick
     <div className="flex flex-col gap-4">
       <div className="flex items-baseline justify-between gap-3"><h1 className="m-0 text-3xl leading-normal font-semibold">{t('settingsTitle')}</h1><span aria-live="polite" className="text-base font-semibold">{saved ? t('saved') : ''}</span></div>
       <p role="status" aria-live="polite" data-must-understand className="m-0 text-muted-foreground">{l.status}</p>
+      {l.ai && <p className="m-0 text-muted-foreground">{t('draftsBy')} <a href={l.ai.policy} target="_blank" rel="noopener" className="underline underline-offset-4">{l.ai.name}</a></p>}
       <div className="flex flex-col gap-2">
         <Label htmlFor="lang" className="text-base">{t('myLanguage')}</Label>
         <NativeSelect id="lang" className={field} value={s.myLang} onChange={e => set({ myLang: e.target.value })}>
