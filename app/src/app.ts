@@ -84,7 +84,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   let toolNote = ''                // a short note over a tool's hint (nothing heard)
   const home = () => !active && !r.on && s.paired && s.view === 'empty'
 
-  const outbox = new Outbox(store, p => api ? api.send(p.key, p.msgId, p.text) : Promise.resolve('retry'))
+  const outbox = new Outbox(store, p => api ? api.send(p.key, p.msgId, p.text, settings.mark) : Promise.resolve('retry'))
   const UNDO_MS = 5000
   const held: Record<string, ReturnType<typeof setTimeout>> = {}   // replies in their undo window
 

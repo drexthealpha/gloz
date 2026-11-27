@@ -41,6 +41,7 @@ export const STRINGS = {
   middle: s('Middle'), // Line position: middle (max 12)
   low: s('Low'), // Line position: low (max 12)
   translate: s('Translate messages into my language'), // Label of the translate switch (max 48)
+  mark: s('Sign my replies "via Gloz"'), // Label of the switch that adds "via Gloz" under each sent reply (max 48)
   roomLang: s('In the room, people speak'), // Label: language spoken in Listen to the room (max 36)
   findIt: s('Detect it'), // Room language option: detect it (max 20)
   theme: s('Screen'), // Label of the theme choice (max 16)

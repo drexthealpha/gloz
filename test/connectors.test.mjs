@@ -55,6 +55,9 @@ test('Slack: the first read sets the starting point, then new messages come with
   const body = JSON.parse(calls.at(-1).opts.body)
   assert.equal(body.thread_ts, '101.1')
   assert.equal(body.channel, 'C1')
+  // Who wrote the reply goes in Slack's own message metadata, readable by other apps.
+  await c.send(msgs[0], 'On it.', { by: 'ai' })
+  assert.deepEqual(JSON.parse(calls.at(-1).opts.body).metadata, { event_type: 'gloz_reply', event_payload: { written_by: 'ai' } })
 })
 
 test('Discord: skips bots, replies with a reference to the message', async () => {
@@ -94,6 +97,12 @@ test('Gmail: reads the new part of an unread mail, replies in the same thread, m
   const raw = Buffer.from(sent.raw, 'base64url').toString('utf8')
   assert.match(raw, /In-Reply-To: <id1@x>/)
   assert.match(raw, /\r\n\r\nYes, Friday\.$/)
+  assert.doesNotMatch(raw, /X-Gloz/)
+  // With who wrote it: a mail header, so the other side's mail filters can see an AI draft.
+  calls.length = 0
+  await c.send(msgs[0], 'Yes, Friday.', { by: 'ai' })
+  const raw2 = Buffer.from(JSON.parse(calls.find(x => x.url.endsWith('/messages/send')).opts.body).raw, 'base64url').toString('utf8')
+  assert.match(raw2, /\r\nX-Gloz-Written-By: ai\r\n\r\nYes, Friday\.$/)
   await c.read(msgs[0])
   assert.ok(calls.some(x => x.url.includes('/m1/modify')))
 })

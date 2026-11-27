@@ -20,17 +20,17 @@ function fakeService() {
     conn: {
       name: 'telegram',
       async poll() { const q = queue; queue = []; return q },
-      async send(msg, text) { if (down) throw new Error('network down'); sent.push({ id: msg.id, text }) },
+      async send(msg, text, meta) { if (down) throw new Error('network down'); sent.push({ id: msg.id, text, by: meta?.by }) },
       async read() {},
     },
   }
 }
 
-async function boot(svc) {
+async function boot(svc, aiOver = {}) {
   for (const k of Object.keys(process.env)) if (k.startsWith('GLOZ_')) delete process.env[k]
   const app = createApp({
     connectors: [svc.conn],
-    ai: { ready: ai.aiReady, draft: ai.draft, translate: ai.translate },
+    ai: { ready: ai.aiReady, draft: ai.draft, translate: ai.translate, ...aiOver },
     stt: { ready: async () => false, transcribe: async () => { throw new Error('no speech engine') } },
     dataDir: mkdtempSync(join(tmpdir(), 'gloz-')),
   })
@@ -257,5 +257,28 @@ test('a pairing in daily use never ends; one unused for 90 days ends', async () 
   const idle = await pair()
   for (let d = 0; d < 365; d++) { t += 24 * 3600 * 1000; assert.ok(await ok(daily), `day ${d + 1}`) }
   assert.equal(await ok(idle), false)
+  app.server.close()
+})
+
+test(`each sent reply records who wrote it, AI draft or the wearer, as the server's own drafts show; the "via Gloz" line only when the wearer turns it on`, async () => {
+  const svc = fakeService()
+  const draft = async () => ({ text: 'Yes, 3 pm works', by: 'ai', alts: [{ text: 'Yes, 3 pm works' }, { text: 'Can we do 4 pm?' }] })
+  const { app, call } = await boot(svc, { draft, ready: () => true })
+  const { json: { token } } = await call('/pair', { code: app.pairCode() })
+  for (const n of [1, 2, 3]) svc.push(msg(n, 'Can we move the meeting to 3?'))
+  await app.pollOnce()
+  const [a, b, c] = (await call('/inbox?after=0', null, token)).json.msgs.map(m => m.id)
+  for (const id of [a, b, c]) assert.equal((await call('/draft', { id, lang: 'en' }, token)).json.by, 'ai')
+  // The AI's draft as it stands, with the mark off (the default): sent as written, recorded as the AI's.
+  assert.equal((await call('/send', { key: 'a', id: a, text: 'Yes, 3 pm works' }, token)).json.by, 'ai')
+  // Another of the AI's replies, with the mark on: signed as an AI draft.
+  assert.equal((await call('/send', { key: 'b', id: b, text: 'Can we do 4 pm?', mark: true }, token)).json.by, 'ai')
+  // Words the AI never wrote are the wearer's, whatever the phone says.
+  assert.equal((await call('/send', { key: 'c', id: c, text: 'Call me at 3', by: 'ai', mark: true }, token)).json.by, 'wearer')
+  assert.deepEqual(svc.sent, [
+    { id: a, text: 'Yes, 3 pm works', by: 'ai' },
+    { id: b, text: 'Can we do 4 pm?\n\nvia Gloz · AI draft', by: 'ai' },
+    { id: c, text: 'Call me at 3\n\nvia Gloz', by: 'wearer' },
+  ])
   app.server.close()
 })

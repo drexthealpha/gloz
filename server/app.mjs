@@ -65,9 +65,15 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
     threads.set(key, t.slice(-10))
   }
 
+  // Every reply the AI wrote for a message, by hash: a sent text that matches one was written by the AI,
+  // so the record says who wrote each reply without taking the phone's word for it.
+  const aiWrote = new Map()
+  const noteAi = (id, d) => { if (d?.by !== 'ai') return d; const set = aiWrote.get(id) || new Set(); for (const a of [d, ...(d.alts || [])]) if (a.text) set.add(sha(a.text)); aiWrote.set(id, set); return d }
+
   function drop(id) {
     const m = msgs.get(id)
     msgs.delete(id)
+    aiWrote.delete(id)
     for (const k of translations.keys()) if (k.startsWith(`${id}|`)) translations.delete(k)
     if (m) { const key = `${m.source}:${m.chat}`; const t = (threads.get(key) || []).filter(x => x.id !== id); if (t.length) threads.set(key, t); else threads.delete(key) }
     const i = inbox.findIndex(e => e.id === id)
@@ -191,14 +197,14 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
     const m = msgs.get(id)
     if (!m) return [410, { error: 'message gone' }]
     // A sample message with no AI key on the server: the reply written for it ahead of time.
-    if (m.pre && !ask && !ai.ready()) return [200, { ...m.pre, ms: 0 }]
+    if (m.pre && !ask && !ai.ready()) return [200, { ...noteAi(id, m.pre), ms: 0 }]
     const thread = (threads.get(`${m.source}:${m.chat}`) || []).slice(0, -1)
     const t0 = performance.now()
-    try { return [200, { ...(await ai.draft(m, thread, ask || '', lang || 'en')), ms: Math.round(performance.now() - t0) }] } catch (e) { return [503, { error: String(e.message || e) }] }
+    try { return [200, { ...noteAi(id, await ai.draft(m, thread, ask || '', lang || 'en')), ms: Math.round(performance.now() - t0) }] } catch (e) { return [503, { error: String(e.message || e) }] }
   }
 
   async function sendReply({ req }) {
-    const { key, id, text } = await body(req)
+    const { key, id, text, mark } = await body(req)
     if (!key || !id || !text) return [400, { error: 'key, id and text are needed' }]
     // A retry of the same reply is answered as sent; the same key with other text is refused, never sent.
     const was = state.sent[key]
@@ -207,14 +213,17 @@ ${text}`) ? [409, { error: 'this key already sent a different reply' }] : [200, 
     const r = state.refs[id]
     const c = r && byName[r.source]
     if (!c) return [410, { error: 'message unknown', drop: true }]
-    try { await c.send({ id, ref: r.ref }, text) } catch (e) { return [503, { error: String(e.message || e), retry: true }] }
+    const by = aiWrote.get(id)?.has(sha(text)) ? 'ai' : 'wearer'
+    // The wearer may choose (phone settings) to sign each reply; a connector that has a field for it also gets who wrote it.
+    const out = mark ? `${text}\n\n${by === 'ai' ? 'via Gloz · AI draft' : 'via Gloz'}` : text
+    try { await c.send({ id, ref: r.ref }, out, { by }) } catch (e) { return [503, { error: String(e.message || e), retry: true }] }
     state.sent[key] = { at: Date.now(), h: sha(`${id}
-${text}`) }
+${text}`), by }
     r.done = true
     drop(id)
     save()
     c.read?.({ id, ref: r.ref }).catch(() => {})
-    return [200, { ok: true }]
+    return [200, { ok: true, by }]
   }
 
   async function markRead({ req }) {

@@ -6,7 +6,7 @@ export interface Api {
   pair(code: string): Promise<string>
   inbox(after: number, lang: string, translate: boolean, wait?: number): Promise<{ msgs: Msg[]; after: number }>
   draft(id: string, lang: string, ask?: string): Promise<Draft & { ms?: number }>
-  send(key: string, id: string, text: string): Promise<'ok' | 'retry' | 'drop'>
+  send(key: string, id: string, text: string, mark?: boolean): Promise<'ok' | 'retry' | 'drop'>
   read(id: string): Promise<void>
   stt(pcm: Uint8Array, lang: string): Promise<{ text: string; ms?: number }>
   listen(pcm: Uint8Array, lang: string, spoken: string): Promise<{ text: string; translated?: string }>
@@ -44,9 +44,9 @@ export class HttpApi implements Api {
     if (!r.ok) throw new Error(`draft ${r.status}`)
     return r.json()
   }
-  async send(key: string, id: string, text: string) {
+  async send(key: string, id: string, text: string, mark = false) {
     try {
-      const r = await this.call('/send', { key, id, text })
+      const r = await this.call('/send', { key, id, text, mark })
       if (r.ok) return 'ok'
       return r.status === 410 || r.status === 400 ? 'drop' : 'retry'
     } catch { return 'retry' }

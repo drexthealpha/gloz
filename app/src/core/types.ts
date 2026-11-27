@@ -38,6 +38,7 @@ export interface Settings {
   myLang: string        // the wearer's language, e.g. "en"
   autoPace: boolean     // lines move on at reading pace
   roomLang?: string     // Listen to the room: the language spoken there; empty finds it
+  mark?: boolean        // sign each reply "via Gloz" (off unless the wearer turns it on)
 }
 
 export const DEFAULT_SETTINGS: Settings = { size: 3, low: false, translate: false, myLang: 'en', autoPace: true }

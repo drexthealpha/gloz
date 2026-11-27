@@ -34,6 +34,10 @@ export default function MoreSettings({ s, set, l, setL, live, unmute, pick, unpa
         <Label htmlFor="tr" className="min-w-0 flex-1 basis-40 text-base">{t('translate')}</Label>
         <Switch id="tr" aria-label={t('translate')} checked={s.translate} onCheckedChange={v => set({ translate: v })} />
       </div>
+      <div className="flex min-h-12 flex-wrap items-center justify-between gap-3">
+        <Label htmlFor="mark" className="min-w-0 flex-1 basis-40 text-base">{t('mark')}</Label>
+        <Switch id="mark" aria-label={t('mark')} checked={!!s.mark} onCheckedChange={v => set({ mark: v })} />
+      </div>
       <div className="flex flex-col gap-2">
         <Label htmlFor="room" className="text-base">{t('roomLang')}</Label>
         <NativeSelect id="room" className={field} value={s.roomLang ?? ''} onChange={e => set({ roomLang: e.target.value })}>

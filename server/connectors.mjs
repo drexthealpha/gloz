@@ -117,8 +117,10 @@ export function slack() {
       }
       return out
     },
-    async send(msg, text) {
-      const j = await getJSON('https://slack.com/api/chat.postMessage', { method: 'POST', headers: h, body: JSON.stringify({ channel: msg.ref.ch, thread_ts: msg.ref.ts, text }) })
+    async send(msg, text, { by } = {}) {
+      // Slack message metadata: other apps can read who wrote the reply.
+      const metadata = by ? { event_type: 'gloz_reply', event_payload: { written_by: by } } : undefined
+      const j = await getJSON('https://slack.com/api/chat.postMessage', { method: 'POST', headers: h, body: JSON.stringify({ channel: msg.ref.ch, thread_ts: msg.ref.ts, text, metadata }) })
       if (!j.ok) throw new Error(`slack ${j.error}`)
     },
     async read(msg) {
@@ -193,10 +195,10 @@ export function gmail() {
       }
       return out
     },
-    async send(msg, text) {
+    async send(msg, text, { by } = {}) {
       const r = msg.ref
       const subject = /^re:/i.test(r.subject) ? r.subject : `Re: ${r.subject}`
-      const raw = [`To: ${r.to}`, `Subject: =?UTF-8?B?${Buffer.from(subject).toString('base64')}?=`, `In-Reply-To: ${r.msgid}`, `References: ${r.msgid}`, 'Content-Type: text/plain; charset=UTF-8', '', text].join('\r\n')
+      const raw = [`To: ${r.to}`, `Subject: =?UTF-8?B?${Buffer.from(subject).toString('base64')}?=`, `In-Reply-To: ${r.msgid}`, `References: ${r.msgid}`, 'Content-Type: text/plain; charset=UTF-8', ...(by ? [`X-Gloz-Written-By: ${by}`] : []), '', text].join('\r\n')
       await getJSON(`${G}/messages/send`, { method: 'POST', headers: { authorization: `Bearer ${await auth()}`, 'content-type': 'application/json' }, body: JSON.stringify({ raw: Buffer.from(raw).toString('base64url'), threadId: r.thread }) })
     },
     async read(msg) {
