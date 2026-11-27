@@ -29,6 +29,9 @@ if (h) {
   blocks.heldout = read('heldout.md').trim()
 }
 if (t) blocks.time = read('time.md').trim()
+// Start to first line, from `node eval/run.mjs heldout --first-line` (the CI run gates it at the same budget).
+const fl = json('first-line.json')
+blocks.firstline = fl ? `${(fl.firstLineMs / 1000).toFixed(1)} s from page start to the first line on the glasses in the simulator (budget ${fl.budgetMs / 1000} s, read ${fl.read})` : 'not measured yet'
 
 // Every complaint an app can act on, with its result: measured wins first, then the rest as they stand.
 const ORDER = ['beaten', 'matched', 'not beaten', 'different measure', 'not measured', 'needs a key', 'no number to beat', 'not built']
@@ -68,7 +71,7 @@ blocks.Lphone = at('app/src/phone/PairScreen.tsx', 'export function PairScreen')
 blocks.Ltime = at('eval/time.mjs', 'const CPS')
 blocks.Lwho = at('server/app.mjs', 'const by = aiWrote')
 
-const PAGES = { 'README.md': ['first', 'heldout', 'time', 'wins', 'video', 'cost', 'tests', 'Lsend', 'Ldraft', 'Lonce', 'Loutbox', 'Llayout', 'Ldrop', 'Ldraw', 'Ltap', 'Lconn', 'Lmove', 'Lphone', 'Ltime', 'Lwho'], 'SUBMISSION-CHECK.md': ['video'] }
+const PAGES = { 'README.md': ['first', 'heldout', 'time', 'wins', 'video', 'cost', 'tests', 'Lsend', 'Ldraft', 'Lonce', 'Loutbox', 'Llayout', 'Ldrop', 'Ldraw', 'Ltap', 'Lconn', 'Lmove', 'Lphone', 'Ltime', 'Lwho', 'firstline'], 'SUBMISSION-CHECK.md': ['video'] }
 let stale = false
 for (const [file, want] of Object.entries(PAGES)) {
   const path = new URL(`../${file}`, import.meta.url)
@@ -79,7 +82,7 @@ for (const [file, want] of Object.entries(PAGES)) {
     if (!block.test(md)) { console.log(`${file}: the gen:${k} marker is missing`); process.exit(1) }
     // A function, so a "$" in the text (prices) is never read as a pattern; a short value stays inline.
     const val = blocks[k]
-    md = md.replace(new RegExp(`(<!-- gen:${k} -->)[\\s\\S]*?(<!-- /gen -->)`, 'g'), (_, a, b) => k !== 'first' && k !== 'tests' && !k.startsWith('L') && (val.includes('\n') || val.length > 40) ? `${a}\n${val}\n${b}` : `${a}${val}${b}`)   // the README's first line stays one line
+    md = md.replace(new RegExp(`(<!-- gen:${k} -->)[\\s\\S]*?(<!-- /gen -->)`, 'g'), (_, a, b) => k !== 'first' && k !== 'tests' && k !== 'firstline' && !k.startsWith('L') && (val.includes('\n') || val.length > 40) ? `${a}\n${val}\n${b}` : `${a}${val}${b}`)   // the README's first line stays one line
   }
   if (md !== before) { stale = true; if (!process.argv.includes('--check')) writeFileSync(path, md) }
 }

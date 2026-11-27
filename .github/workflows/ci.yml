@@ -30,6 +30,8 @@ jobs:
         run: |
           node eval/score.mjs --check
           node scripts/readme.mjs --check
+          # Speed and data budget: over 10% slower or heavier than eval/results/time.json fails.
+          node eval/time.mjs --check
           # The held-out set is the one whose digest the protocol records.
           grep -q "sha256 eval/set/heldout.json: $(sha256sum eval/set/heldout.json | cut -d' ' -f1)" eval/PROTOCOL.md
   setup:

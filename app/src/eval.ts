@@ -15,6 +15,7 @@ import type { Card } from './core/types.ts'
 
 const RUNNER = 'http://127.0.0.1:8799'
 const bridge = await waitForEvenAppBridge()
+console.log(`[eval] bridge ${Math.round(performance.now())} ms`)
 
 const plainPage = (text: string) => ({
   containerTotalNum: 1,
@@ -36,10 +37,19 @@ const fullPage = () => ({
 })
 
 await bridge.createStartUpPageContainer(new CreateStartUpPageContainer(plainPage(' ')))
+// The first line a wearer would see, drawn by Gloz's renderer: the time from page start to it is logged (start to first line).
+{
+  await bridge.rebuildPageContainer(new RebuildPageContainer(glozPage()))
+  const c: Card = { kind: 'message', text: 'Gloz' }
+  const [a, b] = await tiles(drawLine(c, layoutCard(c, 3), 0, { pages: false }))
+  await bridge.updateImageRawData(new ImageRawDataUpdate({ containerID: 2, containerName: 'left', imageData: a }))
+  await bridge.updateImageRawData(new ImageRawDataUpdate({ containerID: 3, containerName: 'right', imageData: b }))
+  console.log(`[eval] first line ${Math.round(performance.now())} ms`)
+}
 console.log('[eval] up')
 
 let last = -1
-let layout: 'plain' | 'gloz' | 'full' = 'plain'
+let layout: 'plain' | 'gloz' | 'full' = 'gloz'
 for (;;) {
   let cmd: any
   try { cmd = await (await fetch(`${RUNNER}/cmd`)).json() } catch { await new Promise(r => setTimeout(r, 200)); continue }

@@ -101,8 +101,31 @@ async function show(c) {
   return { f: await settled(), lines: Number(msg.split('lines ')[1]) }
 }
 
+// Start to first line, in ms from page start in the simulator. Android's vitals call a cold start of 5 s or more excessive;
+// the CI run fails above that (D8: speed is retention, test it in the first minute).
+const FIRST_LINE_MAX_MS = 5000
+let firstLineMs = null
 const vite = startVite(5174)
 await waitUp('http://localhost:5174/eval.html')
+// Warm the dev server first: every module the page imports is fetched once, so Vite's one-time compile of the
+// project and its dependencies is done before the clock starts. The start-to-first-line time is then the app's own,
+// as a built app has no such compile.
+{
+  const seen = new Set(), todo = ['/eval.html']
+  for (let k = 0; k < 2; k++) {
+    seen.clear(); todo.push('/eval.html')
+    while (todo.length) {
+      const p = todo.pop()
+      if (seen.has(p)) continue
+      seen.add(p)
+      const t = await fetch('http://localhost:5174' + p).then(r => r.text()).catch(() => '')
+      for (const m of t.matchAll(/(?:from|import|src=)\s*\(?["'](\/[^"']+)["']/g)) todo.push(m[1])
+    }
+    // A first compile can find new dependencies and rebuild them; the second pass waits for that.
+    await new Promise(r => setTimeout(r, 1500))
+  }
+  console.log(`dev server warmed: ${seen.size} modules`)
+}
 const sim = startSim('http://localhost:5174/eval.html')
 const workers = {}
 // Model downloads can fail on a bad network; try again before giving up.
@@ -121,6 +144,17 @@ const results = (() => { try { return JSON.parse(readFileSync(partial, 'utf8')) 
 const done = new Set(results.map(r => `${r.lang}:${r.id}`))
 try {
   await waitUp('http://127.0.0.1:9898/api/ping')
+  const bridgeMs = Number((await waitLog('[eval] bridge ', 60000)).split('[eval] bridge ')[1].split(' ')[0])
+  const first = await waitLog('[eval] first line ', 60000)
+  firstLineMs = Number(first.split('[eval] first line ')[1].split(' ')[0])
+  console.log(`start to first line: ${firstLineMs} ms`)
+  // node eval/run.mjs heldout --first-line: only this measure, written to eval/results/first-line.json.
+  if (process.argv.includes('--first-line')) {
+    kill(sim); kill(vite)
+    mkdirSync(new URL('./results/', import.meta.url), { recursive: true })
+    writeFileSync(new URL('./results/first-line.json', import.meta.url), JSON.stringify({ what: 'page start to the first Gloz line on the glasses, in the Even Hub simulator, dev server warmed', firstLineMs, bridgeMs, budgetMs: FIRST_LINE_MAX_MS, read: new Date().toISOString().slice(0, 10) }, null, 1) + '\n')
+    process.exit(firstLineMs <= FIRST_LINE_MAX_MS ? 0 : 1)
+  }
   await waitLog('[eval] up', 60000)
   for (const it of items) {
     const lang = OCR_LANG[it.lang]
@@ -196,6 +230,9 @@ for (const [k, s] of Object.entries(by)) {
 md += `
 Scripts won: ${wins} of ${Object.keys(by).length}. Shown means a character error rate of at most ${PASS}. Blur ladder: ${LADDER.join(', ')} px. Protocol: eval/PROTOCOL.md.
 `
-writeFileSync(new URL(`./results/${OUT}.json`, import.meta.url), JSON.stringify({ protocol: 'eval/PROTOCOL.md', size: SIZE, ladder: LADDER, pass: PASS, wins, by, results }, null, 1) + '\n')
+writeFileSync(new URL(`./results/${OUT}.json`, import.meta.url), JSON.stringify({ protocol: 'eval/PROTOCOL.md', firstLineMs, size: SIZE, ladder: LADDER, pass: PASS, wins, by, results }, null, 1) + '\n')
 writeFileSync(new URL(`./results/${OUT}.md`, import.meta.url), md)
 console.log(md)
+// The time gate: a start slower than the budget fails the run (and the CI job that runs it).
+if (firstLineMs == null || firstLineMs > FIRST_LINE_MAX_MS) { console.log(`start to first line ${firstLineMs} ms: over the ${FIRST_LINE_MAX_MS} ms budget`); process.exit(1) }
+console.log(`start to first line ${firstLineMs} ms, within the ${FIRST_LINE_MAX_MS} ms budget`)
