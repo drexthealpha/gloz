@@ -10,7 +10,7 @@
       "name": "network",
       "desc": "Reaches your own Gloz backend, which fetches your messages and sends the replies you approve.",
       "whitelist": [
-        "https://gloz-backend.example.com"
+        "https://gloz-hf9z.onrender.com"
       ]
     },
     {
