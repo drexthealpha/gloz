@@ -327,3 +327,23 @@ test('delete everything: every pairing, message reference, sent record and messa
     assert.equal(svc.sent.length, before)
   } finally { app.server.close() }
 })
+
+test('the server publishes from its own log, without message text: arrival to shown, send to delivered, replies sent and how many went as drafted', async () => {
+  const svc = fakeService()
+  const draft = async m => ({ text: `re: ${m.text}`, by: 'ai', score: 3 })
+  const { app, call } = await boot(svc, { draft, ready: () => true })
+  try {
+    const { json: { token } } = await call('/pair', { code: app.pairCode() })
+    svc.push(msg(1, 'lunch?'))
+    await app.pollOnce()
+    const r = (await call('/inbox?after=0&lang=en', null, token)).json
+    await call('/send', { key: 'k1', id: r.msgs[0].id, text: r.msgs[0].draft.text }, token)
+    const st = (await call('/stats')).json
+    assert.equal(typeof st.arrivalToShownMs, 'number')
+    assert.equal(typeof st.sendToDeliveredMs, 'number')
+    assert.deepEqual(st.targets, { arrivalToShownMs: 2000, sendToDeliveredMs: 1000 })
+    assert.equal(st.repliesSent, 1)
+    assert.equal(st.sentAsDrafted, 100)
+    assert.doesNotMatch(JSON.stringify(st), /lunch/)
+  } finally { app.server.close() }
+})

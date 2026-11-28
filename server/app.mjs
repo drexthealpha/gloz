@@ -62,12 +62,17 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
     return ai.draft(m, thread, '', lang).then(d => noteAi(m.id, d)).catch(() => null)
   }
   const lastFrom = new Map()   // sender name -> { source, chat, ref, at }
+  const arrivedAt = new Map()   // id -> when the server got it, until the glasses have it
+  const book = { shown: [], delivered: [], sent: 0, asDrafted: 0 }
+  const keep = (a, v) => { a.push(v); if (a.length > 500) a.shift() }
+  const median = a => { if (!a.length) return null; const b = [...a].sort((x, y) => x - y); const k = b.length >> 1; return b.length % 2 ? b[k] : Math.round((b[k - 1] + b[k]) / 2) }
   function add(m) {
     if (msgs.has(m.id) || state.refs[m.id]?.done) return
     msgs.set(m.id, m)
     state.refs[m.id] = { source: m.source, ref: m.ref, at: m.at }
     dirty = true
     inbox.push({ seq: ++seq, id: m.id })
+    arrivedAt.set(m.id, now())
     for (const w of waiters) w()
     waiters.clear()
     const key = `${m.source}:${m.chat}`
@@ -228,6 +233,7 @@ export function createApp({ connectors = [], ai, stt, dataDir, pollMs = 2000, lo
       out.push({ id: m.id, source: m.source, chat: m.chat, from: m.from, text: m.text, at: m.at, translated, brief: d?.line, score: d?.score, draft: d })
     }
     // Most pressing first, then newest.
+    for (const m of out) if (arrivedAt.has(m.id)) { keep(book.shown, now() - arrivedAt.get(m.id)); arrivedAt.delete(m.id) }
     out.sort((a, b) => (b.score ?? 0) - (a.score ?? 0) || b.at - a.at)
     return [200, { msgs: out, after: seq }]
   }
@@ -260,7 +266,11 @@ ${text}`) ? [409, { error: 'this key already sent a different reply' }] : [200, 
     const by = aiWrote.get(id)?.has(sha(text)) ? 'ai' : 'wearer'
     // The wearer may choose (phone settings) to sign each reply; a connector that has a field for it also gets who wrote it.
     const out = mark ? `${text}\n\n${by === 'ai' ? 'via Gloz · AI draft' : 'via Gloz'}` : text
+    const t0 = now()
     try { await c.send({ id, ref: r.ref }, out, { by }) } catch (e) { return [503, { error: String(e.message || e), retry: true }] }
+    keep(book.delivered, now() - t0)
+    book.sent++
+    if (by === 'ai') book.asDrafted++
     state.sent[key] = { at: Date.now(), h: sha(`${id}
 ${text}`), by }
     r.done = true
@@ -330,7 +340,9 @@ ${text}`), by }
     save()
     return [200, { ok: true }]
   }
-  const OPEN = { 'GET /health': health_, 'POST /health': health_, 'POST /pair': pair }
+  // Published from the server's own log, against the targets: arrival to shown under 2 s, send to delivered under 1 s.
+  const stats = async () => [200, { arrivalToShownMs: median(book.shown), sendToDeliveredMs: median(book.delivered), targets: { arrivalToShownMs: 2000, sendToDeliveredMs: 1000 }, repliesSent: book.sent, sentAsDrafted: book.sent ? Math.round(100 * book.asDrafted / book.sent) : null, samples: { shown: book.shown.length, delivered: book.delivered.length } }]
+  const OPEN = { 'GET /health': health_, 'GET /stats': stats, 'POST /health': health_, 'POST /pair': pair }
   const PAIRED = { 'GET /inbox': inboxSince, 'POST /draft': draftReply, 'POST /send': sendReply, 'POST /read': markRead, 'POST /stt': speech, 'POST /listen': listen, 'POST /unpair': unpair, 'POST /forget': forget }
 
   async function handle(req, res) {
