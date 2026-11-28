@@ -193,3 +193,24 @@ test('NEAR AI says the credit is gone (402): no more calls', async () => {
   await ai.draft({ chat: 'c', from: 'a', text: 'again' }, [], '', 'en')
   assert.equal(n, 1)
 })
+
+test('speech on a 512 MB host: no local model, Whisper at NEAR AI on the demo credit, counted and stopped like the drafts', async () => {
+  process.env.GLOZ_STT_LOCAL = '0'
+  process.env.GLOZ_NEARAI_KEY = 'k'
+  const sent = []
+  globalThis.fetch = async (url, opts) => { sent.push({ url: String(url), model: opts.body.get('model') }); return { ok: true, status: 200, json: async () => ({ text: ' send it ' }) } }
+  const q = Math.random()
+  const stt = await import(`../server/stt.mjs?${q}`)
+  const { near } = await import('../server/ai.mjs')
+  const before = near.spent
+  const r = await stt.transcribe(Buffer.alloc(32000 * 10), 'en')
+  assert.equal(r.text, 'send it')
+  assert.equal(r.engine, 'nearai')
+  assert.equal(sent[0].url, 'https://cloud-api.near.ai/v1/audio/transcriptions')
+  assert.equal(sent[0].model, 'openai/whisper-large-v3')
+  assert.ok(Math.abs(near.spent - before - 0.001) < 1e-9)
+  globalThis.fetch = async () => ({ ok: false, status: 402, json: async () => ({}) })
+  await assert.rejects(stt.transcribe(Buffer.alloc(32000), 'en'))
+  assert.equal(near.out, true)
+  near.out = false; near.spent = 0
+})

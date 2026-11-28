@@ -3,6 +3,8 @@
 //  1. Whisper running on this server (optional package @huggingface/transformers),
 //     so speech never leaves the backend.
 //  2. OpenAI transcription when GLOZ_OPENAI_KEY is set (ChatGPT is on the allowed list).
+//  3. Whisper at NEAR AI on the public demo's credit (GLOZ_NEARAI_KEY), for hosts with too little memory for 1.
+import { near } from './ai.mjs'
 const env = process.env
 let local = null
 let localTried = false
@@ -10,6 +12,8 @@ let localTried = false
 async function loadLocal() {
   if (localTried) return local
   localTried = true
+  // GLOZ_STT_LOCAL=0: never load the 700 MB model (hosts with 512 MB, like Render's free plan).
+  if (env.GLOZ_STT_LOCAL === '0') return null
   try {
     const { pipeline } = await import('@huggingface/transformers')
     // The _timestamped build is Whisper base with word times, so the teleprompter knows when the last word ended.
@@ -34,7 +38,7 @@ function wav(pcm) {
 }
 
 export async function sttReady() {
-  return Boolean(env.GLOZ_OPENAI_KEY) || Boolean(await loadLocal())
+  return Boolean(env.GLOZ_OPENAI_KEY) || Boolean(env.GLOZ_NEARAI_KEY && !near.out) || Boolean(await loadLocal())
 }
 
 // The wearer speaks their own language (set on the phone), so it is passed in:
@@ -66,6 +70,21 @@ export async function transcribe(pcm, lang = 'en', { words = false } = {}) {
     if (!r.ok) throw new Error(`stt ${r.status}`)
     const j = await r.json()
     return { text: (j.text || '').trim(), ms: Math.round(performance.now() - t0), engine: 'openai' }
+  }
+  // The public demo: Whisper large v3 at NEAR AI, which NEAR runs in its own secure hardware, on the same fixed credit
+  // as the drafts. Each second of audio is counted at $0.0001 (hosted Whisper's usual $0.006 a minute), so the hard stop holds.
+  if (env.GLOZ_NEARAI_KEY && !near.out) {
+    const form = new FormData()
+    form.append('file', new Blob([wav(pcm)], { type: 'audio/wav' }), 'speech.wav')
+    form.append('model', env.GLOZ_NEARAI_STT_MODEL || 'openai/whisper-large-v3')
+    if (lang) form.append('language', lang)
+    const r = await fetch('https://cloud-api.near.ai/v1/audio/transcriptions', { method: 'POST', headers: { authorization: `Bearer ${env.GLOZ_NEARAI_KEY}` }, body: form, signal: AbortSignal.timeout(20000) })
+    if (r.status === 402) near.out = true
+    if (!r.ok) throw new Error(`stt ${r.status}`)
+    near.spent += (pcm.length / 32000) * 0.0001
+    if (near.spent >= near.budget) near.out = true
+    const j = await r.json()
+    return { text: String(j.text || '').trim(), ms: Math.round(performance.now() - t0), engine: 'nearai' }
   }
   throw new Error('no speech engine: see .env.example')
 }
