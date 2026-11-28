@@ -212,7 +212,7 @@ No analytics, no logs of message text. Nothing is sent to any address not listed
 
 ## The hosted server
 
-The public Gloz server runs at [gloz-hf9z.onrender.com](https://gloz-hf9z.onrender.com/health), built from this repository's [Dockerfile](Dockerfile), on Render's free plan: no card, in an account its maintainer already had. Render's own page says "Render spins down a Free web service that goes 15 minutes without receiving any inbound traffic" ([render.com/docs/free](https://render.com/docs/free)), so an outside uptime check calls it every 10 minutes through judging and keeps it awake. The free plan has 512 MB, so speech goes to Whisper at NEAR AI instead of the 700 MB local model. Keys live only in Render's environment settings.
+The public Gloz server runs at [gloz-hf9z.onrender.com](https://gloz-hf9z.onrender.com/health), built from this repository's [Dockerfile](Dockerfile), on Render's free plan: no card, in an account its maintainer already had. Render's own page says "Render spins down a Free web service that goes 15 minutes without receiving any inbound traffic" ([render.com/docs/free](https://render.com/docs/free)), so an outside uptime check, [UptimeRobot](https://stats.uptimerobot.com/ycGWGNrabN), calls it every 5 minutes through judging and keeps it awake (its free plan offers 5 or 30 minutes, and 30 is too long). Its public page shows every check: [![demo server](https://img.shields.io/website?url=https%3A%2F%2Fgloz-hf9z.onrender.com%2Fhealth&label=demo%20server&up_message=up&down_message=down)](https://stats.uptimerobot.com/ycGWGNrabN) The free plan has 512 MB, so speech goes to Whisper at NEAR AI instead of the 700 MB local model. Keys live only in Render's environment settings.
 
 ## Setup
 

@@ -40,7 +40,7 @@ async function boot(svc, aiOver = {}) {
     const r = await fetch(base + path, { method: body ? 'POST' : 'GET', headers: { 'content-type': 'application/json', ...(token ? { authorization: `Bearer ${token}` } : {}) }, body: body ? JSON.stringify(body) : undefined })
     return { status: r.status, json: await r.json() }
   }
-  return { app, call }
+  return { app, call, base }
 }
 
 const msg = (id, text) => ({ id: `telegram:1:${id}`, source: 'telegram', chat: 'Board', from: 'Ana', text, at: Date.now(), ref: { chat: 1, mid: id } })
@@ -198,7 +198,7 @@ test('five wrong pairing codes stop pairing for a minute, so the code cannot be 
 
 test('a phone ends its own pairing at once; the owner sees use counts with no text; drafts have a daily cap', async () => {
   const svc = fakeService()
-  const { app, call } = await boot(svc)
+  const { app, call, base } = await boot(svc)
   process.env.GLOZ_DRAFTS_PER_DAY = '2'
   const { json: { token } } = await call('/pair', { code: app.pairCode() })
   svc.push(msg(5, 'hello'))
@@ -215,6 +215,8 @@ test('a phone ends its own pairing at once; the owner sees use counts with no te
   assert.equal((await call('/health')).json.paired, 0)
   const root = await call('/')
   assert.deepEqual([root.status, root.json.ok, JSON.stringify(root.json).includes('hello')], [200, true, false])
+  // Uptime checks send HEAD: it answers 200 with no body, before and after pairing.
+  for (const p of ['/', '/health']) { const r = await fetch(base + p, { method: 'HEAD' }); assert.equal(r.status, 200); assert.equal(await r.text(), '') }
   delete process.env.GLOZ_DRAFTS_PER_DAY
   app.server.close()
 })

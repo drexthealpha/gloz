@@ -352,12 +352,14 @@ ${text}`), by }
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
     if (req.method === 'OPTIONS') { res.writeHead(204); return res.end() }
     const url = new URL(req.url, 'http://x')
-    const key = `${req.method} ${url.pathname}`
+    // HEAD is GET without the body: uptime checks use it.
+    const head = req.method === 'HEAD'
+    const key = `${head ? 'GET' : req.method} ${url.pathname}`
     const dev = OPEN[key] ? null : authed(req)
     const route = OPEN[key] || (dev ? PAIRED[key] || (req.method === 'POST' && url.pathname.startsWith('/mode/') ? tool : null) : 'unpaired')
     const [code, obj] = route === 'unpaired' ? [401, { error: 'pair first' }] : route ? await route({ req, url, dev }) : [404, { error: 'not found' }]
     res.writeHead(code, { 'content-type': 'application/json' })
-    res.end(JSON.stringify(obj))
+    res.end(head ? undefined : JSON.stringify(obj))
   }
 
   const server = createServer((req, res) => handle(req, res).catch(e => { res.writeHead(e.code === 413 ? 413 : 500); res.end(JSON.stringify({ error: String(e.message) })) }))
