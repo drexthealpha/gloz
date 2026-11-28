@@ -1,15 +1,13 @@
-Read and answer every message on your glasses, with the phone in your pocket.
+The one message that matters, answered from your glasses with one tap.
 
-Gloz brings your Telegram, Slack, Discord and Gmail messages to Even G2, one line at a time, in your language and at your size. Arabic, Persian, Hindi, Thai, Hebrew and other scripts the glasses cannot show on their own are drawn as images, so every message reads.
+Gloz shows the messages from the Telegram, Slack and Discord chats you pick on your Even G2, one at a time, the most pressing first: who wrote, one line of what they want, and a reply already drafted by AI in their language, with its meaning shown in yours.
 
-Under each message a reply is ready, drafted by AI in the sender's language with its meaning shown to you. Tap to see it, tap again to send it. Hold to say your own words instead. Nothing is sent without your tap or your word, and replies wait through a lost signal.
+One tap on the glasses or the R1 ring sends it, with 2 seconds to take it back. Double tap for another of three replies; swipe to skip. Hold and say a few words to have the reply rewritten. Nothing is sent without your tap or your word, and replies wait through a lost signal.
 
-After your messages comes your day: your next meeting, your tasks, the weather, music, notes and more, each one swipe away. Hold anywhere and say what you need: add a task, take a note, get directions, set a timer, hear the weather or the news, or ask a question. The timer runs on the glasses with no signal.
+Ten minutes before your next Google Calendar meeting, a card shows who and when, with "On my way." ready to send in the chat where that person last wrote. Hold on "No new messages" and ask what someone said: a one-line answer from your chats.
 
-Seven text sizes; the largest fills the whole display. Every screen says what a tap, swipe or hold does there.
+Arabic, Persian, Hindi, Thai, Hebrew and other scripts the glasses cannot show on their own are drawn as images, at the size you pick. Quiet hours keep messages waiting until the hour you choose.
 
-Your keys and your message text stay on your own Gloz server. Message text is dropped once the reply is sent.
-
-If your glasses need a repair, "Fix my glasses" on the phone screen opens Even Realities' support form already filled in.
+Your keys and your message text stay on your own Gloz server; message text is dropped once the reply is sent. "Delete everything" on the phone forgets it all.
 
 Free and open source (MIT).
