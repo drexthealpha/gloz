@@ -91,7 +91,10 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   const UNDO_MS = 2000   // the reply shows with undo for 2 s, then goes
   const held: Record<string, ReturnType<typeof setTimeout>> = {}   // replies in their undo window
 
+  let cardKey = '', cardAt = 0
+  const GUARD_MS = 600
   function render() {
+    { const k = `${s.view}:${s.queue[s.at]?.id ?? ''}`; if (k !== cardKey) { cardKey = k; cardAt = Date.now() } }
     if (home() || saying) { g.show(homeCard()); onState?.(saying ? { ...s, view: 'listen' } : s, settings); return }
     if (active) { const c = active.card(), h = fade(c.hint); g.show(toolNote ? { ...c, hint: toolNote } : c.hint?.includes('double tap') || knows('double tap') ? { ...c, hint: h } : { ...c, hint: h, back: 'double tap: back' }); onState?.(s, settings); return }
     g.show(r.on ? { ...roomCard(r, settings.myLang), ...(roomNote ? { text: roomNote } : quiet && !r.paused && !r.lines.length ? { text: words(settings.myLang).nothingHeardYet } : {}) } : card(s, settings.myLang))
@@ -174,7 +177,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
           const all = new Uint8Array(pcm.reduce((n, c) => n + c.length, 0))
           let o = 0
           for (const c of pcm) { all.set(c, o); o += c.length }
-          try { dispatch({ t: 'heard', text: (await api.stt(all, settings.myLang)).text }) } catch (e) { dispatch({ t: 'heard', text: '' }); if (/stt 503/.test(String(e))) dispatch({ t: 'note', text: 'No speech engine on the server', ms: 3500 }) }
+          try { dispatch({ t: 'heard', text: (await Promise.race([api.stt(all, settings.myLang), new Promise<{ text: string }>(ok => setTimeout(() => ok({ text: '' }), 8000))])).text }) } catch (e) { dispatch({ t: 'heard', text: '' }); if (/stt 503/.test(String(e))) dispatch({ t: 'note', text: 'No speech engine on the server', ms: 3500 }) }
         }
         return
       case 'refresh': { const n = await poll(); const w = words(settings.myLang); dispatch({ t: 'note', text: n < 0 ? w.laterOnline : n ? w.someNew(n) : w.nothingNew }); return }
@@ -217,6 +220,7 @@ export async function runGloz(bridge: EvenAppBridge, api0: Api | null, onState?:
   }
 
   g.onInput = i => {
+    if (i === 'tap' && !active && !saying && s.view === 'draft' && Date.now() - cardAt < GUARD_MS) return
     used(i)
     if (i === 'exit' && active?.back?.()) return render()
     if (i === 'exit' && saying) { sayGen++; saying = ''; sayTo = null; g.mic(false).catch(() => {}); return render() }
