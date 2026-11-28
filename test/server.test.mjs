@@ -213,6 +213,8 @@ test('a phone ends its own pairing at once; the owner sees use counts with no te
   assert.equal((await call('/unpair', {}, token)).status, 200)
   assert.equal((await call('/inbox', null, token)).status, 401)
   assert.equal((await call('/health')).json.paired, 0)
+  const root = await call('/')
+  assert.deepEqual([root.status, root.json.ok, JSON.stringify(root.json).includes('hello')], [200, true, false])
   delete process.env.GLOZ_DRAFTS_PER_DAY
   app.server.close()
 })
